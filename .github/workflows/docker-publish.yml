@@ -1,7 +1,8 @@
 name: build and publish
 
 on:
-  release: [published]
+  release:
+    types: [published]
   push:
     branches: main
   pull_request:
