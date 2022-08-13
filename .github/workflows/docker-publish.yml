@@ -1,6 +1,10 @@
 name: build and publish
 
-on: [release, push, pull_request]
+on:
+  release:
+  push:
+    branches: main
+  pull_request:
 
 env:
   # Use docker.io for Docker Hub if empty

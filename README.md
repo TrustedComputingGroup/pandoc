@@ -10,7 +10,7 @@ The interesting dependencies are:
 
 * [Pandoc](https://pandoc.org)
 * [LaTeX](https://www.latex-project.org) /
-  [TexLive](https://www.tug.org/texlive/))
+  [TexLive](https://www.tug.org/texlive/)
   (a dependency of Pandoc for PDF generation)
 * [Eisvogel](https://github.com/Wandmalfarbe/pandoc-latex-template)
   (Pandoc/LaTeX template, with some TCG-specific modifications)
