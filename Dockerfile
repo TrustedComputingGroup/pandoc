@@ -39,7 +39,7 @@ RUN tlmgr update --self && \
     transparent
 
 RUN apk upgrade && apk add --no-cache \
-    bash
+    bash \
     nodejs \
     npm \
     chromium
