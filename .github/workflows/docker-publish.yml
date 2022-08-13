@@ -1,11 +1,6 @@
 name: build and publish
 
-on:
-  release:
-    types: [created]
-  push:
-    branches: main
-  pull_request:
+on: [release, push, pull_request]
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -14,7 +9,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  publish-container:
+  build-container:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,15 +49,30 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Build just the amd64 container to validate the build
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        if: github.event_name != 'release'
+        id: build-only
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64
+          # Push only if releasiing
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
+        if: github.event_name == 'release'
         id: build-and-push
         uses: docker/build-push-action@v3
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           # Push only if releasiing
-          push: github.event_name == 'release' && github.event.action == 'created'
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
