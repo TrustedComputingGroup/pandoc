@@ -39,12 +39,12 @@ and brands contained herein are the property of their respective owners.
 
 \newpage
 
-# CHANGE HISTORY
+# Change History
 
-| Revision | Date       | Description     |
-| -------- | ---------- | --------------- |
-| 0.2/17   | 2022/08/10 | Initial draft   |
-| 0.2/18   | 2022/08/10 | Add page breaks |
+| **Revision** | **Date**   | **Description** |
+| ------------ | ---------- | --------------- |
+| 0.2/17       | 2022/08/10 | Initial draft   |
+| 0.2/18       | 2022/08/10 | Add page breaks |
 
 \newpage
 
@@ -100,34 +100,34 @@ graph TD;
 
 Table: List of Mandatory Algorithms
 
-| Algorithm ID     | M/R/O/D | Comments                                      |
-| ---------------- | ------- | --------------------------------------------- |
-| TPM_ALG_ECC      | M       | Support for 256 and 384-bit keys is required. |
-| TPM_ALG_ECDSA    | M       |
-| TPM_ALG_ECDH     | M       |
-| TPM_ALG_ECDAA    | O       |
-| TPM_ALG_RSA      | O       |
-| TPM_ALG_RSAES    | O       |
-| TPM_ALG_RSAPSS   | O       |
-| TPM_ALG_RSAOAEP  | O       |
-| TPM_ALG_AES      | M       |
-| TPM_ALG_SHA256   | M       |
-| TPM_ALG_SHA384   | M       |
-| TPM_ALG_SHA512   | O       |
-| TPM_ALG_HMAC     | M       |
-| TPM_ALG_SHA3_256 | O       |
-| TPM_ALG_SHA3_384 | O       |
-| TPM_ALG_SHA3_512 | O       |
-| TPM_ALG_NULL     | M       |
+| **Algorithm ID** | **M/R/O/D** | **Comments**                                  |
+| ---------------- | ----------- | --------------------------------------------- |
+| TPM_ALG_ECC      | M           | Support for 256 and 384-bit keys is required. |
+| TPM_ALG_ECDSA    | M           |
+| TPM_ALG_ECDH     | M           |
+| TPM_ALG_ECDAA    | O           |
+| TPM_ALG_RSA      | O           |
+| TPM_ALG_RSAES    | O           |
+| TPM_ALG_RSAPSS   | O           |
+| TPM_ALG_RSAOAEP  | O           |
+| TPM_ALG_AES      | M           |
+| TPM_ALG_SHA256   | M           |
+| TPM_ALG_SHA384   | M           |
+| TPM_ALG_SHA512   | O           |
+| TPM_ALG_HMAC     | M           |
+| TPM_ALG_SHA3_256 | O           |
+| TPM_ALG_SHA3_384 | O           |
+| TPM_ALG_SHA3_512 | O           |
+| TPM_ALG_NULL     | M           |
 
 ### Mandatory Curves
 
 Table: List of Mandatory Curves
 
-| Curve Identifier  | M/R/O/D | Comments |
-| ----------------- | ------- | -------- |
-| TPM_ECC_NIST_P256 | M       |
-| TPM_ECC_NIST_P384 | M       |
+| **Curve Identifier** | **M/R/O/D** | **Comments** |
+| -------------------- | ----------- | ------------ |
+| TPM_ECC_NIST_P256    | M           |
+| TPM_ECC_NIST_P384    | M           |
 
 ## Code
 
@@ -144,6 +144,6 @@ int main() {
 
 Table: Fantastic Table
 
-| Column 1 | Column 2 | Column 3 |
-| -------- | -------- | -------- |
-| AAAAAAAA | BBBBBBBB | CCCCCCCC |
+| **Column 1** | **Column 2** | **Column 3** |
+| ------------ | ------------ | ------------ |
+| AAAAAAAA     | BBBBBBBB     | CCCCCCCC     |
