@@ -49,8 +49,7 @@ jobs:
 
       # Login against a Docker registry
       # https://github.com/docker/login-action
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name == 'release'
+      - name: Log into registry
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
@@ -59,14 +58,15 @@ jobs:
 
       # Build just the amd64 container to validate the build
       # https://github.com/docker/build-push-action
-      - name: Validate Docker image build
+      # Upload it as "test" so we can use it to render samples
+      - name: Build Docker image
         if: github.event_name != 'release'
         uses: docker/build-push-action@v3
         with:
           context: .
           platforms: linux/amd64
-          # Push only if releasiing
-          push: false
+          push: true
+          tags: ghcr.io/trustedcomputinggroup/pandoc:test
 
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
@@ -80,3 +80,34 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  render-samples:
+    if: github.event_name != 'release'
+    needs: build-container
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/trustedcomputinggroup/pandoc:test
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run the action on sample1
+        uses: trustedcomputinggroup/markdown@latest
+        with:
+          input-md: sample1.md
+          output-pdf: sample1.pdf
+
+      - name: Run the action on sample2
+        uses: trustedcomputinggroup/markdown@latest
+        with:
+          input-md: sample2.md
+          output-pdf: sample2.pdf
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: samples
+          path: sample*.pdf
