@@ -887,6 +887,7 @@ $else$
     {
       {
         \color{white}
+        \vspace*{\fill}
         $title$
         \hskip 0.25em | \hskip 0.25em 
         Version $version$
@@ -898,6 +899,7 @@ $else$
         $status$
         \hskip 2em
         Page \thepage
+        \vfill
       }
     }
     \end{textblock*}
@@ -907,10 +909,12 @@ $else$
     \begin{textblock*}{8.00in}(0.25in,10.8in)
     \footnotesize
     {
-      \textcolor{white}
+      \color{white}
+      \vspace*{\fill}
       {
-        © TCG $year$
+        \copyright TCG $year$
       }
+      \vfill
     }
     \end{textblock*}
   }
