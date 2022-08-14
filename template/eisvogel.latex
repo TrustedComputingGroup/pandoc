@@ -299,6 +299,10 @@ $else$
 \usepackage[margin=0.75in,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
 $endif$
 $endif$
+
+\setlength{\paperheight}{11in}
+\setlength{\paperwidth}{8.5in}
+
 $if(logo)$
 \usepackage[export]{adjustbox}
 \usepackage{graphicx}
