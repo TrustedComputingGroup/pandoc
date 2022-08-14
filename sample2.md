@@ -39,7 +39,7 @@ and brands contained herein are the property of their respective owners.
 
 \newpage
 
-# CHANGE HISTORY
+# Change History
 
 | **Revision** | **Date**   | **Description** |
 | ------------ | ---------- | --------------- |
