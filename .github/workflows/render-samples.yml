@@ -1,0 +1,35 @@
+name: render samples
+
+on:
+  pull_request:
+
+jobs:
+  render-samples:
+
+    runs-on: ubuntu-latest
+    container:
+      image: 'Dockerfile'
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run the action on sample1
+        uses: trustedcomputinggroup/markdown@latest
+        with:
+          input-md: sample1.md
+          output-pdf: sample1.pdf
+
+      - name: Run the action on sample2
+        uses: trustedcomputinggroup/markdown@latest
+        with:
+          input-md: sample2.md
+          output-pdf: sample2.pdf
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: samples
+          path: sample*.pdf
