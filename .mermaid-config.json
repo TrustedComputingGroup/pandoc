@@ -1,3 +1,5 @@
 {
-    "theme": "neutral"
+    "theme": "neutral",
+    "caption": "true",
+    "format": "pdf"
 }
