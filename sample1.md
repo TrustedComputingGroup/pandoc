@@ -41,7 +41,7 @@ and brands contained herein are the property of their respective owners.
 
 # CHANGE HISTORY
 
-| Revision | Date       | Description     |
+| **Revision** | **Date**       | **Description**     |
 | -------- | ---------- | --------------- |
 | 0.2/17   | 2022/08/10 | Initial draft   |
 | 0.2/18   | 2022/08/10 | Add page breaks |
@@ -73,7 +73,7 @@ culpa qui officia deserunt mollit anim id est laborum.
 
 Table: List of Mandatory Algorithms
 
-| Algorithm ID     | M/R/O/D | Comments                                      |
+| *Algorithm ID*     | *M/R/O/D* | *Comments*                                      |
 | ---------------- | ------- | --------------------------------------------- |
 | TPM_ALG_ECC      | M       | Support for 256 and 384-bit keys is required. |
 | TPM_ALG_ECDSA    | M       |
