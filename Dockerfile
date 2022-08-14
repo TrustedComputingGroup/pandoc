@@ -38,6 +38,7 @@ RUN tlmgr update --self && \
 
 RUN apk upgrade && apk add --no-cache \
     bash \
+    git \
     nodejs \
     npm \
     chromium
