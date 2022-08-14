@@ -685,7 +685,8 @@ $endif$
 $if(tables)$
 
 \definecolor{table-row-color}{HTML}{F5F5F5}
-\definecolor{table-rule-color}{HTML}{999999}
+\definecolor{table-alt-color}{HTML}{D1E3A0}
+\definecolor{table-rule-color}{HTML}{FFFFFF}
 
 %\arrayrulecolor{black!40}
 \arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
@@ -708,7 +709,7 @@ $if(table-use-row-colors)$
 \let\oldlongtable\longtable
 \let\endoldlongtable\endlongtable
 \renewenvironment{longtable}{
-\rowcolors{3}{}{table-row-color!100}  % row color
+\rowcolors{3}{table-alt-color!100}{table-row-color!100}  % row color
 \oldlongtable} {
 \endoldlongtable
 \global\rownum=0\relax}
