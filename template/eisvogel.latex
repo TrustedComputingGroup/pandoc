@@ -688,17 +688,16 @@ $if(tables)$
 \definecolor{table-alt-color}{HTML}{D1E3A0}
 \definecolor{table-rule-color}{HTML}{FFFFFF}
 
-%\arrayrulecolor{black!40}
 \arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
 \setlength\heavyrulewidth{0.3ex}      % thickness of \toprule, \bottomrule
 \renewcommand{\arraystretch}{1.3}     % spacing (padding)
 
 $if(table-use-row-colors)$
 \usepackage{etoolbox}
-\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color!100}{table-alt-color!100}}
-\apptocmd{\toprule}{\hiderowcolors}{}{}
-\apptocmd{\endhead}{\showrowcolors}{}{}
-\apptocmd{\endfirsthead}{\showrowcolors}{}{}
+\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color!50}{table-alt-color!50}}
+\apptocmd{\toprule}{\hiderowcolors()}{}{}
+\apptocmd{\endhead}{\showrowcolors()}{}{}
+\apptocmd{\endfirsthead}{\showrowcolors()}{}{}
 $endif$
 $endif$
 
