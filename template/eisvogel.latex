@@ -877,7 +877,7 @@ $else$
   % \rhead[$if(header-left)$$header-left$$else$title$endif$]{$if(header-right)$$header-right$$else$$date$$endif$}
   % \lfoot[$if(footer-right)$$footer-right$$else$\thepage$endif$]{$if(footer-left)$$footer-left$$else$$for(author)$$author$$sep$, $endfor$$endif$}
   % \cfoot[$if(footer-center)$$footer-center$$else$$endif$]{$if(footer-center)$$footer-center$$else$$endif$}
-  \fancyfoot[D]
+  \fancyfoot[C]
   {
     \begin{textblock*}{8.5in}(0in,10.7in)
     \tikz \fill [color={rgb,255:red,77; green,77; blue,77}] (0in,0in) rectangle (8.5in,0.3in);
