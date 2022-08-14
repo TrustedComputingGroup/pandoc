@@ -906,6 +906,9 @@ $else$
   }
   \fancyfoot[R]
   {
+    \begin{textblock*}{8.5in}(0in,10.7in)
+    \tikz \fill [color={rgb,255:red,77; green,77; blue,77}] (0in,0in) rectangle (0in,0in);
+    \end{textblock*}
     \begin{textblock*}{8.00in}(0.25in,10.8in)
     \footnotesize
     {
