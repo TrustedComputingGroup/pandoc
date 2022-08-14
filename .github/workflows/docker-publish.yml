@@ -59,7 +59,7 @@ jobs:
       # Build just the amd64 container to validate the build
       # https://github.com/docker/build-push-action
       # Upload it as "test" so we can use it to render samples
-      - name: Validate Docker image build
+      - name: Build Docker image
         if: github.event_name != 'release'
         uses: docker/build-push-action@v3
         with:
