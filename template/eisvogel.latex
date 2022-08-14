@@ -896,7 +896,7 @@ $else$
         $date$
         \hskip 0.25em | \hskip 0.25em 
         $status$
-        \hskip 2em
+        \hfill
         Page \thepage
         \hfill
         © TCG $year$
