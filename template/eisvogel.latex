@@ -912,7 +912,7 @@ $else$
       \color{white}
       \vspace*{\fill}
       {
-        \copyright TCG $year$
+        © TCG $year$
       }
       \vfill
     }
