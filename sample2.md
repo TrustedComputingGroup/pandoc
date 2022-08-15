@@ -96,6 +96,16 @@ graph TD;
     C-->D;
 ```
 
+Ideally, the below diagram also makes it to the list of figures.
+
+```mermaid {#fig:abcd2}
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
+
 ### Mandatory Algorithms
 
 Table: List of Mandatory Algorithms
