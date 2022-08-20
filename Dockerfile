@@ -2,6 +2,7 @@ FROM pandoc/latex:2.19
 
 COPY ./img/* /resources/img/
 COPY ./template/* /resources/templates/
+COPY ./filter/* /resources/filters/
 
 RUN tlmgr list
 RUN tlmgr update --self && \
