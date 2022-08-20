@@ -42,7 +42,11 @@ RUN apk upgrade && apk add --no-cache \
     git \
     nodejs \
     npm \
-    chromium
+    chromium \
+    python3 \
+    py3-pip
+
+RUN pip install pandocfilters
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
