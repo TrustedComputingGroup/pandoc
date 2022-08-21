@@ -54,11 +54,12 @@ RUN pip install pandocfilters
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN npm install --global --unsafe-perm mermaid.cli@0.5.1 puppeteer@16.1.0 imgur@2.2.0 mermaid-filter@1.4.6 typescript@4.7.4 @types/node
+RUN npm install --global --unsafe-perm mermaid.cli@0.5.1 puppeteer@16.1.0 imgur@2.2.0 mermaid-filter@1.4.6 typescript@4.7.4
 
 # Install latest pandiff, which has not been released in a while
 # This pre-release build has --reference-doc support for docx output
 RUN mkdir /src
 RUN cd /src && git clone https://github.com/davidar/pandiff.git
 RUN cd /src/pandiff && git checkout d1d468b2c4d81c622ff431ef718b1bf0daaa03db
+RUN cd /src/pandiff && npm install @types/node --save-dev
 RUN npm install /src/pandiff
