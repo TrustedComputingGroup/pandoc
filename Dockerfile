@@ -60,4 +60,4 @@ RUN npm install --global --unsafe-perm mermaid.cli@0.5.1 puppeteer@16.1.0 imgur@
 RUN mkdir /src && cd /src
 RUN git clone https://github.com/davidar/pandiff.git
 RUN cd pandiff && git checkout d1d468b2c4d81c622ff431ef718b1bf0daaa03db
-RUN npm install .
+RUN npm install /src/pandiff
