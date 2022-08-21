@@ -46,7 +46,8 @@ RUN apk upgrade && apk add --no-cache \
     npm \
     chromium \
     python3 \
-    py3-pip
+    py3-pip \
+    yarn
 
 RUN pip install pandocfilters
 
