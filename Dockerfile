@@ -52,5 +52,5 @@ RUN pip install pandocfilters
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN npm install --global --unsafe-perm mermaid.cli@0.5.1 puppeteer@16.1.0 imgur@2.2.0 mermaid-filter@1.4.6
+RUN npm install --global --unsafe-perm mermaid.cli@0.5.1 puppeteer@16.1.0 imgur@2.2.0 mermaid-filter@1.4.6 pandiff@0.5.0
 
