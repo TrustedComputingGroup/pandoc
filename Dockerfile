@@ -58,6 +58,6 @@ RUN npm install --global --unsafe-perm mermaid.cli@0.5.1 puppeteer@16.1.0 imgur@
 # Install latest pandiff, which has not been released in a while
 # This pre-release build has --reference-doc support for docx output
 RUN mkdir /src
-RUN cd src && git clone https://github.com/davidar/pandiff.git
-RUN cd src/pandiff && git checkout d1d468b2c4d81c622ff431ef718b1bf0daaa03db
+RUN cd /src && git clone https://github.com/davidar/pandiff.git
+RUN cd /src/pandiff && git checkout d1d468b2c4d81c622ff431ef718b1bf0daaa03db
 RUN npm install /src/pandiff
