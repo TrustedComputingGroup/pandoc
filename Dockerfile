@@ -35,7 +35,8 @@ RUN tlmgr update --self && \
     xurl \
     textpos \
     anyfontsize \
-    transparent
+    transparent \
+    ulem
 
 RUN apk upgrade && apk add --no-cache \
     bash \
