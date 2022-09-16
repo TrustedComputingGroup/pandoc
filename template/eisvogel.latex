@@ -1019,7 +1019,7 @@ $if(titlepage-background)$
   {
     \begin{center}
     \vskip -1.1em
-    \fontsize{38}{46}{\textsf{\textbf{\textcolor{white}}{\char}}}\\
+    \fontsize{38}{46}{\textsf{\textcolor{white}{\textbf{\char}}}}\\
     \end{center}
   }
   $endif$
