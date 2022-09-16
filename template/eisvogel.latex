@@ -581,7 +581,7 @@ $if(titlepage-background)$
 $endif$
 $if(geometry)$
 $else$
-\usepackage[margin=0.75in]{geometry}
+\usepackage[margin=0.5in]{geometry}
 $endif$
 $endif$
 
