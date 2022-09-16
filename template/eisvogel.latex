@@ -138,7 +138,7 @@ $if(linestretch)$
 \usepackage{setspace}
 $else$
 \usepackage{setspace}
-\setstretch{1.2}
+\setstretch{1.0}
 $endif$
 \usepackage[absolute,overlay]{textpos}
 \usepackage{ifxetex,ifluatex}
@@ -296,7 +296,7 @@ $endif$
 $else$
 $if(beamer)$
 $else$
-\usepackage[margin=0.75in,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
+\usepackage[margin=0.5in,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
 $endif$
 $endif$
 
@@ -581,7 +581,7 @@ $if(titlepage-background)$
 $endif$
 $if(geometry)$
 $else$
-\usepackage[margin=0.75in]{geometry}
+\usepackage[margin=0.5in]{geometry}
 $endif$
 $endif$
 
@@ -1019,7 +1019,7 @@ $if(titlepage-background)$
   {
     \begin{center}
     \vskip -1.1em
-    \fontsize{38}{46}{\textsf{\textcolor{white}{\char}}}\\
+    \fontsize{38}{46}{\textsf{\textcolor{white}{\fontseries{sb}\selectfont \char}}}\\
     \end{center}
   }
   $endif$
