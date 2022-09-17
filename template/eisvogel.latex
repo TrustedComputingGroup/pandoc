@@ -534,21 +534,6 @@ $if(logo)$
 $endif$
 $endif$
 
-% Tweak the section spacings
-% Workaround:
-% https://github.com/rstudio/bookdown/issues/677
-\let\eisparagraph\paragraph
-\let\paragraph\oldparagraph
-\let\eissubparagraph\subparagraph
-\let\subparagraph\oldsubparagraph
-\usepackage[compact]{titlesec}
-\let\paragraph\eisparagraph
-\let\subparagraph\eissubparagraph
-
-\titlespacing\section{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
-\titlespacing\subsection{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
-\titlespacing\subsubsection{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
-
 %%
 %% added
 %%
@@ -964,6 +949,32 @@ $endif$
  }
 
 \ExplSyntaxOff
+
+\RedeclareSectionCommand[
+  %runin=false,
+  afterindent=false,
+  beforeskip=\baselineskip,
+  afterskip=.5\baselineskip]{section}
+\RedeclareSectionCommand[
+  %runin=false,
+  afterindent=false,
+  beforeskip=.75\baselineskip,
+  afterskip=.5\baselineskip]{subsection}
+\RedeclareSectionCommand[
+  %runin=false,
+  afterindent=false,
+  beforeskip=.5\baselineskip,
+  afterskip=.25\baselineskip]{subsubsection}
+\RedeclareSectionCommand[
+  runin=true,
+  %afterindent=false,
+  beforeskip=.5\baselineskip,
+  afterskip=1em]{paragraph}
+\RedeclareSectionCommand[
+  runin=true,
+  %afterindent=false,
+  beforeskip=.5\baselineskip,
+  afterskip=1em]{subparagraph}
 
 \begin{document}
 

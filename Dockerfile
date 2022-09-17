@@ -19,7 +19,6 @@ RUN tlmgr update --self && \
     pagecolor \
     adjustbox \
     collectbox \
-    titlesec \
     fvextra \
     pdftexcmds \
     footnotebackref \
