@@ -688,14 +688,14 @@ $if(tables)$
 \definecolor{table-rule-color}{HTML}{FFFFFF}
 
 \arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
-\setlength\arrayrulewidth{2pt}
+\setlength\arrayrulewidth{1pt}
 \setlength\heavyrulewidth{2pt}        % thickness of \toprule, \bottomrule
 \renewcommand{\arraystretch}{1.3}     % spacing (padding)
 
 $if(table-use-row-colors)$
 \usepackage{etoolbox}
 \AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
-\preto{\toprule}{\rowcolor{table-hdr-color}{}{}
+\preto{\toprule}{\rowcolor{table-hdr-color}}{}{}
 %\appto{\endhead}{\showrowcolors}{}{}
 %\appto{\endfirsthead}{\showrowcolors}{}{}
 $endif$
