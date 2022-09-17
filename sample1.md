@@ -57,7 +57,12 @@ and brands contained herein are the property of their respective owners.
 
 # Introduction
 
-Draft specification, with a list of tables.
+Draft specification, with a list of tables and a list of figures.
+
+> Informative!
+
+> Informative text 2: here is a block of
+> informative text.
 
 ## Details
 
