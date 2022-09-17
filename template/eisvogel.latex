@@ -695,7 +695,7 @@ $if(tables)$
 $if(table-use-row-colors)$
 \usepackage{etoolbox}
 \AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
-\preto{\toprule}{
+\appto{\toprule}{
   \hiderowcolors
   \rowfont{\color{white}}
   \rowcolor{table-hdr-color}}{}{}
