@@ -697,14 +697,11 @@ $if(table-use-row-colors)$
 \AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
 \preto{\toprule}{
   \hiderowcolors
-  \rowcolor{table-hdr-color}
-  \color{white}}{}{}
+  \rowcolor{table-hdr-color}}{}{}
 \appto{\endhead}{
-  \showrowcolors
-  \color{black}}{}{}
+  \showrowcolors}{}{}
 \appto{\endfirsthead}{
-  \showrowcolors
-  \color{black}}{}{}
+  \showrowcolors}{}{}
 $endif$
 $endif$
 
