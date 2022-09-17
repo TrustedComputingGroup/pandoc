@@ -1075,8 +1075,9 @@ $endif$
 
 \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
 {
-  \DraftwatermarkOptions{text=DRAFT,stamp=true}
+  \DraftwatermarkOptions{text=DRAFT, stamp=true}
 }
+{}
 
 $if(has-frontmatter)$
 \frontmatter
