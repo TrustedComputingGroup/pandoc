@@ -36,7 +36,8 @@ RUN tlmgr update --self && \
     textpos \
     anyfontsize \
     transparent \
-    ulem
+    ulem \
+    tocloft
 
 RUN apk upgrade && apk add --no-cache \
     bash \
