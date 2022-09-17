@@ -682,23 +682,18 @@ $endif$
 %
 $if(tables)$
 
-\definecolor{table-hdr-color}{HTML}{818181}
 \definecolor{table-row-color}{HTML}{C0C0C0}
 \definecolor{table-alt-color}{HTML}{DADADA}
 \definecolor{table-rule-color}{HTML}{FFFFFF}
 
 \arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
-\setlength\arrayrulewidth{0pt}
-\setlength\heavyrulewidth{0pt}        % thickness of \toprule, \bottomrule
+\setlength\heavyrulewidth{0.3ex} % thickness of \toprule, \bottomrule
 \renewcommand{\arraystretch}{1.3}     % spacing (padding)
 
 $if(table-use-row-colors)$
 \usepackage{etoolbox}
 \AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
-\preto{\toprule}{
-  \hiderowcolors
-  \rowcolor{table-hdr-color}}{}{}
-\appto{\toprule}{\color{white}}{}{}
+\preto{\toprule}{\hiderowcolors}{}{}
 \appto{\endhead}{\showrowcolors}{}{}
 \appto{\endfirsthead}{\showrowcolors}{}{}
 $endif$
