@@ -7,6 +7,7 @@ date: 8/11/2022
 year: 2022
 type: SPECIFICATION
 status: PUBLISHED
+template: bluetop
 ...
 
 \newpage
