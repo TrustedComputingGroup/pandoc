@@ -688,8 +688,8 @@ $if(tables)$
 \definecolor{table-rule-color}{HTML}{FFFFFF}
 
 \arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
-\setlength\arrayrulewidth{1pt}
-\setlength\heavyrulewidth{1pt}        % thickness of \toprule, \bottomrule
+%\setlength\arrayrulewidth{1pt}
+%\setlength\heavyrulewidth{1pt}        % thickness of \toprule, \bottomrule
 \renewcommand{\arraystretch}{1.3}     % spacing (padding)
 
 $if(table-use-row-colors)$
@@ -697,6 +697,7 @@ $if(table-use-row-colors)$
 \AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
 \preto{\toprule}{
   \hiderowcolors
+  \rowfont{\color{white}}
   \rowcolor{table-hdr-color}}{}{}
 \appto{\endhead}{
   \showrowcolors}{}{}
