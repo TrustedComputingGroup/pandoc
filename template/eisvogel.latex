@@ -537,11 +537,10 @@ $endif$
 % Tweak the section spacings
 % Workaround:
 % https://github.com/rstudio/bookdown/issues/677
+\let\eisparagraph\paragraph
 \let\paragraph\oldparagraph
-\let\subparagraph\oldsubparagraph
 \usepackage{titlesec}
-\let\oldparagraph\paragraph
-\let\oldsubparagraph\subparagraph
+\let\paragraph\eisparagraph
 
 \titlespacing\section{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
 \titlespacing\subsection{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
