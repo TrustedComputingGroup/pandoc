@@ -612,9 +612,15 @@ $endif$
 \usepackage{mdframed}
 \newmdenv[linewidth=0pt,backgroundcolor=blockquote-border,skipabove=\parskip]{customblockquote}
 \renewenvironment{quote}{
+  \vskip -1em
   \begin{customblockquote}
   \list{}{\rightmargin=0em\leftmargin=0em}
-\item\relax\color{blockquote-text}\ignorespaces}{\unskip\unskip\endlist\end{customblockquote}}
+  \item\color{blockquote-text}Start of informative comment
+  \item\relax\color{blockquote-text}\ignorespaces
+}{
+  \item\color{blockquote-text}Start of informative comment
+  \unskip\unskip\endlist\end{customblockquote}
+}
 
 %
 % Source Sans Pro as the de­fault font fam­ily
