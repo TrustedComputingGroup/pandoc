@@ -531,8 +531,6 @@ $if(logo)$
 $endif$
 $endif$
 
-
-
 %%
 %% added
 %%
@@ -602,7 +600,7 @@ $endif$
 \definecolor{caption-color}{HTML}{777777}
 $if(beamer)$
 $else$
-\usepackage[font={stretch=1.2}, textfont={color=caption-color}, position=top, skip=4mm, labelfont=bf, singlelinecheck=false, justification=$if(caption-justification)$$caption-justification$$else$raggedright$endif$]{caption}
+\usepackage[font={stretch=1.2}, textfont={color=caption-color}, position=top, skip=4mm, labelfont=bf, singlelinecheck=false, justification=centering]{caption}
 \setcapindent{0em}
 $endif$
 
@@ -684,17 +682,17 @@ $endif$
 %
 $if(tables)$
 
-\definecolor{table-row-color}{HTML}{F5F5F5}
-\definecolor{table-alt-color}{HTML}{D1E3A0}
+\definecolor{table-row-color}{HTML}{C0C0C0}
+\definecolor{table-alt-color}{HTML}{DADADA}
 \definecolor{table-rule-color}{HTML}{FFFFFF}
 
 \arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
-\setlength\heavyrulewidth{0.3ex}      % thickness of \toprule, \bottomrule
+\setlength\heavyrulewidth{0.3ex} % thickness of \toprule, \bottomrule
 \renewcommand{\arraystretch}{1.3}     % spacing (padding)
 
 $if(table-use-row-colors)$
 \usepackage{etoolbox}
-\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color!50}{table-alt-color!50}}
+\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
 \preto{\toprule}{\hiderowcolors}{}{}
 \appto{\endhead}{\showrowcolors}{}{}
 \appto{\endfirsthead}{\showrowcolors}{}{}
@@ -948,6 +946,32 @@ $endif$
  }
 
 \ExplSyntaxOff
+
+\RedeclareSectionCommand[
+  runin=false,
+  afterindent=false,
+  beforeskip=\baselineskip,
+  afterskip=0em]{section}
+\RedeclareSectionCommand[
+  runin=false,
+  afterindent=false,
+  beforeskip=.75\baselineskip,
+  afterskip=0em]{subsection}
+\RedeclareSectionCommand[
+  runin=false,
+  afterindent=false,
+  beforeskip=.5\baselineskip,
+  afterskip=0em]{subsubsection}
+\RedeclareSectionCommand[
+  runin=false,
+  %afterindent=false,
+  beforeskip=.5\baselineskip,
+  afterskip=0em]{paragraph}
+\RedeclareSectionCommand[
+  runin=false,
+  %afterindent=false,
+  beforeskip=.5\baselineskip,
+  afterskip=0em]{subparagraph}
 
 \begin{document}
 
