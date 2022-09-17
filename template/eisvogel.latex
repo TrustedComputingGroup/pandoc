@@ -418,12 +418,6 @@ $endif$
 $if(pagestyle)$
 \pagestyle{$pagestyle$}
 $endif$
-% All sections get dots in the table of contents
-\usepackage{tocloft}
-\renewcommand{\cftpartdotsep}{\cftdotsep}
-\renewcommand{\cftsecdotsep}{\cftdotsep}
-\renewcommand{\cftsubsecdotsep}{\cftdotsep}
-\renewcommand{\cftsubsubsecdotsep}{\cftdotsep}
 
 % Make use of float-package and set default placement for figures to H.
 % The option H means 'PUT IT HERE' (as  opposed to the standard h option which means 'You may put it here if you like').
@@ -693,7 +687,8 @@ $if(tables)$
 \definecolor{table-rule-color}{HTML}{FFFFFF}
 
 \arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
-\setlength\heavyrulewidth{0.3ex}      % thickness of \toprule, \bottomrule
+\setlength\arrayrulewidth{1pt}
+\setlength\heavyrulewidth{2pt}        % thickness of \toprule, \bottomrule
 \renewcommand{\arraystretch}{1.3}     % spacing (padding)
 
 $if(table-use-row-colors)$
@@ -954,27 +949,27 @@ $endif$
 \ExplSyntaxOff
 
 \RedeclareSectionCommand[
-  %runin=false,
+  runin=false,
   afterindent=false,
   beforeskip=\baselineskip,
   afterskip=1em]{section}
 \RedeclareSectionCommand[
-  %runin=false,
+  runin=false,
   afterindent=false,
   beforeskip=.75\baselineskip,
   afterskip=1em]{subsection}
 \RedeclareSectionCommand[
-  %runin=false,
+  runin=false,
   afterindent=false,
   beforeskip=.5\baselineskip,
   afterskip=1em]{subsubsection}
 \RedeclareSectionCommand[
-  runin=true,
+  runin=false,
   %afterindent=false,
   beforeskip=.5\baselineskip,
   afterskip=1em]{paragraph}
 \RedeclareSectionCommand[
-  runin=true,
+  runin=false,
   %afterindent=false,
   beforeskip=.5\baselineskip,
   afterskip=1em]{subparagraph}
