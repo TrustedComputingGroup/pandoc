@@ -698,13 +698,13 @@ $if(table-use-row-colors)$
 \preto{\toprule}{
   \hiderowcolors
   \rowcolor{table-hdr-color}
-  \textcolor{white}}{}{}
+  \color{white}}{}{}
 \appto{\endhead}{
   \showrowcolors
-  \textcolor{black}}{}{}
+  \color{black}}{}{}
 \appto{\endfirsthead}{
   \showrowcolors
-  \textcolor{black}}{}{}
+  \color{black}}{}{}
 $endif$
 $endif$
 
