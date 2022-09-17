@@ -951,27 +951,27 @@ $endif$
   runin=false,
   afterindent=false,
   beforeskip=\baselineskip,
-  afterskip=1em]{section}
+  afterskip=0em]{section}
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
   beforeskip=.75\baselineskip,
-  afterskip=1em]{subsection}
+  afterskip=0em]{subsection}
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
   beforeskip=.5\baselineskip,
-  afterskip=1em]{subsubsection}
+  afterskip=0em]{subsubsection}
 \RedeclareSectionCommand[
   runin=false,
   %afterindent=false,
   beforeskip=.5\baselineskip,
-  afterskip=1em]{paragraph}
+  afterskip=0em]{paragraph}
 \RedeclareSectionCommand[
   runin=false,
   %afterindent=false,
   beforeskip=.5\baselineskip,
-  afterskip=1em]{subparagraph}
+  afterskip=0em]{subparagraph}
 
 \begin{document}
 
