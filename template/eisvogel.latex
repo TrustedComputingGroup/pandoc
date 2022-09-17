@@ -539,8 +539,11 @@ $endif$
 % https://github.com/rstudio/bookdown/issues/677
 \let\eisparagraph\paragraph
 \let\paragraph\oldparagraph
+\let\eissubparagraph\subparagraph
+\let\subparagraph\oldsubparagraph
 \usepackage{titlesec}
 \let\paragraph\eisparagraph
+\let\subparagraph\eissubparagraph
 
 \titlespacing\section{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
 \titlespacing\subsection{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
