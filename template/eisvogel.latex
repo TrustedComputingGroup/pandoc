@@ -420,8 +420,11 @@ $if(pagestyle)$
 $endif$
 % All sections get dots in the table of contents
 \usepackage{tocloft}
-\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}}
-\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftpartdotsep}{\cftdotsep}
+\renewcommand{\cftschapdotsep}{\cftdotsep}
+\renewcommand{\cftsecdotsep}{\cftdotsep}
+\renewcommand{\cftsubsecdotsep}{\cftdotsep}
+\renewcommand{\cftsubsubsecdotsep}{\cftdotsep}
 
 % Make use of float-package and set default placement for figures to H.
 % The option H means 'PUT IT HERE' (as  opposed to the standard h option which means 'You may put it here if you like').
@@ -955,27 +958,27 @@ $endif$
   %runin=false,
   afterindent=false,
   beforeskip=\baselineskip,
-  afterskip=0em]{section}
+  afterskip=1em]{section}
 \RedeclareSectionCommand[
   %runin=false,
   afterindent=false,
   beforeskip=.75\baselineskip,
-  afterskip=0em]{subsection}
+  afterskip=1em]{subsection}
 \RedeclareSectionCommand[
   %runin=false,
   afterindent=false,
   beforeskip=.5\baselineskip,
-  afterskip=0em]{subsubsection}
+  afterskip=1em]{subsubsection}
 \RedeclareSectionCommand[
   runin=true,
   %afterindent=false,
   beforeskip=.5\baselineskip,
-  afterskip=0em]{paragraph}
+  afterskip=1em]{paragraph}
 \RedeclareSectionCommand[
   runin=true,
   %afterindent=false,
   beforeskip=.5\baselineskip,
-  afterskip=0em]{subparagraph}
+  afterskip=1em]{subparagraph}
 
 \begin{document}
 
