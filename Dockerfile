@@ -36,8 +36,7 @@ RUN tlmgr update --self && \
     textpos \
     anyfontsize \
     transparent \
-    ulem \
-    titletoc
+    ulem
 
 RUN apk upgrade && apk add --no-cache \
     bash \
