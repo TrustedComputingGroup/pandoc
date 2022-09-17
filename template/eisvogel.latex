@@ -364,7 +364,7 @@ $else$
 % Patch tableofcontents to hide links
 \makeatletter
 \patchcmd\tableofcontents{
-  \begingroup\hypersetup{hidelinks}
+  \begingroup\hypersetup{linkcolor=black}
 }{
   \endgroup
 }{}{}
