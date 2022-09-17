@@ -694,10 +694,11 @@ $if(tables)$
 
 $if(table-use-row-colors)$
 \usepackage{etoolbox}
-\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
-\appto{\toprule}{
+\AtBeginEnvironment{longtable}{
+  \rowcolors{2}{table-row-color}{table-alt-color}
+  \rowfont{\color{white}}}
+\preto{\toprule}{
   \hiderowcolors
-  \rowfont{\color{white}}
   \rowcolor{table-hdr-color}}{}{}
 \appto{\endhead}{
   \showrowcolors}{}{}
