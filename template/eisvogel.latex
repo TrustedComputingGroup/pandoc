@@ -361,14 +361,6 @@ $else$
 \makeatletter
 \patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
 \makeatother
-% Patch tableofcontents to hide links
-\makeatletter
-\patchcmd\tableofcontents{
-  \begingroup\hypersetup{linkcolor=black}
-}{
-  \endgroup
-}{}{}
-\makeatother
 % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
