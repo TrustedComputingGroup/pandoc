@@ -535,7 +535,14 @@ $endif$
 $endif$
 
 % Tweak the section spacings
+% Workaround:
+% https://github.com/rstudio/bookdown/issues/677
+\let\paragraph\oldparagraph
+\let\subparagraph\oldsubparagraph
 \usepackage{titlesec}
+\let\oldparagraph\paragraph
+\let\oldsubparagraph\subparagraph
+
 \titlespacing\section{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
 \titlespacing\subsection{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
 \titlespacing\subsubsection{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
@@ -701,7 +708,7 @@ $if(tables)$
 
 $if(table-use-row-colors)$
 \usepackage{etoolbox}
-\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color!50}{table-alt-color!50}}
+\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
 \preto{\toprule}{\hiderowcolors}{}{}
 \appto{\endhead}{\showrowcolors}{}{}
 \appto{\endfirsthead}{\showrowcolors}{}{}
