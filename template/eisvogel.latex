@@ -366,6 +366,18 @@ $else$
 \makesavenoteenv{longtable}
 $endif$
 $endif$
+% https://tex.stackexchange.com/a/106191
+\usepackage{etoolbox}
+\makeatletter
+\newif\ifLT@nocaption
+\preto\longtable{\LT@nocaptiontrue}
+\appto\endlongtable{%
+  \ifLT@nocaption
+    \addtocounter{table}{\m@ne}%
+  \fi}
+\preto\LT@caption{%
+  \noalign{\global\LT@nocaptionfalse}}
+\makeatother
 % add backlinks to footnote references, cf. https://tex.stackexchange.com/questions/302266/make-footnote-clickable-both-ways
 $if(footnotes-disable-backlinks)$
 $else$
@@ -420,8 +432,6 @@ $endif$
 $if(pagestyle)$
 \pagestyle{$pagestyle$}
 $endif$
-% Replace invocation of longtable with the variant that doesn't increment the counter
-\let\longtable\longtable*
 
 % Make use of float-package and set default placement for figures to H.
 % The option H means 'PUT IT HERE' (as  opposed to the standard h option which means 'You may put it here if you like').
