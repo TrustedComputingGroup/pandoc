@@ -420,6 +420,8 @@ $endif$
 $if(pagestyle)$
 \pagestyle{$pagestyle$}
 $endif$
+% Replace invocation of longtable with the variant that doesn't increment the counter
+\let\longtable\longtable*
 
 % Make use of float-package and set default placement for figures to H.
 % The option H means 'PUT IT HERE' (as  opposed to the standard h option which means 'You may put it here if you like').

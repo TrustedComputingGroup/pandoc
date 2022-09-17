@@ -99,15 +99,19 @@ jobs:
         with:
           input-md: sample1.md
           output-pdf: sample1.pdf
+          output-tex: sample1.tex
 
       - name: Run the action on sample2
         uses: trustedcomputinggroup/markdown@latest
         with:
           input-md: sample2.md
           output-pdf: sample2.pdf
+          output-tex: sample2.tex
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
           name: samples
-          path: sample*.pdf
+          path: |
+            sample*.pdf
+            sample*.tex
