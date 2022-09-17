@@ -73,7 +73,8 @@ $endif$
 $for(classoption)$
   $classoption$$sep$,
 $endfor$
-  ,captions=tableheading
+  ,captions=tableheading,
+  toc=sectionentrywithdots
 ]{$if(beamer)$$documentclass$$else$$if(book)$scrbook$else$scrartcl$endif$$endif$}
 $if(beamer)$
 $if(background-image)$
@@ -81,6 +82,13 @@ $if(background-image)$
   \includegraphics[width=\paperwidth]{$background-image$}%
 }
 $endif$
+
+\ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
+{
+  \usepackage[text=DRAFT]{draftwatermark}
+}
+{}
+
 \usepackage{pgfpages}
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
@@ -611,8 +619,16 @@ $endif$
 \definecolor{blockquote-text}{RGB}{10,10,10}
 \usepackage{mdframed}
 \newmdenv[linewidth=0pt,backgroundcolor=blockquote-border,skipabove=\parskip]{customblockquote}
-\renewenvironment{quote}{\begin{customblockquote}\list{}{\rightmargin=0em\leftmargin=0em}%
-\item\relax\color{blockquote-text}\ignorespaces}{\unskip\unskip\endlist\end{customblockquote}}
+\renewenvironment{quote}{
+  \vskip 0.5em
+  \begin{customblockquote}
+  \list{}{\rightmargin=0em\leftmargin=0em}
+  \item\color{blockquote-text}\textbf{\textit{Start of informative comment}}
+  \item\relax\color{blockquote-text}\ignorespaces
+}{
+  \item\color{blockquote-text}\textbf{\textit{End of informative comment}}
+  \unskip\unskip\endlist\end{customblockquote}
+}
 
 %
 % Source Sans Pro as the de­fault font fam­ily
@@ -841,20 +857,7 @@ $else$
 
 \fancypagestyle{eisvogel-header-footer}{
   \fancyhead{}
-  \fancyhead[C]
-  {
-    \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
-    {
-      \begin{textblock*}{8.5in}(-0.3in,0.4in)
-      \fontsize{300}{360}{
-        \begin{turn}{50}
-        \textsf{\textcolor{gray}{\transparent{0.1}{DRAFT}}}
-        \end{turn}
-      }
-      \end{textblock*}
-    }
-    {}
-  }
+   \fancyhead[C]{}
   \fancyfoot{}
   % \lhead[$if(header-right)$$header-right$$else$$date$$endif$]{$if(header-left)$$header-left$$else$title$endif$}
   % \chead[$if(header-center)$$header-center$$else$$endif$]{$if(header-center)$$header-center$$else$$endif$}

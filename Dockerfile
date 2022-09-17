@@ -35,11 +35,13 @@ RUN tlmgr update --self && \
     textpos \
     anyfontsize \
     transparent \
-    ulem
+    ulem \
+    draftwatermark
 
 RUN apk upgrade && apk add --no-cache \
     bash \
     coreutils \
+    sed \
     git \
     nodejs \
     npm \
