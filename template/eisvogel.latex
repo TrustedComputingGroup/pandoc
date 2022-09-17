@@ -81,6 +81,7 @@ $if(background-image)$
   \includegraphics[width=\paperwidth]{$background-image$}%
 }
 $endif$
+\usepackage[nostamp]{draftwatermark}
 \usepackage{pgfpages}
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
@@ -1072,7 +1073,6 @@ $endif$
 %% end titlepage
 %%
 
-\usepackage[nostamp]{draftwatermark}
 \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
 {
   \DraftwatermarkOptions{text=DRAFT,stamp=true}
