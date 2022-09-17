@@ -994,7 +994,15 @@ $endif$
   beforeskip=.5\baselineskip,
   afterskip=0em]{subparagraph}
 
-\newcommand{\coverbg}{/resources/img/bluetop.png}
+\newcommand{\coverbg}{/resources/img/greentop.png}
+
+$if(template)$
+  \ifthenelse{\equal{\detokenize{$template$}}{\detokenize{bluetop}}}
+  {
+    \renewcommand{\coverbg}{/resources/img/bluetop.png}
+  }
+  {}
+$endif$
 
 \begin{document}
 
