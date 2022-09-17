@@ -419,8 +419,9 @@ $endif$
 $if(pagestyle)$
 \pagestyle{$pagestyle$}
 $endif$
-% All parts, chapters, sections need dots in the table of contents
-\renewcommand{\cftsectiondotsep}{\cftdotsep}% Sections should use dots in ToC
+% All sections get dots in the table of contents
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 
 % Make use of float-package and set default placement for figures to H.
 % The option H means 'PUT IT HERE' (as  opposed to the standard h option which means 'You may put it here if you like').
