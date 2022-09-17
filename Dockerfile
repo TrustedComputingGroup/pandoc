@@ -40,6 +40,7 @@ RUN tlmgr update --self && \
 RUN apk upgrade && apk add --no-cache \
     bash \
     coreutils \
+    sed \
     git \
     nodejs \
     npm \

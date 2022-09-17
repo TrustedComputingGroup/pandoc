@@ -611,7 +611,9 @@ $endif$
 \definecolor{blockquote-text}{RGB}{10,10,10}
 \usepackage{mdframed}
 \newmdenv[linewidth=0pt,backgroundcolor=blockquote-border,skipabove=\parskip]{customblockquote}
-\renewenvironment{quote}{\begin{customblockquote}\list{}{\rightmargin=0em\leftmargin=0em}%
+\renewenvironment{quote}{
+  \begin{customblockquote}
+  \list{}{\rightmargin=0em\leftmargin=0em}
 \item\relax\color{blockquote-text}\ignorespaces}{\unskip\unskip\endlist\end{customblockquote}}
 
 %
