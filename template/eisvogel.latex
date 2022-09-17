@@ -421,7 +421,6 @@ $endif$
 % All sections get dots in the table of contents
 \usepackage{tocloft}
 \renewcommand{\cftpartdotsep}{\cftdotsep}
-\renewcommand{\cftschapdotsep}{\cftdotsep}
 \renewcommand{\cftsecdotsep}{\cftdotsep}
 \renewcommand{\cftsubsecdotsep}{\cftdotsep}
 \renewcommand{\cftsubsubsecdotsep}{\cftdotsep}
