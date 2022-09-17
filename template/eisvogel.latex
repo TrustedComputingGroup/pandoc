@@ -420,6 +420,7 @@ $if(pagestyle)$
 $endif$
 % All sections get dots in the table of contents
 \usepackage{tocloft}
+\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 
 % Make use of float-package and set default placement for figures to H.
@@ -954,27 +955,27 @@ $endif$
   %runin=false,
   afterindent=false,
   beforeskip=\baselineskip,
-  afterskip=.5\baselineskip]{section}
+  afterskip=0em]{section}
 \RedeclareSectionCommand[
   %runin=false,
   afterindent=false,
   beforeskip=.75\baselineskip,
-  afterskip=.5\baselineskip]{subsection}
+  afterskip=0em]{subsection}
 \RedeclareSectionCommand[
   %runin=false,
   afterindent=false,
   beforeskip=.5\baselineskip,
-  afterskip=.25\baselineskip]{subsubsection}
+  afterskip=0em]{subsubsection}
 \RedeclareSectionCommand[
   runin=true,
   %afterindent=false,
   beforeskip=.5\baselineskip,
-  afterskip=1em]{paragraph}
+  afterskip=0em]{paragraph}
 \RedeclareSectionCommand[
   runin=true,
   %afterindent=false,
   beforeskip=.5\baselineskip,
-  afterskip=1em]{subparagraph}
+  afterskip=0em]{subparagraph}
 
 \begin{document}
 
