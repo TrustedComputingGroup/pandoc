@@ -45,8 +45,6 @@ and brands contained herein are the property of their respective owners.
 | 0.2/17       | 2022/08/10 | Initial draft   |
 | 0.2/18       | 2022/08/10 | Add page breaks |
 
-Table: Change History
-
 ---
 
 \tableofcontents
