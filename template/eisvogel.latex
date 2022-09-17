@@ -361,12 +361,22 @@ $else$
 \makeatletter
 \patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
 \makeatother
+% Patch tableofcontents to hide links
+\makeatletter
+\patchcmd\tableofcontents{
+  \begingroup\hypersetup{hidelinks}
+}{
+  \endgroup
+}{}{}
+\makeatother
 % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
 $endif$
 $endif$
-% https://tex.stackexchange.com/a/106191
+% Workaround for the fact that longtable increments the table counter
+% even when there is no caption.
+% Source: https://tex.stackexchange.com/a/106191
 \usepackage{etoolbox}
 \makeatletter
 \newif\ifLT@nocaption
