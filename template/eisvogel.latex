@@ -73,7 +73,8 @@ $endif$
 $for(classoption)$
   $classoption$$sep$,
 $endfor$
-  ,captions=tableheading
+  ,captions=tableheading,
+  toc=sectionentrywithdots
 ]{$if(beamer)$$documentclass$$else$$if(book)$scrbook$else$scrartcl$endif$$endif$}
 $if(beamer)$
 $if(background-image)$
@@ -84,7 +85,7 @@ $endif$
 
 \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
 {
-  \usepackage{draftwatermark}
+  \usepackage[text=DRAFT]{draftwatermark}
 }
 {}
 
@@ -855,6 +856,8 @@ $else$
 \usepackage{fancyhdr}
 
 \fancypagestyle{eisvogel-header-footer}{
+  \fancyhead{}
+   \fancyhead[C]{}
   \fancyfoot{}
   % \lhead[$if(header-right)$$header-right$$else$$date$$endif$]{$if(header-left)$$header-left$$else$title$endif$}
   % \chead[$if(header-center)$$header-center$$else$$endif$]{$if(header-center)$$header-center$$else$$endif$}
