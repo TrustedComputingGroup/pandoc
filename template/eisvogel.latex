@@ -697,8 +697,8 @@ $if(table-use-row-colors)$
 \AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
 \preto{\toprule}{
   \hiderowcolors
-  \rowfont{\color{white}}}{}{}
-\appto{\toprule}{\rowcolor{table-hdr-color}}{}{}
+  \rowcolor{table-hdr-color}}{}{}
+\appto{\toprule}{\rowfont{\color{white}}}{}{}
 \appto{\endhead}{\showrowcolors}{}{}
 \appto{\endfirsthead}{\showrowcolors}{}{}
 $endif$
