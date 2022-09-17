@@ -81,6 +81,7 @@ $if(background-image)$
   \includegraphics[width=\paperwidth]{$background-image$}%
 }
 $endif$
+\usepackage{titlesec}
 \usepackage{pgfpages}
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
@@ -533,7 +534,10 @@ $if(logo)$
 $endif$
 $endif$
 
-
+% Tweak the section spacings
+\titlespacing\section{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing\subsection{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing\subsubsection{0pt}{0pt plus 2pt minus 2pt}{0pt plus 2pt minus 2pt}
 
 %%
 %% added
@@ -604,7 +608,7 @@ $endif$
 \definecolor{caption-color}{HTML}{777777}
 $if(beamer)$
 $else$
-\usepackage[font={stretch=1.2}, textfont={color=caption-color}, position=top, skip=4mm, labelfont=bf, singlelinecheck=false, justification=$if(caption-justification)$$caption-justification$$else$raggedright$endif$]{caption}
+\usepackage[font={stretch=1.2}, textfont={color=caption-color}, position=top, skip=4mm, labelfont=bf, singlelinecheck=false, justification=centering]{caption}
 \setcapindent{0em}
 $endif$
 
@@ -686,8 +690,8 @@ $endif$
 %
 $if(tables)$
 
-\definecolor{table-row-color}{HTML}{F5F5F5}
-\definecolor{table-alt-color}{HTML}{D1E3A0}
+\definecolor{table-row-color}{HTML}{C0C0C0}
+\definecolor{table-alt-color}{HTML}{DADADA}
 \definecolor{table-rule-color}{HTML}{FFFFFF}
 
 \arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
@@ -696,7 +700,7 @@ $if(tables)$
 
 $if(table-use-row-colors)$
 \usepackage{etoolbox}
-\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color!50}{table-alt-color!50}}
+\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
 \preto{\toprule}{\hiderowcolors}{}{}
 \appto{\endhead}{\showrowcolors}{}{}
 \appto{\endfirsthead}{\showrowcolors}{}{}
