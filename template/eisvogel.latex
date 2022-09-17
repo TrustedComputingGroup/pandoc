@@ -366,6 +366,20 @@ $else$
 \makesavenoteenv{longtable}
 $endif$
 $endif$
+% Workaround for the fact that longtable increments the table counter
+% even when there is no caption.
+% Source: https://tex.stackexchange.com/a/106191
+\usepackage{etoolbox}
+\makeatletter
+\newif\ifLT@nocaption
+\preto\longtable{\LT@nocaptiontrue}
+\appto\endlongtable{%
+  \ifLT@nocaption
+    \addtocounter{table}{\m@ne}%
+  \fi}
+\preto\LT@caption{%
+  \noalign{\global\LT@nocaptionfalse}}
+\makeatother
 % add backlinks to footnote references, cf. https://tex.stackexchange.com/questions/302266/make-footnote-clickable-both-ways
 $if(footnotes-disable-backlinks)$
 $else$

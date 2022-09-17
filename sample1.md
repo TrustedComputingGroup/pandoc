@@ -125,7 +125,13 @@ int main() {
 }
 ```
 
-## Another Table
+## Another Couple Tables
+
+Uncaptioned table:
+
+| **Column 1** | **Column 2** | **Column 3** |
+| ------------ | ------------ | ------------ |
+| AAAAAAAA     | BBBBBBBB     | CCCCCCCC     |
 
 Table: Fantastic Table
 
