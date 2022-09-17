@@ -541,7 +541,7 @@ $endif$
 \let\paragraph\oldparagraph
 \let\eissubparagraph\subparagraph
 \let\subparagraph\oldsubparagraph
-\usepackage{titlesec}
+\usepackage[compact]{titlesec}
 \let\paragraph\eisparagraph
 \let\subparagraph\eissubparagraph
 
