@@ -298,7 +298,7 @@ $endif$
 $else$
 $if(beamer)$
 $else$
-\usepackage[margin=0.5in,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
+\usepackage[top=0.5in,left=0.5in,right=0.5in,bottom=0.8in,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
 $endif$
 $endif$
 
@@ -593,7 +593,7 @@ $if(titlepage)$
 \usepackage{tikz}
 $if(geometry)$
 $else$
-\usepackage[margin=0.5in]{geometry}
+\usepackage[top=0.5in,left=0.5in,right=0.5in,bottom=0.8in]{geometry}
 $endif$
 $endif$
 
