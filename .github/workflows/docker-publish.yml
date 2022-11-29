@@ -81,12 +81,21 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  configure:
+    runs-on: ubuntu-latest
+    outputs:
+      uid_gid: ${{ steps.get-user.outputs.uid_gid }}
+    steps:
+      - id: get-user
+        run: echo "::set-output name=uid_gid::$(id -u):$(id -g)"
+
   render-samples:
     if: github.event_name != 'release'
-    needs: build-container
+    needs: [ build-container, configure ]
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/trustedcomputinggroup/pandoc_test
+      options: --user ${{ needs.configure.outputs.uid_gid }}
     permissions:
       contents: read
 
