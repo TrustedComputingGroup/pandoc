@@ -65,3 +65,7 @@ RUN cd /src && git clone https://github.com/davidar/pandiff.git
 RUN cd /src/pandiff && git checkout d1d468b2c4d81c622ff431ef718b1bf0daaa03db
 RUN cd /src/pandiff && npm install @types/node --save-dev
 RUN npm install --global /src/pandiff
+
+COPY build.sh /usr/bin/build.sh
+ENTRYPOINT ["/usr/bin/build.sh"]
+CMD ["--help"]
