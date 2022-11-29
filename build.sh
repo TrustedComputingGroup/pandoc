@@ -3,9 +3,9 @@
 is_tmp="yes"	  # default to no tmp directory
 resource_dir="/"  #default to root of pandoc container buildout
 do_puppeteer="no"
-do_pdf="no"
-do_docx="no"
-do_latex="no"
+pdf_output=""
+docx_output=""
+latex_output=""
 
 # Setup an EXIT handler
 on_exit() {
@@ -21,25 +21,23 @@ print_usage() {
 	echo "$(basename "${0}") [options] [input-file]"
 	echo
 	echo "Arguments:"
-	echo "  This script takes a single markdown file input for rendering to docx/pdf/LaTex. Default is pdf."
-	echo "  The output file is the input-file basename with the file extension appended based on output format".
+	echo "  This script takes a single markdown file input for rendering to docx/pdf/LaTex."
 	echo
 	echo "Options:"
 	echo
 	echo "Output Control"
-	echo "  --docx: enable outputing of docx Output file will be input-file.docx"
-	echo "  --pdf:  enable outputing of pdf. Output file will be input-file.pdf"
-	echo "  --latex:  enable outputing of pdf. Output file will be input-file.tex"
+	echo "  --docx=output: enable outputing of docx and specify the output file name."
+	echo "  --pdf=output: enable outputing of pdf and specify the output file name."
+	echo "  --latex=output: enable outputing of latex and specify the output file name."
 	echo
 	echo "Miscellaneous"
-	echo "  --puppeteer: enable outputing of .puppeteer.json in current directory"
-	echo "  --resouredir: Set the resource directory, defaults to root for pandoc containers"
+	echo "  --puppeteer: enable outputing of .puppeteer.json in current directory. This is needed for running in sandboxes eg docker containers."
+	echo "  --resouredir=dir: Set the resource directory, defaults to root for pandoc containers"
 	echo "  --notmp: Do not use a tempory directory for processing steps, instead create a directory called \"build\" in CWD"
 }
 
 
-options=$(getopt --longoptions=help,puppeteer,pdf,latex,docx,notmp,resouredir: --options="" -- "$@")
-if [ $? -ne 0 ]; then
+if ! options=$(getopt --longoptions=help,puppeteer,pdf:,latex:,docx:,notmp,resouredir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -50,19 +48,19 @@ while true; do
 	case "$1" in
 	--puppeteer)
 		do_puppeteer="yes"
-		shift
+		shift 2
 		;;
 	--docx)
-		do_docx="yes"
-		shift
+		docx_output="${2}"
+		shift 2
 		;;
 	--latex)
-		do_latex="yes"
-		shift
+		latex_output="${2}"
+		shift 2
 		;;
 	--pdf)
-		do_pdf="yes"
-		shift
+		pdf_output="${2}"
+		shift 2
 		;;
 	--notmp)
 		is_tmp="no"
@@ -82,7 +80,6 @@ while true; do
 		break
 		;;
 	esac
-	shift
 done
 
 shift "$(( OPTIND - 1 ))"
@@ -101,17 +98,18 @@ if [ ! -e "${input_file}" ]; then
    exit 1
 fi
 
+if [ -z "${pdf_output}${latex_output}${docx_output}" ]; then
+	>&2 echo "Expected --pdf, --docx or --latex option"
+	print_usage
+	exit 1
+fi
+
 # Set up the output directory, either tmp or build in pwd.
 if [ "${is_tmp}" == "yes" ]; then
 	build_dir="$(mktemp -d)"
 else
 	build_dir="$(pwd)/build"
 	mkdir -p "${build_dir}"
-fi
-
-# default to pdf enabled
-if [ "${do_pdf}${do_latex}${do_docx}" == "nonono" ]; then
-	do_pdf="yes"
 fi
 
 # Get the default browser
@@ -122,10 +120,11 @@ if ! browser=$(command -v "chromium-browser"); then
 fi
 
 echo "Starting Build with"
+echo "file: ${input_file}"
 echo "puppeteer: ${do_puppeteer}"
-echo "docx: ${do_docx}"
-echo "pdf: ${do_pdf}"
-echo "latex: ${do_latex}"
+echo "docx: ${docx_output:-none}"
+echo "pdf: ${pdf_output:-none}"
+echo "latex: ${latex_ouput:-none}"
 echo "use tmp: ${is_tmp}"
 echo "resource dir: ${resource_dir}"
 echo "build dir: ${build_dir}"
@@ -178,8 +177,8 @@ export MERMAID_FILTER_THEME="forest"
 export MERMAID_FILTER_FORMAT="pdf"
 
 # Generate the pdf
-pdf_output="$(basename "${input_file}")".pdf
-if [ "${do_pdf}" = "yes" ]; then
+if [ -n "${pdf_output}" ]; then
+	echo "Generating PDF Output"
 	pandoc \
 		--embed-resources \
 		--standalone \
@@ -204,11 +203,12 @@ if [ "${do_pdf}" = "yes" ]; then
 		--to=pdf \
 		"${build_dir}/${input_file}.3" \
 		--output="${pdf_output}"
+	echo "PDF Output Generated to file: ${pdf_output}"
 fi
 
 # Generate the LaTeX output
-latex_output="$(basename "${input_file}")".tex
-if [ "${do_latex}" = "yes" ]; then
+if [ -n "${latex_output}" ]; then
+	echo "Generating LaTeX Output"
 	pandoc \
 		--embed-resources \
 		--standalone \
@@ -233,11 +233,12 @@ if [ "${do_latex}" = "yes" ]; then
 		--to=latex \
 		"${build_dir}/${input_file}.3" \
 		--output="${latex_output}"
+	echo "LaTeX Output Generated to file: ${latex_output}"
 fi
 
 # Generate the docx output
-docx_output="$(basename "${input_file}")".docx
-if [ "${do_docx}" = "yes" ]; then
+if [ -n "${docx_output}" ]; then
+	echo "Generating DOCX Output"
 	pandoc \
 		--embed-resources \
 		--standalone \
@@ -248,8 +249,16 @@ if [ "${do_docx}" = "yes" ]; then
 		--data-dir=/resources \
 		--from=markdown+implicit_figures+table_captions \
 		--reference-doc=/resources/templates/tcg_template.docx \
-		--to=docx
+		--to=docx \
 		"${build_dir}/${input_file}.3" \
 		--output="${docx_output}"
+	echo "DOCX Output Generated to file: ${docx_output}"
+fi
+if [ $? -ne 0 ]; then
+	exit 1
 fi
 
+# on success remove this output
+rm -f mermaid-filter.err
+
+exit 0
