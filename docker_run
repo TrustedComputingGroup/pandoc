@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+docker_image=${DOCKER_IMAGE:-"ghcr.io/trustedcomputinggroup/pandoc:latest"}
+
+print_usage() {
+	echo "Usage:"
+	echo "$(basename "${0}") [options] [build.sh arguments]"
+	echo
+	echo "Arguments:"
+	echo "  Arguments to this script are passed as parameters to build.sh inside of the docker conatiner"
+	echo
+	echo "Environment:"
+	echo
+	echo "DOCKER_IMAGE: set this env variable to the docker image to run, defaults to ${docker_image}"
+	echo
+	echo "Options:"
+	echo
+	echo "Miscellaneous"
+	echo "  --help: output this message"
+}
+
+# hand process options as we want all options to go to docker run command except ones we know
+if test "${1}" == "--help"; then
+	print_usage
+	exit 0
+fi
+
+echo "Launching Container: ${docker_image}"
+docker run -v "$(pwd):/workspace" -it --user="$(id -u):$(id -g)" -w/workspace "${docker_image}" "$@"
