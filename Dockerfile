@@ -35,7 +35,8 @@ RUN tlmgr update --self && \
     textpos \
     anyfontsize \
     transparent \
-    ulem
+    ulem \
+    hardwrap
 
 RUN apk upgrade && apk add --no-cache \
     bash \
