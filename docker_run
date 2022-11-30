@@ -26,4 +26,4 @@ if test "${1}" == "--help"; then
 fi
 
 echo "Launching Container: ${docker_image}"
-docker run -v "$(pwd):/workspace" -it --user="$(id -u):$(id -g)" -w/workspace "${docker_image}" "$@"
+docker run -v "$(pwd):/workspace" --user="$(id -u):$(id -g)" -w/workspace "${docker_image}" "$@"
