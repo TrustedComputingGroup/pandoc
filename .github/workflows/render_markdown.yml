@@ -1,0 +1,51 @@
+on:
+  workflow_call:
+  inputs:
+    input-md:
+      description: 'The name of the Markdown file to render'
+      required: true
+    input-use-git-version:
+      description: 'True or False to use automatic git versioning of documents'
+      type: boolean
+    output-pdf:
+      description: 'The name of the rendered PDF file'
+    output-docx:
+      description: 'The name of the rendered DOCX file'
+    output-tex:
+      description: 'The name of the rendered TEX file'
+
+jobs:
+  # Set the Docker Container to the host uid/gid.
+  # https://github.com/actions/runner/issues/691
+  configure:
+    runs-on: ubuntu-latest
+    outputs:
+      uid_gid: ${{ steps.get-user.outputs.uid_gid }}
+    steps:
+      - id: get-user
+        run: echo "::set-output name=uid_gid::$(id -u):$(id -g)"
+
+  render-markdown:
+    needs: configure
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/trustedcomputinggroup/pandoc:latest
+      options: --user ${{ needs.configure.outputs.uid_gid }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Render to DOCX
+        run: ./docker_run --puppeteer $(./na.py ${{ input-use-git-version }} --gitversion) --latex=${{ inputs.output-pdf }} ${{ inputs.input-docx }}
+        shell: bash
+        if: ${{ inputs.output-pdf }}
+
+      - name: Render to PDF
+        run: ./docker_run --puppeteer $(./na.py ${{ input-use-git-version }} --gitversion) --latex=${{ inputs.output-pdf }} ${{ inputs.input-md }}
+        shell: bash
+        if: ${{ inputs.output-pdf }}
+
+      - name: Render to LaTeX
+        run: ./docker_run --puppeteer $(./na.py ${{ input-use-git-version }} --gitversion) --latex=${{ inputs.output-tex }} ${{ inputs.input-md }}
+        shell: bash
+        if: ${{ inputs.output-tex }}
