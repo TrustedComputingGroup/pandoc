@@ -3,6 +3,7 @@
 is_tmp="yes"	  # default to no tmp directory
 resource_dir="/"  #default to root of pandoc container buildout
 do_puppeteer="no"
+do_gitversion="no"
 pdf_output=""
 docx_output=""
 latex_output=""
@@ -34,10 +35,11 @@ print_usage() {
 	echo "  --puppeteer: enable outputing of .puppeteer.json in current directory. This is needed for running in sandboxes eg docker containers."
 	echo "  --resouredir=dir: Set the resource directory, defaults to root for pandoc containers"
 	echo "  --notmp: Do not use a tempory directory for processing steps, instead create a directory called \"build\" in CWD"
+	echo "  --gitversion: Use git describe to generate document version and revision metadata."
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,pdf:,latex:,docx:,notmp,resouredir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,pdf:,latex:,docx:,resouredir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -46,9 +48,17 @@ fi
 eval set -- "${options}"
 while true; do
 	case "$1" in
+	--gitversion)
+		do_gitversion="yes"
+		shift
+		;;
 	--puppeteer)
 		do_puppeteer="yes"
-		shift 2
+		shift
+		;;
+	--notmp)
+		is_tmp="no"
+		shift
 		;;
 	--docx)
 		docx_output="${2}"
@@ -61,10 +71,6 @@ while true; do
 	--pdf)
 		pdf_output="${2}"
 		shift 2
-		;;
-	--notmp)
-		is_tmp="no"
-		shift
 		;;
 	--resouredir)
 		resource_dir="${2}"
@@ -119,6 +125,51 @@ if ! browser=$(command -v "chromium-browser"); then
 	fi
 fi
 
+# figure out git version and revision if needed.
+extra_pandoc_options=""
+if test "${do_gitversion}" == "yes"; then
+
+	# TODO: Should we fail if dirty?
+	raw_version="$(git describe --always --tags)"
+	IFS='-' read -r -a dash_hunks <<< "${raw_version}"
+
+    # Could be one of:
+    # gabcd - commit no tag (len 1)
+   	# 4 --> tag major only (len 1)
+	# 4.0 --> tag major minor (len 1)
+	# 4-54-gabcd --> tag major with commits (len 3)
+	# 4.0-54-gabcd --> tag major-minor with commits (len 3)
+	len=${#dash_hunks[@]}
+	if ! test "${len}" -eq 1 -o "${len}" -eq 3; then
+	    >&2 echo "Malformed git version got: ${raw_version}"
+	    exit 1
+    fi
+
+	revision="0"
+	major_minor="${dash_hunks[0]}"
+	if test "${len}" -eq 3; then
+		revision="${dash_hunks[1]}"
+	fi
+
+	# Does this even have a major minor, or is it just a commit (8d7046adcf1b) len of 12 no dot char?
+	if grep -qv '\.' <<< "${major_minor}"; then
+		if test ${#major_minor} -eq 12; then
+			# its a commit
+			major_minor="0.0"
+			revision="$(git rev-list --count HEAD)"
+		else
+			# its a major with no minor, append .0
+			major_minor="${major_minor}.0"
+		fi
+	fi
+
+	# scrub any leading non-numerical arguments from major_minor, ie v4.0, scrub any other nonsense as well
+	major_minor="$(tr -d "[:alpha:]" <<< "${major_minor}")"
+
+	extra_pandoc_options="--metadata=version:${major_minor} --metadata=revision:${revision}"
+
+fi # Done with git version handling
+
 echo "Starting Build with"
 echo "file: ${input_file}"
 echo "puppeteer: ${do_puppeteer}"
@@ -129,6 +180,12 @@ echo "use tmp: ${is_tmp}"
 echo "resource dir: ${resource_dir}"
 echo "build dir: ${build_dir}"
 echo "browser: ${browser}"
+echo "use git version: ${do_gitversion}"
+if test "${do_gitversion}" == "yes"; then
+	echo "Git Generated Document Version Information"
+	echo "    version: ${major_minor}"
+	echo "    revision: ${revision}"
+fi
 
 if [ "${do_puppeteer}" == "yes" ]; then
 	if [ "${browser}" == "none" ]; then
@@ -199,6 +256,7 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
 		--from=markdown+implicit_figures+table_captions \
+		${extra_pandoc_options} \
 		--to=pdf \
 		"${build_dir}/${input_file}.3" \
 		--output="${pdf_output}"
@@ -227,6 +285,7 @@ if [ -n "${latex_output}" ]; then
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
 		--from=markdown+implicit_figures+table_captions \
+		${extra_pandoc_options} \
 		--to=latex \
 		"${build_dir}/${input_file}.3" \
 		--output="${latex_output}"
@@ -244,6 +303,7 @@ if [ -n "${docx_output}" ]; then
 		--data-dir=/resources \
 		--from=markdown+implicit_figures+table_captions \
 		--reference-doc=/resources/templates/tcg_template.docx \
+		${extra_pandoc_options} \
 		--to=docx \
 		"${build_dir}/${input_file}.3" \
 		--output="${docx_output}"
