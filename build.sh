@@ -235,6 +235,7 @@ export MERMAID_FILTER_FORMAT="pdf"
 
 # Generate the pdf
 if [ -n "${pdf_output}" ]; then
+	echo "Generating PDF Output"
 	pandoc \
 		--embed-resources \
 		--standalone \
@@ -260,10 +261,12 @@ if [ -n "${pdf_output}" ]; then
 		--to=pdf \
 		"${build_dir}/${input_file}.3" \
 		--output="${pdf_output}"
+	echo "PDF Output Generated to file: ${pdf_output}"
 fi
 
 # Generate the LaTeX output
 if [ -n "${latex_output}" ]; then
+	echo "Generating LaTeX Output"
 	pandoc \
 		--embed-resources \
 		--standalone \
@@ -289,10 +292,12 @@ if [ -n "${latex_output}" ]; then
 		--to=latex \
 		"${build_dir}/${input_file}.3" \
 		--output="${latex_output}"
+	echo "LaTeX Output Generated to file: ${latex_output}"
 fi
 
 # Generate the docx output
 if [ -n "${docx_output}" ]; then
+	echo "Generating DOCX Output"
 	pandoc \
 		--embed-resources \
 		--standalone \
@@ -307,6 +312,7 @@ if [ -n "${docx_output}" ]; then
 		--to=docx \
 		"${build_dir}/${input_file}.3" \
 		--output="${docx_output}"
+	echo "DOCX Output Generated to file: ${docx_output}"
 fi
 if [ $? -ne 0 ]; then
 	exit 1
