@@ -4,6 +4,7 @@ is_tmp="yes"	  # default to no tmp directory
 resource_dir="/"  #default to root of pandoc container buildout
 do_puppeteer="no"
 do_gitversion="no"
+do_gitstatus="no"
 pdf_output=""
 docx_output=""
 latex_output=""
@@ -36,10 +37,11 @@ print_usage() {
 	echo "  --resouredir=dir: Set the resource directory, defaults to root for pandoc containers"
 	echo "  --notmp: Do not use a tempory directory for processing steps, instead create a directory called \"build\" in CWD"
 	echo "  --gitversion: Use git describe to generate document version and revision metadata."
+        echo "  --gitstatus: Use git describe to generate document version and revision metadata. Implies --gitversion"
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,pdf:,latex:,docx:,resouredir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,pdf:,latex:,docx:,resouredir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -49,6 +51,11 @@ eval set -- "${options}"
 while true; do
 	case "$1" in
 	--gitversion)
+		do_gitversion="yes"
+		shift
+		;;
+	--gitstatus)
+		do_gitstatus="yes"
 		do_gitversion="yes"
 		shift
 		;;
@@ -169,6 +176,16 @@ if test "${do_gitversion}" == "yes"; then
 	major_minor="$(tr -d "[:alpha:]" <<< "${major_minor}")"
 
 	extra_pandoc_options="--metadata=version:${major_minor} --metadata=revision:${revision}"
+	
+	# Do we set document status pased on git version?
+	if [ "${do_gitversion}" == "yes" ]; then
+		if [ "${revision}" == "0" ]; then
+			status="PUBLISHED"
+		else
+			status="DRAFT"
+		fi
+		extra_pandoc_options+=" --metadata=status:${status}"
+	fi
 
 fi # Done with git version handling
 
@@ -187,6 +204,9 @@ if test "${do_gitversion}" == "yes"; then
 	echo "Git Generated Document Version Information"
 	echo "    version: ${major_minor}"
 	echo "    revision: ${revision}"
+	if [ "${do_gitstatus}" == "yes" ]; then
+		echo "    status: ${status}"
+	fi
 fi
 
 if [ "${do_puppeteer}" == "yes" ]; then
