@@ -66,6 +66,10 @@ RUN cd /src/pandiff && git checkout d1d468b2c4d81c622ff431ef718b1bf0daaa03db
 RUN cd /src/pandiff && npm install @types/node --save-dev
 RUN npm install --global /src/pandiff
 
+# mktexpk gets executed and needs a home dir, build one
+RUN mkdir -m 0777 /home/user
+ENV HOME="/home/user"
+
 COPY build.sh /usr/bin/build.sh
 ENTRYPOINT ["/usr/bin/build.sh"]
 CMD ["--help"]
