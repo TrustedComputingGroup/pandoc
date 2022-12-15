@@ -259,6 +259,7 @@ export MERMAID_FILTER_FORMAT="pdf"
 if [ -n "${pdf_output}" ]; then
 	echo "Generating PDF Output"
 	pandoc \
+		--citeproc \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
@@ -278,7 +279,7 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+table_captions \
+		--from=markdown+implicit_figures+table_captions+citations \
 		${extra_pandoc_options} \
 		--to=pdf \
 		"${build_dir}/${input_file}.3" \
@@ -290,6 +291,7 @@ fi
 if [ -n "${latex_output}" ]; then
 	echo "Generating LaTeX Output"
 	pandoc \
+		--citeproc \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
@@ -309,7 +311,7 @@ if [ -n "${latex_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+table_captions \
+		--from=markdown+implicit_figures+table_captions+citations \
 		${extra_pandoc_options} \
 		--to=latex \
 		"${build_dir}/${input_file}.3" \
@@ -321,6 +323,7 @@ fi
 if [ -n "${docx_output}" ]; then
 	echo "Generating DOCX Output"
 	pandoc \
+		--citeproc \
 		--embed-resources \
 		--standalone \
 		--filter=/resources/filters/info.py \
@@ -328,7 +331,7 @@ if [ -n "${docx_output}" ]; then
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
-		--from=markdown+implicit_figures+table_captions \
+		--from=markdown+implicit_figures+table_captions+citations \
 		--reference-doc=/resources/templates/tcg_template.docx \
 		${extra_pandoc_options} \
 		--to=docx \
