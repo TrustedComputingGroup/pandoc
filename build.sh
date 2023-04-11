@@ -242,9 +242,9 @@ sed 's/```mermaid *{/```{.mermaid /g' "${input_file}" > "${build_dir}/${input_fi
 sed 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${build_dir}/${input_file}.1" > "${build_dir}/${input_file}.2"
 
 # Transform 3
-# Transform sections before the table of contents into addsec, which does not number them.
+# Transform sections before the table of contents into section*, which does not number them.
 # While we're doing this, transform the case to all-caps.
-sed '0,/\\tableofcontents/s/^# \(.*\)/\\addsec\{\U\1\}/g' "${build_dir}/${input_file}.2" > "${build_dir}/${input_file}.3"
+sed '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${build_dir}/${input_file}.2" > "${build_dir}/${input_file}.3"
 
 # Grab the date from the front matter and generate the full date and year.
 DATE="$(grep date: "${input_file}" | head -n 1 | cut -d ' ' -f 2)"

@@ -1,10 +1,5 @@
-FROM pandoc/latex:2.19
+FROM pandoc/latex:3.1.1
 
-COPY ./img/* /resources/img/
-COPY ./template/* /resources/templates/
-COPY ./filter/* /resources/filters/
-
-RUN tlmgr list
 RUN tlmgr update --self && \
     tlmgr install \
     merriweather \
@@ -37,7 +32,8 @@ RUN tlmgr update --self && \
     transparent \
     ulem \
     hardwrap \
-    catchfile
+    catchfile \
+    ragged2e
 
 RUN apk upgrade && apk add --no-cache \
     bash \
@@ -56,7 +52,7 @@ RUN pip install pandocfilters
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN npm install --global --unsafe-perm mermaid.cli@0.5.1 puppeteer@16.1.0 imgur@2.2.0 mermaid-filter@1.4.6 typescript@4.7.4
+RUN npm install --global --unsafe-perm mermaid.cli@0.5.1 puppeteer@19.8.5 imgur@2.2.0 mermaid-filter@1.4.6 typescript@5.0.4
 
 # Install latest pandiff, which has not been released in a while
 # This pre-release build has --reference-doc support for docx output
@@ -65,6 +61,10 @@ RUN cd /src && git clone https://github.com/davidar/pandiff.git
 RUN cd /src/pandiff && git checkout d1d468b2c4d81c622ff431ef718b1bf0daaa03db
 RUN cd /src/pandiff && npm install @types/node --save-dev
 RUN npm install --global /src/pandiff
+
+COPY ./img/* /resources/img/
+COPY ./template/* /resources/templates/
+COPY ./filter/* /resources/filters/
 
 # mktexpk gets executed and needs a home dir, build one
 RUN mkdir -m 0777 /home/user
