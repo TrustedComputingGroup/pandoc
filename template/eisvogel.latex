@@ -248,7 +248,6 @@ $endif$
 \definecolor{default-filecolor}{HTML}{4077C0}
 \definecolor{default-citecolor}{HTML}{4077C0}
 \definecolor{default-urlcolor}{HTML}{4077C0}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 $if(footnotes-pretty)$
 % load footmisc in order to customize footnotes (footmisc has to be loaded before hyperref, cf. https://tex.stackexchange.com/a/169124/144087)
 \usepackage[hang,flushmargin,bottom,multiple]{footmisc}

@@ -187,3 +187,16 @@ Internet Engineering Task Force, "PKCS #10: Certification Request Syntax Specifi
 > Internet Engineering Task Force, "PKCS #10: Certification Request Syntax Specification Version 1.7," 2000. [Online].
 >     Avilable: https://www.ietf.org/rfc/rfc2986.txt
 >
+
+1. Trusted Computing Group, "DICE Protection Environment," 2023. [Online].
+   Available: <https://trustedcomputinggroup.org>.
+
+2. Trusted Computing Group, "DICE Certificate Profiles," 2020. [Online].
+   Available: <https://trustedcomputinggroup.org>.
+
+3. Internet Engineering Task Force, "Cryptographic Message Syntax (CMS)," 2009.
+   [Online]. Avilable: <https://www.ietf.org/rfc/rfc5652.txt>.
+
+4. Internet Engineering Task Force,
+   "PKCS #10: Certification Request Syntax Specification Version 1.7," 2000.
+   [Online]. Avilable: <https://www.ietf.org/rfc/rfc2986.txt>.
