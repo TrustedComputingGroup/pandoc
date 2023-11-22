@@ -33,7 +33,8 @@ RUN tlmgr update --self && \
     ulem \
     hardwrap \
     catchfile \
-    ragged2e
+    ragged2e \
+    enumitem
 
 RUN apk upgrade && apk add --no-cache \
     bash \
