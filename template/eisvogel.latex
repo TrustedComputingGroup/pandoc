@@ -36,6 +36,8 @@
 %% Enable useful error output.
 \errorcontextlines 10000
 
+\usepackage{mathtools}
+
 %%
 % This is the Eisvogel pandoc LaTeX template.
 %
