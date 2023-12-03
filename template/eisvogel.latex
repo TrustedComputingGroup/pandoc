@@ -640,7 +640,7 @@ $endif$
 }
 
 \usepackage{fontspec}
-\setmainfont{Arial Unicode MS}
+\setmainfont{Arial}
 \setmonofont{Source Code Pro}
 \usepackage{unicode-math}
 
