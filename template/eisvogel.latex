@@ -642,7 +642,6 @@ $endif$
 \usepackage{fontspec}
 \setmainfont{Arial Unicode MS}
 \setmonofont{Source Code Pro}
-\usepackage{unicode-math}
 
 %
 % heading color
