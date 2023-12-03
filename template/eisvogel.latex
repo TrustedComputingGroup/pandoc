@@ -436,6 +436,15 @@ $endif$
 $for(header-includes)$
 $header-includes$
 $endfor$
+
+%% TCG docs tend to have deeply nested lists, too deep for Pandoc/Latex defaults.
+\usepackage{enumitem}
+\setlistdepth{9}
+\setlist[itemize]{label=$\bullet$}
+\renewlist{itemize}{itemize}{9}
+\setlist[enumerate]{label=$\arabic*.$}
+\renewlist{enumerate}{enumerate}{9}
+
 $if(lang)$
 \ifxetex
   $if(mainfont)$
@@ -998,14 +1007,6 @@ $if(template)$
   }
   {}
 $endif$
-
-%% TCG docs tend to have deeply nested lists, too deep for Pandoc/Latex defaults.
-\usepackage{enumitem}
-\setlistdepth{9}
-\setlist[itemize]{label=$\bullet$}
-\renewlist{itemize}{itemize}{9}
-\setlist[enumerate]{label=$\arabic*.$}
-\renewlist{enumerate}{enumerate}{9}
 
 \begin{document}
 
