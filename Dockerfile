@@ -35,7 +35,8 @@ RUN tlmgr update --self && \
     catchfile \
     ragged2e \
     enumitem \
-    mathtools
+    mathtools \
+    fontspec
 
 RUN apk upgrade && apk add --no-cache \
     bash \
