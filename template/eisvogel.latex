@@ -649,13 +649,13 @@ $endif$
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   $if(fontfamily)$
   $else$
-  \usepackage[default]{helvet}
+  \usepackage{helvet}
   \usepackage{sourcecodepro}
   $endif$
 \else % if not pdftex
   $if(mainfont)$
   $else$
-  \usepackage[default]{helvet}
+  \usepackage{helvet}
   \usepackage{sourcecodepro}
 
   % XeLaTeX specific adjustments for straight quotes: https://tex.stackexchange.com/a/354887
