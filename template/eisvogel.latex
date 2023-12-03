@@ -640,8 +640,8 @@ $endif$
 }
 
 \usepackage{fontspec}
-\setmainfont{HelveticaNeue}
-\setsansfont{HelveticaNeue}
+\setmainfont{Helvetica}
+\setsansfont{Helvetica}
 \setmonofont{Source Code Pro}
 
 %
