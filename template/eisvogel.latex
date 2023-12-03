@@ -33,6 +33,17 @@
 % POSSIBILITY OF SUCH DAMAGE.
 %%
 
+%% Enable useful error output.
+\errorcontextlines 10000
+
+%% TCG docs tend to have deeply nested lists, too deep for Pandoc/Latex defaults.
+\usepackage{enumitem}
+\setlistdepth{9}
+\setlist[itemize]{label=$\bullet$}
+\renewlist{itemize}{itemize}{9}
+\setlist[enumerate]{label=$\arabic*.$}
+\renewlist{enumerate}{enumerate}{9}
+
 %%
 % This is the Eisvogel pandoc LaTeX template.
 %
