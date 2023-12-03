@@ -265,6 +265,7 @@ if [ -n "${pdf_output}" ]; then
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
 		--filter=pandoc-crossref \
+		--lua-filter=parse-html.lua \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--top-level-division=section \
@@ -279,7 +280,7 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+grid_tables+table_captions-citations \
+		--from=markdown+implicit_figures+grid_tables+table_captions-citations-markdown_in_html_blocks \
 		${extra_pandoc_options} \
 		--to=pdf \
 		"${build_dir}/${input_file}.3" \
@@ -296,6 +297,7 @@ if [ -n "${latex_output}" ]; then
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
 		--filter=pandoc-crossref \
+		--lua-filter=parse-html.lua \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--top-level-division=section \
@@ -310,7 +312,7 @@ if [ -n "${latex_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+grid_tables+table_captions-citations \
+		--from=markdown+implicit_figures+grid_tables+table_captions-citations-markdown_in_html_blocks \
 		${extra_pandoc_options} \
 		--to=latex \
 		"${build_dir}/${input_file}.3" \
@@ -327,9 +329,10 @@ if [ -n "${docx_output}" ]; then
 		--filter=/resources/filters/info.py \
 		--filter=mermaid-filter \
 		--filter=pandoc-crossref \
+		--lua-filter=parse-html.lua \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
-		--from=markdown+implicit_figures+grid_tables+table_captions-citations \
+		--from=markdown+implicit_figures+grid_tables+table_captions-citations-markdown_in_html_blocks \
 		--reference-doc=/resources/templates/tcg_template.docx \
 		${extra_pandoc_options} \
 		--to=docx \
