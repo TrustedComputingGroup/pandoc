@@ -440,9 +440,9 @@ $endfor$
 %% TCG docs tend to have deeply nested lists, too deep for Pandoc/Latex defaults.
 \usepackage{enumitem}
 \setlistdepth{9}
-\setlist[itemize]{label=$\bullet$}
+\setlist[itemize]{label=\textbullet}
 \renewlist{itemize}{itemize}{9}
-\setlist[enumerate]{label=$\arabic*.$}
+\setlist[enumerate]{label=\arabic*.}
 \renewlist{enumerate}{enumerate}{9}
 
 $if(lang)$
