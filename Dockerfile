@@ -51,8 +51,7 @@ RUN apk upgrade && apk add --no-cache \
     py3-pip \
     yarn
 
-RUN apk --no-cache add msttcorefonts-installer fontconfig && \
-    update-ms-fonts && \
+RUN wget https://github.com/kaienfr/Font/raw/master/font/ARIALUNI.TTF -P /usr/share/fonts/TTF/ && \
     fc-cache -f
 
 RUN pip install pandocfilters
