@@ -259,7 +259,7 @@ export MERMAID_FILTER_FORMAT="pdf"
 if [ -n "${pdf_output}" ]; then
 	echo "Generating PDF Output"
 	pandoc \
-	    --trace \
+	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
@@ -292,6 +292,7 @@ fi
 if [ -n "${latex_output}" ]; then
 	echo "Generating LaTeX Output"
 	pandoc \
+	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
@@ -324,6 +325,7 @@ fi
 if [ -n "${docx_output}" ]; then
 	echo "Generating DOCX Output"
 	pandoc \
+	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--filter=/resources/filters/info.py \
