@@ -50,6 +50,10 @@ RUN apk upgrade && apk add --no-cache \
     py3-pip \
     yarn
 
+RUN apk --no-cache add msttcorefonts-installer fontconfig && \
+    update-ms-fonts && \
+    fc-cache -f
+
 RUN pip install pandocfilters
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
