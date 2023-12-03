@@ -265,6 +265,7 @@ if [ -n "${pdf_output}" ]; then
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
 		--filter=pandoc-crossref \
+		--lua-filter=parse-html.lua \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--top-level-division=section \
@@ -296,6 +297,7 @@ if [ -n "${latex_output}" ]; then
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
 		--filter=pandoc-crossref \
+		--lua-filter=parse-html.lua \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--top-level-division=section \
@@ -327,6 +329,7 @@ if [ -n "${docx_output}" ]; then
 		--filter=/resources/filters/info.py \
 		--filter=mermaid-filter \
 		--filter=pandoc-crossref \
+		--lua-filter=parse-html.lua \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--from=markdown+implicit_figures+grid_tables+table_captions-citations \

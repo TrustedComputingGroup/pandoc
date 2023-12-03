@@ -148,6 +148,46 @@ This section contains a Grid Table.
 | Earth               | -89.2 | 14    | 56.7  |
 +---------------------+-------+-------+-------+
 
+### HTML Table
+
+This section contains an HTML Table.
+
+<table>
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 86%" />
+</colgroup>
+<thead>
+<tr>
+<th>A || B</th>
+<th>concatenation of B to A</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CEIL(x)</td>
+<td>the smallest integer not less than x</td>
+</tr>
+<tr>
+<td><strong>FLOOR(</strong>x<strong>)</strong></td>
+<td>the largest integer not greater than x</td>
+</tr>
+<tr>
+<td>A  $\coloneqq$  B</td>
+<td>assignment of the results of the expression on the right (B) to the
+parameter on the left</td>
+</tr>
+<tr>
+<td>A = B</td>
+<td>equivalence (A is the same as B)</td>
+</tr>
+<tr>
+<td>{ A }</td>
+<td>an optional element</td>
+</tr>
+</tbody>
+</table>
+
 ## Code
 
 ```c++
