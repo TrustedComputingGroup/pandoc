@@ -108,6 +108,13 @@ jobs:
           output-pdf: sample2.pdf
           output-tex: sample2.tex
 
+      - name: Run the action on sample3
+        uses: trustedcomputinggroup/markdown@latest
+        with:
+          input-md: sample3.md
+          output-pdf: sample3.pdf
+          output-tex: sample3.tex
+
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
