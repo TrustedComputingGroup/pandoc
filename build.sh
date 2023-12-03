@@ -23,7 +23,7 @@ print_usage() {
 	echo "$(basename "${0}") [options] [input-file]"
 	echo
 	echo "Arguments:"
-	echo "  This script takes a single markdown file input for rendering to docx/pdf/LaTex."
+	echo "  This script takes a single markdown file input for rendering to docx/pdf/LaTeX."
 	echo
 	echo "Options:"
 	echo
@@ -34,14 +34,14 @@ print_usage() {
 	echo
 	echo "Miscellaneous"
 	echo "  --puppeteer: enable outputing of .puppeteer.json in current directory. This is needed for running in sandboxes eg docker containers."
-	echo "  --resouredir=dir: Set the resource directory, defaults to root for pandoc containers"
+	echo "  --resourcedir=dir: Set the resource directory, defaults to root for pandoc containers"
 	echo "  --notmp: Do not use a tempory directory for processing steps, instead create a directory called \"build\" in CWD"
 	echo "  --gitversion: Use git describe to generate document version and revision metadata."
         echo "  --gitstatus: Use git describe to generate document version and revision metadata. Implies --gitversion"
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,pdf:,latex:,docx:,resouredir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,pdf:,latex:,docx:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -79,7 +79,7 @@ while true; do
 		pdf_output="${2}"
 		shift 2
 		;;
-	--resouredir)
+	--resourcedir)
 		resource_dir="${2}"
 		shift 2
 		;;
@@ -259,7 +259,7 @@ export MERMAID_FILTER_FORMAT="pdf"
 if [ -n "${pdf_output}" ]; then
 	echo "Generating PDF Output"
 	pandoc \
-		--citeproc \
+	    --trace \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
@@ -279,7 +279,7 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+table_captions+citations \
+		--from=markdown+implicit_figures+grid_tables+table_captions-citations \
 		${extra_pandoc_options} \
 		--to=pdf \
 		"${build_dir}/${input_file}.3" \
@@ -291,7 +291,6 @@ fi
 if [ -n "${latex_output}" ]; then
 	echo "Generating LaTeX Output"
 	pandoc \
-		--citeproc \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
@@ -311,7 +310,7 @@ if [ -n "${latex_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+table_captions+citations \
+		--from=markdown+implicit_figures+grid_tables+table_captions-citations \
 		${extra_pandoc_options} \
 		--to=latex \
 		"${build_dir}/${input_file}.3" \
@@ -323,7 +322,6 @@ fi
 if [ -n "${docx_output}" ]; then
 	echo "Generating DOCX Output"
 	pandoc \
-		--citeproc \
 		--embed-resources \
 		--standalone \
 		--filter=/resources/filters/info.py \
@@ -331,7 +329,7 @@ if [ -n "${docx_output}" ]; then
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
-		--from=markdown+implicit_figures+table_captions+citations \
+		--from=markdown+implicit_figures+grid_tables+table_captions-citations \
 		--reference-doc=/resources/templates/tcg_template.docx \
 		${extra_pandoc_options} \
 		--to=docx \
