@@ -598,7 +598,7 @@ $endif$
 \newunicodechar{⌈}{\textfallback{⌈}}
 \newunicodechar{⌉}{\textfallback{⌉}}
 \newunicodechar{⊕}{\textfallback{⊕}}
-\newunicodechar{·}{\textfallback{·}}
+\newunicodechar{⋅}{\textfallback{⋅}}
 \newunicodechar{≥}{\textfallback{≥}}
 \newunicodechar{≤}{\textfallback{≤}}
 \newunicodechar{≠}{\textfallback{≠}}
@@ -1038,8 +1038,11 @@ $endif$
 
 $for(include-before)$
 $include-before$
-
 $endfor$
+
+\usepackage{tocloft}
+\renewcommand*{\cftsecnumwidth}{4em}
+
 $if(toc)$
 $if(toc-title)$
 \renewcommand*\contentsname{$toc-title$}

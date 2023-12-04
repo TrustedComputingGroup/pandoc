@@ -39,7 +39,9 @@ RUN tlmgr update --self && \
     fontspec \
     unicode-math \
     titlesec \
-    newunicodechar
+    newunicodechar \
+    tocloft \
+    multicol
 
 RUN apk upgrade && apk add --no-cache \
     bash \
