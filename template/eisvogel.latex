@@ -881,20 +881,17 @@ $endif$
   runin=false,
   afterindent=false,
   beforeskip=\baselineskip,
-  afterskip=0em,
-  font=\bfseries]{section},
+  afterskip=0em]{section},
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
   beforeskip=.75\baselineskip,
-  afterskip=0em,
-  font=\bfseries]{subsection}
+  afterskip=0em]{subsection}
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
   beforeskip=.5\baselineskip,
-  afterskip=0em,
-  font=\bfseries]{subsubsection}
+  afterskip=0em]{subsubsection}
 \RedeclareSectionCommand[
   runin=false,
   %afterindent=false,
