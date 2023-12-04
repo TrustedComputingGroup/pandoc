@@ -583,26 +583,6 @@ $endif$
 \setsansfont{Arial Unicode MS}
 \setmonofont{Source Code Pro}
 
-\usepackage{titlesec}
-
-\titleformat{\chapter}
-  {\normalfont\fontsize{16}{19}\sffamily\bfseries}
-  {\thechapter}
-  {1em}
-  {}
-
-\titleformat{\section}
-  {\normalfont\fontsize{14}{18}\sffamily\bfseries}
-  {\thesection}
-  {1em}
-  {}
-
-\titleformat{\subsection}
-  {\normalfont\fontsize{12}{17}\sffamily\bfseries}
-  {\thesubsection}
-  {1em}
-  {}
-
 %
 % heading color
 %
@@ -901,17 +881,20 @@ $endif$
   runin=false,
   afterindent=false,
   beforeskip=\baselineskip,
-  afterskip=0em]{section}
+  afterskip=0em]{section},
+  font=\textbf
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
   beforeskip=.75\baselineskip,
-  afterskip=0em]{subsection}
+  afterskip=0em]{subsection},
+  font=\textbf
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
   beforeskip=.5\baselineskip,
-  afterskip=0em]{subsubsection}
+  afterskip=0em]{subsubsection},
+  font=\textbf
 \RedeclareSectionCommand[
   runin=false,
   %afterindent=false,
