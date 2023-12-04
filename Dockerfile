@@ -37,7 +37,8 @@ RUN tlmgr update --self && \
     enumitem \
     mathtools \
     fontspec \
-    unicode-math
+    unicode-math \
+    titlesec
 
 RUN apk upgrade && apk add --no-cache \
     bash \

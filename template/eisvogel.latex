@@ -583,6 +583,26 @@ $endif$
 \setsansfont{Arial Unicode MS}
 \setmonofont{Source Code Pro}
 
+\usepackage{titlesec}
+
+\titleformat{\chapter}
+  {\normalfont\fontsize{16}{19}\sffamily\bfseries}
+  {\thechapter}
+  {1em}
+  {}
+
+\titleformat{\section}
+  {\normalfont\fontsize{14}{18}\sffamily\bfseries}
+  {\thesection}
+  {1em}
+  {}
+
+\titleformat{\subsection}
+  {\normalfont\fontsize{12}{17}\sffamily\bfseries}
+  {\thesubsection}
+  {1em}
+  {}
+
 %
 % heading color
 %
