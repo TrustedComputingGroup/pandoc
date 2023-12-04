@@ -591,7 +591,20 @@ $endif$
 % Use Arial Unicode to display various unicode symbols that might be present
 \newfontfamily{\fallbackfont}{Arial Unicode MS}[Scale=MatchLowercase]
 \DeclareTextFontCommand{\textfallback}{\fallbackfont}
+% TODO: Cover more characters with a nice loop or macro.
 \newunicodechar{≔}{\textfallback{≔}}
+\newunicodechar{⌊}{\textfallback{⌊}}
+\newunicodechar{⌋}{\textfallback{⌋}}
+\newunicodechar{⌈}{\textfallback{⌈}}
+\newunicodechar{⌉}{\textfallback{⌉}}
+\newunicodechar{⊕}{\textfallback{⊕}}
+\newunicodechar{·}{\textfallback{·}}
+\newunicodechar{≥}{\textfallback{≥}}
+\newunicodechar{≤}{\textfallback{≤}}
+\newunicodechar{≠}{\textfallback{≠}}
+\newunicodechar{©}{\textfallback{©}}
+\newunicodechar{™}{\textfallback{™}}
+\newunicodechar{→}{\textfallback{→}}
 
 %
 % heading color
