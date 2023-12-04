@@ -35,7 +35,11 @@ RUN tlmgr update --self && \
     catchfile \
     ragged2e \
     enumitem \
-    mathtools
+    mathtools \
+    fontspec \
+    unicode-math \
+    titlesec \
+    newunicodechar
 
 RUN apk upgrade && apk add --no-cache \
     bash \
@@ -48,6 +52,15 @@ RUN apk upgrade && apk add --no-cache \
     python3 \
     py3-pip \
     yarn
+
+# Install MS core fonts, including Arial
+RUN apk --no-cache add msttcorefonts-installer fontconfig && \
+    update-ms-fonts && \
+    fc-cache -f
+
+# Install the Arial Unicode MS font as well
+RUN wget https://github.com/kaienfr/Font/raw/master/font/ARIALUNI.TTF -P /usr/share/fonts/TTF/ && \
+    fc-cache -f
 
 RUN pip install pandocfilters
 

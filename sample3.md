@@ -165,15 +165,15 @@ This section contains an HTML Table.
 </thead>
 <tbody>
 <tr>
-<td>CEIL(x)</td>
+<td>⌈x⌉</td>
 <td>the smallest integer not less than x</td>
 </tr>
 <tr>
-<td><strong>FLOOR(</strong>x<strong>)</strong></td>
+<td>⌊x⌋</td>
 <td>the largest integer not greater than x</td>
 </tr>
 <tr>
-<td>A  $\coloneqq$  B</td>
+<td>A ≔ B</td>
 <td>assignment of the results of the expression on the right (B) to the
 parameter on the left</td>
 </tr>
