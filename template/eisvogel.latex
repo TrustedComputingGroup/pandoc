@@ -587,6 +587,7 @@ $endif$
 \setsansfont{Arial}
 \setmonofont{Source Code Pro}
 
+\usepackage{newunicodechar}
 % Use Arial Unicode to display various unicode symbols that might be present
 \newfontfamily{\fallbackfont}{Arial Unicode MS}[Scale=MatchLowercase]
 \DeclareTextFontCommand{\textfallback}{\fallbackfont}
