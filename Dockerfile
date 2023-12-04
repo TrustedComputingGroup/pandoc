@@ -38,7 +38,8 @@ RUN tlmgr update --self && \
     mathtools \
     fontspec \
     unicode-math \
-    titlesec
+    titlesec \
+    newunicodechar
 
 RUN apk upgrade && apk add --no-cache \
     bash \
@@ -52,6 +53,12 @@ RUN apk upgrade && apk add --no-cache \
     py3-pip \
     yarn
 
+# Install MS core fonts, including Arial
+RUN apk --no-cache add msttcorefonts-installer fontconfig && \
+    update-ms-fonts && \
+    fc-cache -f
+
+# Install the Arial Unicode MS font as well
 RUN wget https://github.com/kaienfr/Font/raw/master/font/ARIALUNI.TTF -P /usr/share/fonts/TTF/ && \
     fc-cache -f
 

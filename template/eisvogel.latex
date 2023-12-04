@@ -583,9 +583,14 @@ $endif$
 }
 
 \usepackage{fontspec}
-\setmainfont{Arial Unicode MS}
-\setsansfont{Arial Unicode MS}
+\setmainfont{Arial}
+\setsansfont{Arial}
 \setmonofont{Source Code Pro}
+
+% Use Arial Unicode to display various unicode symbols that might be present
+\newfontfamily{\fallbackfont}{Arial Unicode MS}[Scale=MatchLowercase]
+\DeclareTextFontCommand{\textfallback}{\fallbackfont}
+\newunicodechar{≔}{\textfallback{≔}}
 
 %
 % heading color
