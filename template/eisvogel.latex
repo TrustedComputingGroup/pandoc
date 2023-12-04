@@ -157,6 +157,10 @@ $if(mathspec)$
 $else$
   \usepackage{unicode-math}
 $endif$
+
+\defaultfontfeatures{Scale=MatchLowercase}
+\defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+
 $if(luatexjapresetoptions)$
   \ifluatex
     \usepackage[$for(luatexjapresetoptions)$$luatexjapresetoptions$$sep$,$endfor$]{luatexja-preset}
@@ -881,7 +885,7 @@ $endif$
   runin=false,
   afterindent=false,
   beforeskip=\baselineskip,
-  afterskip=0em]{section},
+  afterskip=0em]{section}
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
