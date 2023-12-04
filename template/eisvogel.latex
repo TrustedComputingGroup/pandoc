@@ -580,6 +580,7 @@ $endif$
 
 \usepackage{fontspec}
 \setmainfont{Arial Unicode MS}
+\setsansfont{Arial Unicode MS}
 \setmonofont{Source Code Pro}
 
 %
