@@ -679,39 +679,39 @@ $endif$
 
 \ExplSyntaxOff
 
-\RedeclareSectionCommand[
-  % runin=false,
-  afterindent=false,
-  beforeskip=\baselineskip,
-  afterskip=0em]{section}
-\RedeclareSectionCommand[
-  % runin=false,
-  afterindent=false,
-  beforeskip=.75\baselineskip,
-  afterskip=0em]{subsection}
-\RedeclareSectionCommand[
-  % runin=false,
-  afterindent=false,
-  beforeskip=.5\baselineskip,
-  afterskip=0em]{subsubsection}
-\RedeclareSectionCommand[
-  % runin=false,
-  %afterindent=false,
-  beforeskip=.5\baselineskip,
-  afterskip=0em]{paragraph}
-\RedeclareSectionCommand[
-  % runin=false,
-  %afterindent=false,
-  beforeskip=.5\baselineskip,
-  afterskip=0em]{subparagraph}
+% \RedeclareSectionCommand[
+%   % runin=false,
+%   afterindent=false,
+%   beforeskip=\baselineskip,
+%   afterskip=0em]{section}
+% \RedeclareSectionCommand[
+%   % runin=false,
+%   afterindent=false,
+%   beforeskip=.75\baselineskip,
+%   afterskip=0em]{subsection}
+% \RedeclareSectionCommand[
+%   % runin=false,
+%   afterindent=false,
+%   beforeskip=.5\baselineskip,
+%   afterskip=0em]{subsubsection}
+% \RedeclareSectionCommand[
+%   % runin=false,
+%   %afterindent=false,
+%   beforeskip=.5\baselineskip,
+%   afterskip=0em]{paragraph}
+% \RedeclareSectionCommand[
+%   % runin=false,
+%   %afterindent=false,
+%   beforeskip=.5\baselineskip,
+%   afterskip=0em]{subparagraph}
 
-% % Subsections don't wrap to a new page by default.
-% % Workaround from https://tex.stackexchange.com/questions/162236/subsection-on-new-page-if-it-doesnt-fit
-\preto{\section}{\clearpageafterfirst}
-\preto{\subsection}{\filbreak}
-\newcommand{\clearpageafterfirst}{%
-  \gdef\clearpageafterfirst{\clearpage}%
-}
+% % % Subsections don't wrap to a new page by default.
+% % % Workaround from https://tex.stackexchange.com/questions/162236/subsection-on-new-page-if-it-doesnt-fit
+% \preto{\section}{\clearpageafterfirst}
+% \preto{\subsection}{\filbreak}
+% \newcommand{\clearpageafterfirst}{%
+%   \gdef\clearpageafterfirst{\clearpage}%
+% }
 
 \newcommand{\coverbg}{/resources/img/greentop.png}
 
