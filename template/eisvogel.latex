@@ -63,12 +63,7 @@ $endif$
   toc=sectionentrywithdots
 ]{scrartcl}
 
-% Clean up the TOC a bit by ensuring that long section numbers don't overlap.
-\usepackage{tocloft}
-\setlength{\cftchapnumwidth}{8em}
-\setlength{\cftsecnumwidth}{8em}
-\setlength{\cftsubsecnumwidth}{8em}
-\setlength{\cftsubsubsecnumwidth}{8em}
+\usepackage[titles]{tocloft}
 
 \usepackage{amsmath,amssymb}
 \usepackage{mathtools}
@@ -735,6 +730,11 @@ $if(template)$
 $endif$
 
 \begin{document}
+% Clean up the TOC a bit by ensuring that long section numbers don't overlap.
+\setlength{\cftchapnumwidth}{8em}
+\setlength{\cftsecnumwidth}{8em}
+\setlength{\cftsubsecnumwidth}{8em}
+\setlength{\cftsubsubsecnumwidth}{8em}
 
 %%
 %% begin titlepage
