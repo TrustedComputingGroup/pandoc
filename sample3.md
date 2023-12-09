@@ -209,7 +209,7 @@ Table: Fantastic Table
 
 ## Thing 1
 
-These 17 sections are here to make the table of
+These 32 sections are here to make the table of
 contents longer than one page.
 
 ## Thing 2
@@ -228,3 +228,18 @@ contents longer than one page.
 ## Thing 15
 ## Thing 16
 ## Thing 17
+## Thing 18
+## Thing 19
+## Thing 20
+## Thing 21
+## Thing 22
+## Thing 23
+## Thing 24
+## Thing 25
+## Thing 26
+## Thing 27
+## Thing 28
+## Thing 29
+## Thing 30
+## Thing 31
+## Thing 32
