@@ -65,15 +65,16 @@ RUN wget https://github.com/kaienfr/Font/raw/master/font/ARIALUNI.TTF -P /usr/sh
     fc-cache -f
 
 # Install Source Sans Pro, Source Serif Pro, and Source Code Pro
-RUN wget https://github.com/adobe-fonts/source-code-pro/archive/refs/tags/2.042R-u/1.062R-i/1.026R-vf.zip && \
+RUN mkdir /usr/share/fonts/OTF && \
+    wget https://github.com/adobe-fonts/source-code-pro/archive/refs/tags/2.042R-u/1.062R-i/1.026R-vf.zip && \
     unzip 1.026R-vf.zip && \
-    cp source-code-pro-2.042R-u-1.062R-i-1.026R-vf/TTF/*.ttf /usr/share/fonts/TTF/ && \
+    cp source-code-pro-2.042R-u-1.062R-i-1.026R-vf/OTF/*.otf /usr/share/fonts/OTF/ && \
     wget https://github.com/adobe-fonts/source-serif/archive/refs/tags/4.005R.zip && \
     unzip 4.005R.zip && \
-    cp source-serif-4.005R/TTF/*.ttf /usr/share/fonts/TTF/ && \
+    cp source-serif-4.005R/OTF/*.otf /usr/share/fonts/OTF/ && \
     wget https://github.com/adobe-fonts/source-sans/archive/refs/tags/3.052R.zip && \
     unzip 3.052R.zip && \
-    cp source-sans-3.052R/TTF/*.ttf /usr/share/fonts/TTF/ && \
+    cp source-sans-3.052R/OTF/*.otf /usr/share/fonts/OTF/ && \
     fc-cache -f -v
 
 RUN pip install pandocfilters
