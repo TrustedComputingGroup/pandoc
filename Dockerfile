@@ -64,6 +64,12 @@ RUN apk --no-cache add msttcorefonts-installer fontconfig && \
 RUN wget https://github.com/kaienfr/Font/raw/master/font/ARIALUNI.TTF -P /usr/share/fonts/TTF/ && \
     fc-cache -f
 
+# Install Source Code Pro
+RUN wget https://github.com/adobe-fonts/source-code-pro/archive/refs/tags/2.042R-u/1.062R-i/1.026R-vf.zip && \
+    unzip 1.026R-vf.zip && \
+    cp source-code-pro-2.042R-u-1.062R-i-1.026R-vf/TTF/*.ttf /usr/share/fonts/TTF/ && \
+    fc-cache -f
+
 RUN pip install pandocfilters
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
