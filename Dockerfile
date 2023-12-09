@@ -67,13 +67,13 @@ RUN wget https://github.com/kaienfr/Font/raw/master/font/ARIALUNI.TTF -P /usr/sh
 # Install Source Sans Pro, Source Serif Pro, and Source Code Pro
 RUN wget https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.050R-it.zip && \
     unzip 1.050R-it.zip && \
-    cp source-code-pro-2.030R-ro-1.050R-it/OTF/*.otf ~/.fonts/ && \
+    cp source-code-pro-2.030R-ro-1.050R-it/OTF/*.otf /usr/share/fonts/OTF/ && \
     wget https://github.com/adobe-fonts/source-serif-pro/archive/2.000R.zip && \
     unzip 2.000R.zip && \
-    cp source-serif-pro-2.000R/OTF/*.otf ~/.fonts/ && \
+    cp source-serif-pro-2.000R/OTF/*.otf /usr/share/fonts/OTF/ && \
     wget https://github.com/adobe-fonts/source-sans-pro/archive/2.020R-ro/1.075R-it.zip && \
     unzip 1.075R-it.zip && \
-    cp source-sans-pro-2.020R-ro-1.075R-it/OTF/*.otf ~/.fonts/ && \
+    cp source-sans-pro-2.020R-ro-1.075R-it/OTF/*.otf /usr/share/fonts/OTF/ && \
     fc-cache -f -v
 
 RUN pip install pandocfilters
