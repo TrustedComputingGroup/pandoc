@@ -731,7 +731,6 @@ $endif$
 
 \begin{document}
 % Clean up the TOC a bit by ensuring that long section numbers don't overlap.
-\setlength{\cftchapnumwidth}{8em}
 \setlength{\cftsecnumwidth}{8em}
 \setlength{\cftsubsecnumwidth}{8em}
 \setlength{\cftsubsubsecnumwidth}{8em}
