@@ -192,12 +192,23 @@ $highlighting-macros$
 % pandoc includes fvextra in the default template.
 \usepackage{fvextra}
 \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,fontsize=$if(code-block-font-size)$$code-block-font-size$$else$\small$endif$,commandchars=\\\{\}}
+$endif$
 
 % Left-justify the document.
 \usepackage[document]{ragged2e}
 \RaggedRight{}
 \sloppy
-$endif$
+
+% Define some special environments for TPM spec style NOTE and EXAMPLE
+\usepackage{changepage}
+\newenvironment{tcgnote}
+{\begin{adjustwidth}{6em}{}
+  \makebox[0pt][r]{\makebox[6em][l]{NOTE:}}\ignorespaces}
+{\end{adjustwidth}}
+\newenvironment{tcgexample}
+{\begin{adjustwidth}{6em}{}
+  \makebox[0pt][r]{\makebox[6em][l]{EXAMPLE:}}\ignorespaces}
+{\end{adjustwidth}}
 
 % Customizations to the behavior of tables
 $if(tables)$
