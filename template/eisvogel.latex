@@ -58,19 +58,10 @@ $if(CJKmainfont)$
 $endif$
 %
 \documentclass[
-$if(fontsize)$
-  $fontsize$,
-$endif$
-$if(lang)$
-  $babel-lang$,
-$endif$
-paper=letter,
-$for(classoption)$
-  $classoption$$sep$,
-$endfor$
-  ,captions=tableheading,
+  paper=letter,
+  captions=tableheading,
   toc=sectionentrywithdots
-]{$if(book)$scrbook$else$scrartcl$endif$}
+]{scrartcl}
 
 \usepackage{amsmath,amssymb}
 \usepackage{mathtools}
