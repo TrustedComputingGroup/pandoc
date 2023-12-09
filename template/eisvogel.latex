@@ -185,12 +185,23 @@ $highlighting-macros$
 % pandoc includes fvextra in the default template.
 \usepackage{fvextra}
 \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,fontsize=$if(code-block-font-size)$$code-block-font-size$$else$\small$endif$,commandchars=\\\{\}}
+$endif$
 
 % Left-justify the document.
 \usepackage[document]{ragged2e}
 \RaggedRight{}
 \sloppy
-$endif$
+
+% Define some special environments for TPM spec style NOTE and EXAMPLE
+\usepackage{changepage}
+\newenvironment{tcgnote}
+{\begin{adjustwidth}{6em}{}
+  \makebox[0pt][r]{\makebox[6em][l]{NOTE:}}\ignorespaces}
+{\end{adjustwidth}}
+\newenvironment{tcgexample}
+{\begin{adjustwidth}{6em}{}
+  \makebox[0pt][r]{\makebox[6em][l]{EXAMPLE:}}\ignorespaces}
+{\end{adjustwidth}}
 
 % Customizations to the behavior of tables
 $if(tables)$
@@ -698,6 +709,14 @@ $endif$
   beforeskip=.5\baselineskip,
   afterskip=0em]{subparagraph}
 
+% % Subsections don't wrap to a new page by default.
+% % Workaround from https://tex.stackexchange.com/questions/162236/subsection-on-new-page-if-it-doesnt-fit
+\preto{\section}{\clearpageafterfirst}
+\preto{\subsection}{\filbreak}
+\newcommand{\clearpageafterfirst}{%
+  \gdef\clearpageafterfirst{\clearpage}%
+}
+
 \newcommand{\coverbg}{/resources/img/greentop.png}
 
 $if(template)$
@@ -708,6 +727,11 @@ $if(template)$
   {}
 $endif$
 
+% Clean up the TOC a bit by ensuring that long section numbers don't overlap.
+% \usepackage[titles]{tocloft}
+% \renewcommand*{\cftsecnumwidth}{10em}
+% \renewcommand*{\cftsubsecnumwidth}{10em}
+% \renewcommand*{\cftsubsubsecnumwidth}{10em}
 \begin{document}
 
 %%
@@ -743,7 +767,7 @@ $endif$
 {
   \begin{textblock*}{10.5cm}(7cm,11cm)
     \setstretch{2.8}
-    \fontsize{36}{46}{\textsf{$title$}}\\
+    \fontsize{36}{46}{\textbf{$title$}}\\
     \rule{7cm}{0.6mm}\\
     \vskip 0.5em
     \setstretch{1.0}

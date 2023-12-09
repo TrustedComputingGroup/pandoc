@@ -41,7 +41,8 @@ RUN tlmgr update --self && \
     titlesec \
     newunicodechar \
     tocloft \
-    tools
+    tools \
+    changepage
 
 RUN apk upgrade && apk add --no-cache \
     bash \
