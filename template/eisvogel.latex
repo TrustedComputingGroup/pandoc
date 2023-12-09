@@ -905,10 +905,6 @@ $endif$
 %% end titlepage
 %%
 
-$if(has-frontmatter)$
-VARDEBUG has-frontmatter
-\frontmatter
-$endif$
 $if(title)$
 $if(abstract)$
 \begin{abstract}
@@ -917,37 +913,10 @@ $abstract$
 $endif$
 $endif$
 
-$if(first-chapter)$
-VARDEBUG first-chapter
-\setcounter{chapter}{$first-chapter$}
-\addtocounter{chapter}{-1}
-$endif$
-
 $for(include-before)$
 $include-before$
 $endfor$
 
-$if(toc)$
-VARDEBUG toc
-$if(toc-title)$
-VARDEBUG toc-title
-\renewcommand*\contentsname{$toc-title$}
-$endif$
-{
-$if(colorlinks)$
-VARDEBUG colorlinks
-\hypersetup{linkcolor=$if(toccolor)$$toccolor$$else$$endif$}
-$endif$
-\setcounter{tocdepth}{$toc-depth$}
-$if(toc-own-page)$
-\newpage
-$endif$
-}
-$endif$
-$if(linestretch)$
-VARDEBUG linestretch
-\setstretch{$linestretch$}
-$endif$
 $if(has-frontmatter)$
 \mainmatter{}
 $endif$
@@ -955,26 +924,6 @@ $body$
 
 $if(has-frontmatter)$
 \backmatter{}
-$endif$
-$if(natbib)$
-VARDEBUG natbib
-$if(bibliography)$
-VARDEBUG bibliography
-$if(biblio-title)$
-VARDEBUG biblio-title
-$if(has-chapters)$
-VARDEBUG has-chapters
-\renewcommand\bibname{$biblio-title$}
-$else$
-\renewcommand\refname{$biblio-title$}
-$endif$
-$endif$
-  \bibliography{$for(bibliography)$$bibliography$$sep$,$endfor$}
-
-$endif$
-$endif$
-$if(biblatex)$
-\printbibliography$if(biblio-title)$[title=$biblio-title$]$endif$
 $endif$
 $for(include-after)$
 $include-after$
