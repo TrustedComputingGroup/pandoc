@@ -751,7 +751,7 @@ $endif$
 {
   \begin{textblock*}{10.5cm}(7cm,11cm)
     \setstretch{2.8}
-    \fontsize{36}{46}{\textsf{$title$}}\\
+    \fontsize{36}{46}{\textbf{$title$}}\\
     \rule{7cm}{0.6mm}\\
     \vskip 0.5em
     \setstretch{1.0}
