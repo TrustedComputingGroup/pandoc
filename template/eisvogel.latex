@@ -65,7 +65,10 @@ $endif$
 
 % Clean up the TOC a bit by ensuring that long section numbers don't overlap.
 \usepackage{tocloft}
-\renewcommand*{\cftsecnumwidth}{4em}
+\renewcommand*{\cftchapnumwidth}{8em}
+\renewcommand*{\cftsecnumwidth}{8em}
+\renewcommand*{\cftsubsecnumwidth}{8em}
+\renewcommand*{\cftsubsubsecnumwidth}{8em}
 
 \usepackage{amsmath,amssymb}
 \usepackage{mathtools}
@@ -212,14 +215,6 @@ $endif$
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
 $endif$
-
-% % Subsections don't wrap to a new page by default.
-% % Workaround from https://tex.stackexchange.com/questions/162236/subsection-on-new-page-if-it-doesnt-fit
-% \preto{\section}{\clearpageafterfirst}
-% \preto{\subsection}{\filbreak}
-% \newcommand{\clearpageafterfirst}{%
-%   \gdef\clearpageafterfirst{\clearpage}%
-% }
 
 \usepackage{footnotebackref}
 $if(graphics)$
@@ -709,6 +704,14 @@ $endif$
   %afterindent=false,
   beforeskip=.5\baselineskip,
   afterskip=0em]{subparagraph}
+
+% % Subsections don't wrap to a new page by default.
+% % Workaround from https://tex.stackexchange.com/questions/162236/subsection-on-new-page-if-it-doesnt-fit
+\preto{\section}{\clearpageafterfirst}
+\preto{\subsection}{\filbreak}
+\newcommand{\clearpageafterfirst}{%
+  \gdef\clearpageafterfirst{\clearpage}%
+}
 
 \newcommand{\coverbg}{/resources/img/greentop.png}
 
