@@ -729,9 +729,9 @@ $endif$
 
 % Clean up the TOC a bit by ensuring that long section numbers don't overlap.
 \usepackage[titles]{tocloft}
-\setlength{\cftsecnumwidth}{10em}
-\setlength{\cftsubsecnumwidth}{10em}
-\setlength{\cftsubsubsecnumwidth}{10em}
+\renewcommand*{\cftsecnumwidth}{10em}
+\renewcommand*{\cftsubsecnumwidth}{10em}
+\renewcommand*{\cftsubsubsecnumwidth}{10em}
 \begin{document}
 
 %%
