@@ -64,16 +64,10 @@ RUN apk --no-cache add msttcorefonts-installer fontconfig && \
 RUN wget https://github.com/kaienfr/Font/raw/master/font/ARIALUNI.TTF -P /usr/share/fonts/TTF/ && \
     fc-cache -f
 
-# Install Source Sans Pro, Source Serif Pro, and Source Code Pro
+# Install Source Code Pro
 RUN wget https://github.com/adobe-fonts/source-code-pro/archive/refs/tags/2.042R-u/1.062R-i/1.026R-vf.zip && \
     unzip 1.026R-vf.zip && \
     cp source-code-pro-2.042R-u-1.062R-i-1.026R-vf/TTF/*.ttf /usr/share/fonts/TTF/ && \
-    wget https://github.com/adobe-fonts/source-serif/archive/refs/tags/4.005R.zip && \
-    unzip 4.005R.zip && \
-    cp source-serif-4.005R/TTF/*.ttf /usr/share/fonts/TTF/ && \
-    wget https://github.com/adobe-fonts/source-sans/archive/refs/tags/3.052R.zip && \
-    unzip 3.052R.zip && \
-    cp source-sans-3.052R/TTF/*.ttf /usr/share/fonts/TTF/ && \
     fc-cache -f
 
 RUN pip install pandocfilters
