@@ -34,10 +34,11 @@
 %%
 
 %% Enable useful error output.
-\errorcontextlines 10000
+\errorcontextlines{10000}
 
 %%
-% This is the Eisvogel pandoc LaTeX template.
+% This template has been heavily customized for Trusted Computing Group.
+% It started out as the Eisvogel pandoc LaTeX template.
 %
 % For usage information and examples visit the official GitHub page:
 % https://github.com/Wandmalfarbe/pandoc-latex-template
@@ -95,8 +96,8 @@ $for(beameroption)$
 \setbeameroption{$beameroption$}
 $endfor$
 % Prevent slide breaks in the middle of a paragraph
-\widowpenalties 1 10000
-\raggedbottom
+\widowpenalties{1}{10000}
+\raggedbottom{}
 $if(section-titles)$
 \setbeamertemplate{part page}{
   \centering
@@ -120,7 +121,7 @@ $if(section-titles)$
   \frame{\partpage}
 }
 \AtBeginSection{
-  \ifbibliography
+  \ifbibliography{}
   \else
     \frame{\sectionpage}
   \fi
@@ -149,7 +150,7 @@ $endif$
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
 $if(mathspec)$
-  \ifxetex
+  \ifxetex{}
     \usepackage{mathspec}
   \else
     \usepackage{unicode-math}
@@ -162,7 +163,7 @@ $endif$
 \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 
 $if(luatexjapresetoptions)$
-  \ifluatex
+  \ifluatex{}
     \usepackage[$for(luatexjapresetoptions)$$luatexjapresetoptions$$sep$,$endfor$]{luatexja-preset}
   \fi
 $endif$
@@ -233,7 +234,7 @@ $endif$
   pdfcreator={LaTeX via pandoc with the Eisvogel template}}
 \urlstyle{same} % disable monospaced font for URLs
 $if(verbatim-in-note)$
-\VerbatimFootnotes % allow verbatim text in footnotes
+\VerbatimFootnotes{} % allow verbatim text in footnotes
 $endif$
 $if(geometry)$
 $if(beamer)$
@@ -259,7 +260,7 @@ $if(logo)$
 \usepackage{transparent}
 $endif$
 $if(beamer)$
-\newif\ifbibliography
+\newif\ifbibliography{}
 $endif$
 $if(listings)$
 \usepackage{listings}
@@ -290,7 +291,7 @@ $highlighting-macros$
 
 % Left-justify the document.
 \usepackage[document]{ragged2e}
-\RaggedRight
+\RaggedRight{}
 \sloppy
 
 $endif$
@@ -359,11 +360,11 @@ $else$
 $if(block-headings)$
 % Make \paragraph and \subparagraph free-standing
 \ifx\paragraph\undefined\else
-  \let\oldparagraph\paragraph
+  \let\oldparagraph\paragraph{}
   \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
-  \let\oldsubparagraph\subparagraph
+  \let\oldsubparagraph\subparagraph{}
   \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
 $endif$
@@ -390,7 +391,7 @@ $endfor$
 \renewlist{enumerate}{enumerate}{9}
 
 $if(lang)$
-\ifxetex
+\ifxetex{}
   $if(mainfont)$
   $else$
   % See issue https://github.com/reutenauer/polyglossia/issues/127
@@ -1070,12 +1071,12 @@ $if(linestretch)$
 \setstretch{$linestretch$}
 $endif$
 $if(has-frontmatter)$
-\mainmatter
+\mainmatter{}
 $endif$
 $body$
 
 $if(has-frontmatter)$
-\backmatter
+\backmatter{}
 $endif$
 $if(natbib)$
 $if(bibliography)$
@@ -1088,7 +1089,7 @@ $endif$
 $endif$
 $if(beamer)$
 \begin{frame}[allowframebreaks]{$biblio-title$}
-  \bibliographytrue
+  \bibliographytrue{}
 $endif$
   \bibliography{$for(bibliography)$$bibliography$$sep$,$endfor$}
 $if(beamer)$
@@ -1100,7 +1101,7 @@ $endif$
 $if(biblatex)$
 $if(beamer)$
 \begin{frame}[allowframebreaks]{$biblio-title$}
-  \bibliographytrue
+  \bibliographytrue{}
   \printbibliography[heading=none]
 \end{frame}
 $else$
