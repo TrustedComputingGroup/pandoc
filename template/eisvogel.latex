@@ -209,6 +209,14 @@ $endif$
 \makesavenoteenv{longtable}
 $endif$
 
+% Subsections don't wrap to a new page by default.
+% Workaround from https://tex.stackexchange.com/questions/162236/subsection-on-new-page-if-it-doesnt-fit
+\preto{\section}{\clearpageafterfirst}
+\preto{\subsection}{\filbreak}
+\newcommand{\clearpageafterfirst}{%
+  \gdef\clearpageafterfirst{\clearpage}%
+}
+
 \usepackage{footnotebackref}
 $if(graphics)$
 \usepackage{graphicx}
