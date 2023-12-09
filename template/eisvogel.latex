@@ -583,8 +583,8 @@ $endif$
 }
 
 \usepackage{fontspec}
-\setmainfont{Open Sans Pro}
-\setsansfont{Open Sans Pro}
+\setmainfont{Open Sans}
+\setsansfont{Open Sans}
 \setmonofont{Source Code Pro}
 
 \usepackage{newunicodechar}
