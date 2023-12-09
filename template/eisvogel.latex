@@ -65,10 +65,10 @@ $endif$
 
 % Clean up the TOC a bit by ensuring that long section numbers don't overlap.
 \usepackage{tocloft}
-\renewcommand*{\cftchapnumwidth}{8em}
-\renewcommand*{\cftsecnumwidth}{8em}
-\renewcommand*{\cftsubsecnumwidth}{8em}
-\renewcommand*{\cftsubsubsecnumwidth}{8em}
+\setlength{\cftchapnumwidth}{8em}
+\setlength{\cftsecnumwidth}{8em}
+\setlength{\cftsubsecnumwidth}{8em}
+\setlength{\cftsubsubsecnumwidth}{8em}
 
 \usepackage{amsmath,amssymb}
 \usepackage{mathtools}
@@ -679,39 +679,39 @@ $endif$
 
 \ExplSyntaxOff
 
-% \RedeclareSectionCommand[
-%   % runin=false,
-%   afterindent=false,
-%   beforeskip=\baselineskip,
-%   afterskip=0em]{section}
-% \RedeclareSectionCommand[
-%   % runin=false,
-%   afterindent=false,
-%   beforeskip=.75\baselineskip,
-%   afterskip=0em]{subsection}
-% \RedeclareSectionCommand[
-%   % runin=false,
-%   afterindent=false,
-%   beforeskip=.5\baselineskip,
-%   afterskip=0em]{subsubsection}
-% \RedeclareSectionCommand[
-%   % runin=false,
-%   %afterindent=false,
-%   beforeskip=.5\baselineskip,
-%   afterskip=0em]{paragraph}
-% \RedeclareSectionCommand[
-%   % runin=false,
-%   %afterindent=false,
-%   beforeskip=.5\baselineskip,
-%   afterskip=0em]{subparagraph}
+\RedeclareSectionCommand[
+  % runin=false,
+  afterindent=false,
+  beforeskip=\baselineskip,
+  afterskip=0em]{section}
+\RedeclareSectionCommand[
+  % runin=false,
+  afterindent=false,
+  beforeskip=.75\baselineskip,
+  afterskip=0em]{subsection}
+\RedeclareSectionCommand[
+  % runin=false,
+  afterindent=false,
+  beforeskip=.5\baselineskip,
+  afterskip=0em]{subsubsection}
+\RedeclareSectionCommand[
+  % runin=false,
+  %afterindent=false,
+  beforeskip=.5\baselineskip,
+  afterskip=0em]{paragraph}
+\RedeclareSectionCommand[
+  % runin=false,
+  %afterindent=false,
+  beforeskip=.5\baselineskip,
+  afterskip=0em]{subparagraph}
 
-% % % Subsections don't wrap to a new page by default.
-% % % Workaround from https://tex.stackexchange.com/questions/162236/subsection-on-new-page-if-it-doesnt-fit
-% \preto{\section}{\clearpageafterfirst}
-% \preto{\subsection}{\filbreak}
-% \newcommand{\clearpageafterfirst}{%
-%   \gdef\clearpageafterfirst{\clearpage}%
-% }
+% % Subsections don't wrap to a new page by default.
+% % Workaround from https://tex.stackexchange.com/questions/162236/subsection-on-new-page-if-it-doesnt-fit
+\preto{\section}{\clearpageafterfirst}
+\preto{\subsection}{\filbreak}
+\newcommand{\clearpageafterfirst}{%
+  \gdef\clearpageafterfirst{\clearpage}%
+}
 
 \newcommand{\coverbg}{/resources/img/greentop.png}
 
