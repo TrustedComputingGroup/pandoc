@@ -686,27 +686,27 @@ $endif$
 \ExplSyntaxOff
 
 \RedeclareSectionCommand[
-  % runin=false,
+  runin=false,
   afterindent=false,
   beforeskip=\baselineskip,
   afterskip=0em]{section}
 \RedeclareSectionCommand[
-  % runin=false,
+  runin=false,
   afterindent=false,
   beforeskip=.75\baselineskip,
   afterskip=0em]{subsection}
 \RedeclareSectionCommand[
-  % runin=false,
+  runin=false,
   afterindent=false,
   beforeskip=.5\baselineskip,
   afterskip=0em]{subsubsection}
 \RedeclareSectionCommand[
-  % runin=false,
+  runin=false,
   %afterindent=false,
   beforeskip=.5\baselineskip,
   afterskip=0em]{paragraph}
 \RedeclareSectionCommand[
-  % runin=false,
+  runin=false,
   %afterindent=false,
   beforeskip=.5\baselineskip,
   afterskip=0em]{subparagraph}
