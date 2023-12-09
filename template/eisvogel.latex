@@ -173,6 +173,25 @@ $if(logo)$
 \usepackage{transparent}
 $endif$
 
+$if(highlighting-macros)$
+$highlighting-macros$
+
+% Workaround/bugfix from jannick0.
+% See https://github.com/jgm/pandoc/issues/4302#issuecomment-360669013)
+% or https://github.com/Wandmalfarbe/pandoc-latex-template/issues/2
+%
+% Redefine the verbatim environment 'Highlighting' to break long lines (with
+% the help of fvextra). Redefinition is necessary because it is unlikely that
+% pandoc includes fvextra in the default template.
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,fontsize=$if(code-block-font-size)$$code-block-font-size$$else$\small$endif$,commandchars=\\\{\}}
+
+% Left-justify the document.
+\usepackage[document]{ragged2e}
+\RaggedRight{}
+\sloppy
+$endif$
+
 % Customizations to the behavior of tables
 $if(tables)$
 \usepackage{longtable,booktabs,array}
