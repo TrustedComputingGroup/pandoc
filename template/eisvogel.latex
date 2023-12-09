@@ -583,8 +583,8 @@ $endif$
 }
 
 \usepackage{fontspec}
-\setmainfont{Arial}
-\setsansfont{Arial}
+\setmainfont{Source Sans Pro}
+\setsansfont{Source Sans Pro}
 \setmonofont{Source Code Pro}
 
 \usepackage{newunicodechar}
