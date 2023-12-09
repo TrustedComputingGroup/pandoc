@@ -65,7 +65,8 @@ RUN wget https://github.com/kaienfr/Font/raw/master/font/ARIALUNI.TTF -P /usr/sh
     fc-cache -f
 
 # Install Source Sans Pro, Source Serif Pro, and Source Code Pro
-RUN wget https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.050R-it.zip && \
+RUN mkdir /usr/share/fonts/OTF && \
+    wget https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.050R-it.zip && \
     unzip 1.050R-it.zip && \
     cp source-code-pro-2.030R-ro-1.050R-it/OTF/*.otf /usr/share/fonts/OTF/ && \
     wget https://github.com/adobe-fonts/source-serif-pro/archive/2.000R.zip && \
