@@ -65,75 +65,13 @@ $if(lang)$
   $babel-lang$,
 $endif$
 paper=letter,
-$if(beamer)$
-  ignorenonframetext,
-$if(handout)$
-  handout,
-$endif$
-$if(aspectratio)$
-  aspectratio=$aspectratio$,
-$endif$
-$endif$
 $for(classoption)$
   $classoption$$sep$,
 $endfor$
   ,captions=tableheading,
   toc=sectionentrywithdots
-]{$if(beamer)$$documentclass$$else$$if(book)$scrbook$else$scrartcl$endif$$endif$}
-$if(beamer)$
-$if(background-image)$
-\usebackgroundtemplate{%
-  \includegraphics[width=\paperwidth]{$background-image$}%
-}
-$endif$
+]{$if(book)$scrbook$else$scrartcl$endif$}
 
-\usepackage{pgfpages}
-\setbeamertemplate{caption}[numbered]
-\setbeamertemplate{caption label separator}{: }
-\setbeamercolor{caption name}{fg=normal text.fg}
-\beamertemplatenavigationsymbols$if(navigation)$$navigation$$else$empty$endif$
-$for(beameroption)$
-\setbeameroption{$beameroption$}
-$endfor$
-% Prevent slide breaks in the middle of a paragraph
-\widowpenalties=1 10000
-\raggedbottom{}
-$if(section-titles)$
-\setbeamertemplate{part page}{
-  \centering
-  \begin{beamercolorbox}[sep=16pt,center]{part title}
-    \usebeamerfont{part title}\insertpart\par
-  \end{beamercolorbox}
-}
-\setbeamertemplate{section page}{
-  \centering
-  \begin{beamercolorbox}[sep=12pt,center]{part title}
-    \usebeamerfont{section title}\insertsection\par
-  \end{beamercolorbox}
-}
-\setbeamertemplate{subsection page}{
-  \centering
-  \begin{beamercolorbox}[sep=8pt,center]{part title}
-    \usebeamerfont{subsection title}\insertsubsection\par
-  \end{beamercolorbox}
-}
-\AtBeginPart{
-  \frame{\partpage}
-}
-\AtBeginSection{
-  \ifbibliography{}
-  \else
-    \frame{\sectionpage}
-  \fi
-}
-\AtBeginSubsection{
-  \frame{\subsectionpage}
-}
-$endif$
-$endif$
-$if(beamerarticle)$
-\usepackage{beamerarticle} % needs to be loaded first
-$endif$
 \usepackage{amsmath,amssymb}
 \usepackage{mathtools}
 $if(linestretch)$
@@ -237,16 +175,9 @@ $if(verbatim-in-note)$
 \VerbatimFootnotes{} % allow verbatim text in footnotes
 $endif$
 $if(geometry)$
-$if(beamer)$
-\geometry{$for(geometry)$$geometry$$sep$,$endfor$}
-$else$
 \usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
-$endif$
-$else$
-$if(beamer)$
 $else$
 \usepackage[top=0.5in,left=0.5in,right=0.5in,bottom=0.8in,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
-$endif$
 $endif$
 
 \setlength{\paperheight}{11in}
@@ -258,9 +189,6 @@ $if(logo)$
 \usepackage{anyfontsize}
 \usepackage{rotating}
 \usepackage{transparent}
-$endif$
-$if(beamer)$
-\newif\ifbibliography{}
 $endif$
 $if(listings)$
 \usepackage{listings}
@@ -301,13 +229,6 @@ $if(multirow)$
 \usepackage{multirow}
 $endif$
 \usepackage{calc} % for calculating minipage widths
-$if(beamer)$
-\usepackage{caption}
-% Make caption package work with longtable
-\makeatletter
-\def\fnum@table{\tablename~\thetable}
-\makeatother
-$else$
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
 \makeatletter
@@ -316,7 +237,6 @@ $else$
 % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
-$endif$
 $endif$
 % add backlinks to footnote references, cf. https://tex.stackexchange.com/questions/302266/make-footnote-clickable-both-ways
 $if(footnotes-disable-backlinks)$
@@ -355,8 +275,6 @@ $if(numbersections)$
 $else$
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 $endif$
-$if(beamer)$
-$else$
 $if(block-headings)$
 % Make \paragraph and \subparagraph free-standing
 \ifx\paragraph\undefined\else
@@ -367,7 +285,6 @@ $if(block-headings)$
   \let\oldsubparagraph\subparagraph{}
   \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
-$endif$
 $endif$
 $if(pagestyle)$
 \pagestyle{$pagestyle$}
@@ -469,30 +386,16 @@ $if(title)$
 \title{$title$$if(thanks)$\thanks{$thanks$}$endif$}
 $endif$
 $if(subtitle)$
-$if(beamer)$
-$else$
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
-$endif$
 \subtitle{$subtitle$}
 $endif$
 \author{$for(author)$$author$$sep$ \and $endfor$}
 \date{$date$}
-$if(beamer)$
-$if(institute)$
-\institute{$for(institute)$$institute$$sep$ \and $endfor$}
-$endif$
-$if(titlegraphic)$
-\titlegraphic{\includegraphics{$titlegraphic$}}
-$endif$
-$if(logo)$
-\logo{\includegraphics{$logo$}}
-$endif$
-$endif$
 
 %%
 %% added
@@ -559,11 +462,8 @@ $endif$
 % captions
 %
 \definecolor{caption-color}{HTML}{777777}
-$if(beamer)$
-$else$
 \usepackage[font={stretch=1.2}, textfont={color=caption-color}, position=top, skip=4mm, labelfont=bf, singlelinecheck=false, justification=centering]{caption}
 \setcapindent{0em}
-$endif$
 
 %
 % blockquote (repurposed for "informative text" blocks)
@@ -611,10 +511,7 @@ $endif$
 % heading color
 %
 \definecolor{heading-color}{RGB}{35,61,130}
-$if(beamer)$
-$else$
 \addtokomafont{section}{\color{heading-color}}
-$endif$
 % When using the classes report, scrreprt, book,
 % scrbook or memoir, uncomment the following line.
 %\addtokomafont{chapter}{\color{heading-color}}
@@ -622,13 +519,10 @@ $endif$
 %
 % variables for title, author and date
 %
-$if(beamer)$
-$else$
 \usepackage{titling}
 \title{$title$}
 \author{$for(author)$$author$$sep$, $endfor$}
 \date{$date$}
-$endif$
 
 %
 % tables
@@ -787,8 +681,6 @@ $endif$
 %
 % header and footer
 %
-$if(beamer)$
-$else$
 $if(disable-header-and-footer)$
 $else$
 \usepackage{fancyhdr}
@@ -855,7 +747,6 @@ contents={%
   \includegraphics[width=\paperwidth,height=\paperheight]{$page-background$}
   }%
 }
-$endif$
 $endif$
 $endif$
 
@@ -941,8 +832,6 @@ $endif$
 %%
 %% begin titlepage
 %%
-$if(beamer)$
-$else$
 $if(titlepage)$
 \begin{titlepage}
 \newgeometry{top=2cm, right=4cm, bottom=3cm, left=4cm}
@@ -1011,7 +900,6 @@ $endif$
 \end{titlepage}
 \restoregeometry
 $endif$
-$endif$
 
 %%
 %% end titlepage
@@ -1022,9 +910,6 @@ VARDEBUG has-frontmatter
 \frontmatter
 $endif$
 $if(title)$
-$if(beamer)$
-\frame{\titlepage}
-$endif$
 $if(abstract)$
 \begin{abstract}
 $abstract$
@@ -1048,17 +933,6 @@ $if(toc-title)$
 VARDEBUG toc-title
 \renewcommand*\contentsname{$toc-title$}
 $endif$
-$if(beamer)$
-\begin{frame}[allowframebreaks]
-$if(toc-title)$
-  \frametitle{$toc-title$}
-$endif$
-\tableofcontents[hideallsubsections]
-\end{frame}
-$if(toc-own-page)$
-\newpage
-$endif$
-$else$
 {
 $if(colorlinks)$
 VARDEBUG colorlinks
@@ -1069,7 +943,6 @@ $if(toc-own-page)$
 \newpage
 $endif$
 }
-$endif$
 $endif$
 $if(linestretch)$
 VARDEBUG linestretch
@@ -1096,27 +969,12 @@ $else$
 \renewcommand\refname{$biblio-title$}
 $endif$
 $endif$
-$if(beamer)$
-\begin{frame}[allowframebreaks]{$biblio-title$}
-  \bibliographytrue{}
-$endif$
   \bibliography{$for(bibliography)$$bibliography$$sep$,$endfor$}
-$if(beamer)$
-\end{frame}
-$endif$
 
 $endif$
 $endif$
 $if(biblatex)$
-$if(beamer)$
-\begin{frame}[allowframebreaks]{$biblio-title$}
-  \bibliographytrue{}
-  \printbibliography[heading=none]
-\end{frame}
-$else$
 \printbibliography$if(biblio-title)$[title=$biblio-title$]$endif$
-$endif$
-
 $endif$
 $for(include-after)$
 $include-after$
