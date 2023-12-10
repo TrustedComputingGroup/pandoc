@@ -582,14 +582,8 @@ $else$
 
 \fancypagestyle{eisvogel-header-footer}{
   \fancyhead{}
-  \fancyhead[C]
-   {
-     \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
-     {
-       \usepackage{draftwatermark}
-     }
-     {}
-   }  \fancyfoot{}
+  \fancyhead[C]{}
+  \fancyfoot{}
   \fancyfoot[C]
   {
     \begin{textblock*}{8.5in}(0in,10.7in)
@@ -718,6 +712,12 @@ $if(template)$
   }
   {}
 $endif$
+
+\ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
+{
+  \usepackage{draftwatermark}
+}
+{}
 
 \begin{document}
 
