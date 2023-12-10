@@ -43,7 +43,7 @@ RUN tlmgr update --self && \
     tocloft \
     tools \
     changepage \
-    accsup
+    accsupp
 
 RUN apk upgrade && apk add --no-cache \
     bash \
