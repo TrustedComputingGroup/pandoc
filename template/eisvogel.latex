@@ -195,10 +195,13 @@ $endif$
 % Define some special environments for TPM spec style NOTE and EXAMPLE
 \usepackage{changepage}
 \newenvironment{tcgnote}
-{\begin{adjustwidth}{6em}{}
+{
+  % \begin{adjustwidth}{6em}{}
   % \makebox[0pt][r]{\makebox[6em][l]{NOTE:}}\ignorespaces
   }
-{\end{adjustwidth}}
+{
+  % \end{adjustwidth}
+}
 \newenvironment{tcgexample}
 {\begin{adjustwidth}{6em}{}
   % \makebox[0pt][r]{\makebox[6em][l]{EXAMPLE:}}\ignorespaces
