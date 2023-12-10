@@ -192,17 +192,6 @@ $endif$
 \RaggedRight{}
 \sloppy
 
-% Define some special environments for TPM spec style NOTE and EXAMPLE
-\usepackage{changepage}
-\newenvironment{tcgnote}
-{\begin{adjustwidth}{6em}{}
-  \makebox[0pt][r]{\makebox[6em][l]{NOTE:}}\ignorespaces}
-{\end{adjustwidth}}
-\newenvironment{tcgexample}
-{\begin{adjustwidth}{6em}{}
-  \makebox[0pt][r]{\makebox[6em][l]{EXAMPLE:}}\ignorespaces}
-{\end{adjustwidth}}
-
 % Customizations to the behavior of tables
 $if(tables)$
 \usepackage{longtable,booktabs,array}
@@ -588,7 +577,7 @@ $else$
    {
      \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
      {
-       \begin{textblock*}{8.5in}(-0.3in,0.4in)
+       \begin{textblock*}{8.5in}(-0.3in,-0.4in)
        \fontsize{300}{360}{
          \begin{turn}{50}
          \textsf{\textcolor{gray}{\transparent{0.1}{DRAFT}}}
@@ -728,10 +717,13 @@ $if(template)$
 $endif$
 
 % Clean up the TOC a bit by ensuring that long section numbers don't overlap.
-% \usepackage[titles]{tocloft}
-% \renewcommand*{\cftsecnumwidth}{10em}
-% \renewcommand*{\cftsubsecnumwidth}{10em}
-% \renewcommand*{\cftsubsubsecnumwidth}{10em}
+% https://tex.stackexchange.com/questions/64115/table-of-contents-chapter-number-width
+\usepackage{tocloft}
+\makeatletter
+\renewcommand{\numberline}[1]{
+  \@cftbsnum #1\@cftasnum~\@cftasnumb
+}
+\makeatother
 \begin{document}
 
 %%
