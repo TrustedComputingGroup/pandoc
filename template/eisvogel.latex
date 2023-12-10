@@ -715,7 +715,7 @@ $endif$
 
 \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
 {
-  \usepackage{draftwatermark}
+  \usepackage[scale=2, colorspec=0.4]{draftwatermark}
 }
 {}
 
