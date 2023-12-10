@@ -43,7 +43,7 @@ RUN tlmgr update --self && \
     tocloft \
     tools \
     changepage \
-    xparse
+    l3packages
 
 RUN apk upgrade && apk add --no-cache \
     bash \
