@@ -125,10 +125,10 @@ int main() {
 }
 ```
 
-\tcgnote{
+\tcgnote[{
 some notes, bla bla bla bla bla bla, hello bla, hello bla. this is some words,
 watch out for this thing. you have to know about it. thanks for reading this note! &lt;
-}
+}]
 
 \begin{tcgexample}
 do it this way
