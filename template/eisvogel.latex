@@ -193,9 +193,8 @@ $endif$
 \sloppy
 
 % Define some special environments for TPM spec style NOTE and EXAMPLE
-\usepackage{xparse}
 \usepackage{changepage}
-\NewDocumentCommand\tcgnote{m}
+\NewRobustCommand{\tcgnote}[1]
 {
   % \begin{adjustwidth}{6em}{}
   % \makebox[0pt][r]{\makebox[6em][l]{NOTE:}}\ignorespaces
