@@ -591,13 +591,15 @@ $else$
    {
      \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
      {
-       \begin{textblock*}{8.5in}(0in,-0.5in)
+       \squelch{
+       \begin{textblock*}{8.5in}(-0.8in,-0.5in)
        \fontsize{300}{360}{
          \begin{turn}{50}
-         \textsf{\textcolor{gray}{\transparent{0.1}{\squelch{DRAFT}}}}
+         \textsf{\textcolor{gray}{\transparent{0.1}{DRAFT}}}
          \end{turn}
        }
        \end{textblock*}
+       }
      }
      {}
    }  \fancyfoot{}
