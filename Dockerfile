@@ -42,7 +42,8 @@ RUN tlmgr update --self && \
     newunicodechar \
     tocloft \
     tools \
-    changepage
+    changepage \
+    draftwatermark
 
 RUN apk upgrade && apk add --no-cache \
     bash \
