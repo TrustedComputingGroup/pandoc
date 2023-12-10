@@ -34,7 +34,7 @@
 %%
 
 %% Enable useful error output.
-\errorcontextlines=10000
+\errorcontextlines 10000
 
 %%
 % This template has been heavily customized for Trusted Computing Group.

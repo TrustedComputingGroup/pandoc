@@ -127,7 +127,7 @@ int main() {
 
 \begin{tcgnote}
 some notes, bla bla bla bla bla bla, hello bla, hello bla. this is some words,
-watch out for this thing. you have to know about it. thanks for reading this note!
+watch out for this thing. you have to know about it. thanks for reading this note! &lt;
 \end{tcgnote}
 
 \begin{tcgexample}
