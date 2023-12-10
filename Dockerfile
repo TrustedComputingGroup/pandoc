@@ -43,7 +43,7 @@ RUN tlmgr update --self && \
     tocloft \
     tools \
     changepage \
-    accsupp
+    draftwatermark
 
 RUN apk upgrade && apk add --no-cache \
     bash \
