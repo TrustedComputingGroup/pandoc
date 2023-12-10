@@ -126,12 +126,12 @@ $endif$
 
 % Clean up the TOC a bit by ensuring that long section numbers don't overlap.
 % https://tex.stackexchange.com/questions/64115/table-of-contents-chapter-number-width
-\usepackage{tocloft}
-\makeatletter
-\renewcommand{\numberline}[1]{
-  \@cftbsnum #1\@cftasnum~\@cftasnumb
-}
-\makeatother
+% \usepackage{tocloft}
+% \makeatletter
+% \renewcommand{\numberline}[1]{
+%   \@cftbsnum #1\@cftasnum~\@cftasnumb
+% }
+% \makeatother
 
 % PDF metadata
 \hypersetup{
