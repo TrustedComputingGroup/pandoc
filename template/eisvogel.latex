@@ -196,11 +196,11 @@ $endif$
 \usepackage{changepage}
 \newenvironment{tcgnote}
 {\begin{adjustwidth}{6em}{}
-  \makebox[0pt][r]{\makebox[6em][l]{NOTE:}}\ignorespaces}
+  % \makebox[0pt][r]{\makebox[6em][l]{NOTE:}}\ignorespaces}
 {\end{adjustwidth}}
 \newenvironment{tcgexample}
 {\begin{adjustwidth}{6em}{}
-  \makebox[0pt][r]{\makebox[6em][l]{EXAMPLE:}}\ignorespaces}
+  % \makebox[0pt][r]{\makebox[6em][l]{EXAMPLE:}}\ignorespaces}
 {\end{adjustwidth}}
 
 % Customizations to the behavior of tables
