@@ -673,14 +673,14 @@ $endif$
   runin=false,
   afterindent=false,
   tocindent=2em,
-  tocnumwidth=2.5em,
+  tocnumwidth=3em,
   beforeskip=.75\baselineskip,
   afterskip=0em]{subsection}
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
-  tocindent=2.5em,
-  tocnumwidth=3em,
+  tocindent=5em,
+  tocnumwidth=4em,
   beforeskip=.5\baselineskip,
   afterskip=0em]{subsubsection}
 \RedeclareSectionCommand[
