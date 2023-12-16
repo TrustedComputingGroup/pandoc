@@ -66,7 +66,7 @@ Draft specification, with a list of tables and a list of figures.
 > Informative text 2: here is a block of
 > informative text.
 
-## Details
+## Details {#sec:details}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
 incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
@@ -92,11 +92,13 @@ As @eq:FermatsLastTheorem demonstrates, math is hard.
 
 as @fig:computer shows: computers are.
 
+Remember from @sec:details
+
 ## Tables
 
 ### Mandatory Algorithms
 
-Table: List of Mandatory Algorithms
+Table: List of Mandatory Algorithms {#tbl:algorithms}
 
 | **Algorithm ID** | **M/R/O/D** | **Comments**                                  |
 | ---------------- | ----------- | --------------------------------------------- |
@@ -119,6 +121,8 @@ Table: List of Mandatory Algorithms
 | TPM_ALG_NULL     | M           |
 
 ### Mandatory Curves
+
+This table is a lot like @tbl:algorithms.
 
 Table: List of Mandatory Curves
 
