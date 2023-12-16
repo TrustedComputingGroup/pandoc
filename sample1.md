@@ -78,9 +78,9 @@ An inline bit of math is here: $00 01 02 03 04_{16}$
 
 Here is an equation:
 
-(@FermatsLastTheorem) $$a^n + b^n = c^n$$
+$$a^n + b^n = c^n$$ {#eq:FermatsLastTheorem}
 
-As (@FermatsLastTheorem) demonstrates, math is hard.
+As [@eq:FermatsLastTheorem] demonstrates, math is hard.
 
 ## Figures
 
