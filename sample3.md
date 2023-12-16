@@ -266,7 +266,7 @@ Test?
 
 ---
 
-\appendices
+\tcgappendix
 
 # First Appendix
 
