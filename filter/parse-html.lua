@@ -6,3 +6,9 @@ function RawBlock (raw)
       or raw
   end
   
+function RawInline (raw)
+    return raw.format:match 'html'
+      and pandoc.RawInline(raw.text, 'html')
+      or raw
+  end
+  
