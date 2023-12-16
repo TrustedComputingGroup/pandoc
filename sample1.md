@@ -77,6 +77,15 @@ culpa qui officia deserunt mollit anim id est laborum.
 
 a<sup>n</sup> + b<sup>n</sup> = c<sup>n</sup>
 
+00 01 02 03 04$_16$
+
+$00 01 02 03 04_16$
+
+a$^n$ + b$^n$ = c$^n$
+
+$a^n + b^n = c^n$
+
+
 ## Figures
 
 ### Computer
