@@ -34,7 +34,7 @@
 %%
 
 %% Enable useful error output.
-\errorcontextlines 10000
+\errorcontextlines=10000
 
 %%
 % This template has been heavily customized for Trusted Computing Group.
@@ -123,15 +123,6 @@ $if(footnotes-pretty)$
 $endif$
 
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-
-% Clean up the TOC a bit by ensuring that long section numbers don't overlap.
-% https://tex.stackexchange.com/questions/64115/table-of-contents-chapter-number-width
-% \usepackage{tocloft}
-% \makeatletter
-% \renewcommand{\numberline}[1]{
-%   \@cftbsnum #1\@cftasnum~\@cftasnumb
-% }
-% \makeatother
 
 % PDF metadata
 \hypersetup{
@@ -669,29 +660,33 @@ $endif$
 
 \ExplSyntaxOff
 
+% We have a few tweaks to how sections through subparagraphs work.
+% Note the use of tocnumwidth to work around issues where the TOC numbering overlaps
+% with the name of the section due to the length of the number.
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
+  tocnumwidth=3em,
   beforeskip=\baselineskip,
   afterskip=0em]{section}
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
+  tocnumwidth=3em,
   beforeskip=.75\baselineskip,
   afterskip=0em]{subsection}
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
+  tocnumwidth=3em,
   beforeskip=.5\baselineskip,
   afterskip=0em]{subsubsection}
 \RedeclareSectionCommand[
   runin=false,
-  %afterindent=false,
   beforeskip=.5\baselineskip,
   afterskip=0em]{paragraph}
 \RedeclareSectionCommand[
   runin=false,
-  %afterindent=false,
   beforeskip=.5\baselineskip,
   afterskip=0em]{subparagraph}
 
