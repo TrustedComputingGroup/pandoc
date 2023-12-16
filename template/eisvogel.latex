@@ -698,6 +698,14 @@ $endif$
   \gdef\clearpageafterfirst{\clearpage}%
 }
 
+% Allow TCG documents to use '\beginappendices' to easily mark the transition to appendices.
+\usepackage{appendix}
+\newcommand{\beginappendices}{
+  \appendix
+  \appendixpage
+  \addappheadtotoc
+}
+
 \newcommand{\coverbg}{/resources/img/greentop.png}
 
 $if(template)$

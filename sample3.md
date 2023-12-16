@@ -265,3 +265,13 @@ contents longer than one page.
 Test?
 
 ---
+
+\beginappendices
+
+# First Appendix
+
+I'm thinking A is a good one here.
+
+# Second Appendix
+
+I'm thinking B is a good one here.
