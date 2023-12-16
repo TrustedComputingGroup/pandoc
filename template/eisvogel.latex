@@ -60,7 +60,7 @@ $endif$
 \documentclass[
   paper=letter,
   captions=tableheading,
-  toc=sectionentrywithdots
+  toc=flat
 ]{scrartcl}
 
 \usepackage{amsmath,amssymb}
