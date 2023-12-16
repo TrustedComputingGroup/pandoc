@@ -53,6 +53,8 @@ and brands contained herein are the property of their respective owners.
 
 \listoffigures
 
+\listoflistings
+
 ---
 
 # Introduction
@@ -80,13 +82,15 @@ Here is an equation:
 
 $$a^n + b^n = c^n$$ {#eq:FermatsLastTheorem}
 
-As [@eq:FermatsLastTheorem] demonstrates, math is hard.
+As @eq:FermatsLastTheorem demonstrates, math is hard.
 
 ## Figures
 
 ### Computer
 
 ![a computer](computer.jpg){#fig:computer}
+
+as @fig:computer shows: computers are.
 
 ## Tables
 
