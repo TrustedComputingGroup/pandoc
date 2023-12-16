@@ -73,18 +73,14 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
 fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
 culpa qui officia deserunt mollit anim id est laborum.
 
-00 01 02 03 04<sub>16</sub>
 
-a<sup>n</sup> + b<sup>n</sup> = c<sup>n</sup>
+An inline bit of mtah is here: $00 01 02 03 04_{16}$
 
-00 01 02 03 04$_16$
+Here is an equation:
 
-$00 01 02 03 04_16$
+(@FermatsLastTheorem) $$ a^n + b^n = c^n $$
 
-a$^n$ + b$^n$ = c$^n$
-
-$a^n + b^n = c^n$
-
+As (@FermatsLastTheorem) demonstrates, math is hard.
 
 ## Figures
 
