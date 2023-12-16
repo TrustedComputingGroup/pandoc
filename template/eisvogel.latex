@@ -698,9 +698,9 @@ $endif$
   \gdef\clearpageafterfirst{\clearpage}%
 }
 
-% Allow TCG documents to use '\tcgappendix' to easily mark the transition to appendices.
+% Allow TCG documents to use '\beginappendices' to easily mark the transition to appendices.
 \usepackage{appendix}
-\newcommand{\tcgappendix}{
+\newcommand{\beginappendices}{
   \appendix
   \appendixpage
   \addappheadtotoc
