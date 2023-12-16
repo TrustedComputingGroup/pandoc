@@ -8,7 +8,7 @@ function RawBlock (raw)
   
 function RawInline (raw)
     return raw.format:match 'html'
-      and pandoc.RawInline(raw.text, 'html')
+      and pandoc.RawInline('html', raw.text)
       or raw
   end
   

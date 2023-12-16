@@ -95,6 +95,8 @@ COPY ./filter/* /resources/filters/
 RUN mkdir -m 0777 /home/user
 ENV HOME="/home/user"
 
+COPY ./filter/pandoc-crossref.yaml /home/user/.pandoc-crossref/config.yaml
+
 COPY build.sh /usr/bin/build.sh
 ENTRYPOINT ["/usr/bin/build.sh"]
 CMD ["--help"]

@@ -137,6 +137,8 @@ Table: List of Mandatory Curves
 
 This section contains a Grid Table.
 
+Table: Temperatures
+
 +---------------------+-----------------------+
 | Location            | Temperature 1961-1990 |
 |                     | in degree Celsius     |
@@ -153,6 +155,7 @@ This section contains a Grid Table.
 This section contains an HTML Table.
 
 <table>
+<caption>HTML Table</caption>
 <colgroup>
 <col style="width: 13%" />
 <col style="width: 86%" />

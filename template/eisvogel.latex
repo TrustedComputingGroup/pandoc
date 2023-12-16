@@ -666,19 +666,21 @@ $endif$
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
-  tocnumwidth=3em,
+  tocnumwidth=1.5em,
   beforeskip=\baselineskip,
   afterskip=0em]{section}
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
+  tocindent=1.5em,
   tocnumwidth=3em,
   beforeskip=.75\baselineskip,
   afterskip=0em]{subsection}
 \RedeclareSectionCommand[
   runin=false,
   afterindent=false,
-  tocnumwidth=3em,
+  tocindent=4.5em,
+  tocnumwidth=4em,
   beforeskip=.5\baselineskip,
   afterskip=0em]{subsubsection}
 \RedeclareSectionCommand[

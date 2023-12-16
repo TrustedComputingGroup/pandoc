@@ -64,7 +64,7 @@ Draft specification, with a list of tables and a list of figures.
 > Informative text 2: here is a block of
 > informative text.
 
-## Details
+## Details {#sec:details}
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
 incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
@@ -73,9 +73,15 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
 fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
 culpa qui officia deserunt mollit anim id est laborum.
 
-00 01 02 03 04<sub>16</sub>
+### Hidden details {.unlisted}
 
-a<sup>n</sup> + b<sup>n</sup> = c<sup>n</sup>
+An inline bit of math is here: $00 01 02 03 04_{16}$
+
+Here is an equation:
+
+$$a^n + b^n = c^n$$ {#eq:FermatsLastTheorem}
+
+As @eq:FermatsLastTheorem demonstrates, math is hard.
 
 ## Figures
 
@@ -83,11 +89,15 @@ a<sup>n</sup> + b<sup>n</sup> = c<sup>n</sup>
 
 ![a computer](computer.jpg){#fig:computer}
 
+as @fig:computer shows: computers are.
+
+Remember from @sec:details
+
 ## Tables
 
 ### Mandatory Algorithms
 
-Table: List of Mandatory Algorithms
+Table: List of Mandatory Algorithms {#tbl:algorithms}
 
 | **Algorithm ID** | **M/R/O/D** | **Comments**                                  |
 | ---------------- | ----------- | --------------------------------------------- |
@@ -110,6 +120,8 @@ Table: List of Mandatory Algorithms
 | TPM_ALG_NULL     | M           |
 
 ### Mandatory Curves
+
+This table is a lot like @tbl:algorithms.
 
 Table: List of Mandatory Curves
 
