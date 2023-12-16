@@ -265,3 +265,15 @@ contents longer than one page.
 Test?
 
 ---
+
+# Appendices
+
+These sections should be lettered instead of numbered.
+
+## First Appendix
+
+I'm thinking A is a good one here.
+
+## Second Appendix
+
+I'm thinking B is a good one here.
