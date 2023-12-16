@@ -40,7 +40,6 @@ RUN tlmgr update --self && \
     unicode-math \
     titlesec \
     newunicodechar \
-    tocloft \
     tools \
     changepage \
     draftwatermark
