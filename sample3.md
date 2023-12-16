@@ -155,6 +155,7 @@ Table: Temperatures
 This section contains an HTML Table.
 
 <table>
+<caption>HTML Table</caption>
 <colgroup>
 <col style="width: 13%" />
 <col style="width: 86%" />
