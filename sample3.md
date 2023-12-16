@@ -137,6 +137,8 @@ Table: List of Mandatory Curves
 
 This section contains a Grid Table.
 
+Table: Temperatures
+
 +---------------------+-----------------------+
 | Location            | Temperature 1961-1990 |
 |                     | in degree Celsius     |

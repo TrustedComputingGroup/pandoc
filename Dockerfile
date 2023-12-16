@@ -90,6 +90,7 @@ RUN npm install --global /src/pandiff
 COPY ./img/* /resources/img/
 COPY ./template/* /resources/templates/
 COPY ./filter/* /resources/filters/
+COPY ./filter/pandoc-crossref.yaml /home/user/.pandoc-crossref/config.yaml
 
 # mktexpk gets executed and needs a home dir, build one
 RUN mkdir -m 0777 /home/user
