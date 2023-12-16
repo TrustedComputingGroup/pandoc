@@ -42,7 +42,8 @@ RUN tlmgr update --self && \
     newunicodechar \
     tools \
     changepage \
-    draftwatermark
+    draftwatermark \
+    appendix
 
 RUN apk upgrade && apk add --no-cache \
     bash \

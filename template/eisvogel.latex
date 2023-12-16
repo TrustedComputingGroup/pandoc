@@ -698,6 +698,14 @@ $endif$
   \gdef\clearpageafterfirst{\clearpage}%
 }
 
+% Allow TCG documents to use '\appendices' to easily mark the transition to appendices.
+\usepackage{appendix}
+\newcommand{\appendices}{
+  \appendix
+  \appendixpage
+  \addappheadtotoc
+}
+
 \newcommand{\coverbg}{/resources/img/greentop.png}
 
 $if(template)$
