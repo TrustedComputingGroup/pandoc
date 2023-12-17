@@ -265,8 +265,8 @@ if [ -n "${pdf_output}" ]; then
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
 		--filter=pandoc-crossref \
-		--lua-filter=table-rules.lua \
 		--lua-filter=parse-html.lua \
+		--lua-filter=table-rules.lua \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--top-level-division=section \
@@ -298,8 +298,8 @@ if [ -n "${latex_output}" ]; then
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
 		--filter=pandoc-crossref \
-		--lua-filter=table-rules.lua \
 		--lua-filter=parse-html.lua \
+		--lua-filter=table-rules.lua \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--top-level-division=section \
