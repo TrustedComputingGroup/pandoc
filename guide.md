@@ -104,7 +104,7 @@ Reference documents. It's included here, mainly to demonstrate the usage of Mark
 You can create a repository from scratch, or you can use https://github.com/TrustedComputingGroup/specification-example
 to get started a little more quickly. There's a little green "Use this template" button in the top right.
 
-![The "Use this template" button](use_template.jpg)  {#fig:use-template-button}
+![The "Use this template" button](use_template.jpg){#fig:use-template-button}
 
 ## GitHub Actions
 
@@ -232,7 +232,7 @@ OPTIONAL.
 
 `template` should be one of: `greentop`, `bluetop`. It customizes the title page style. If not provided, `greentop` is the current default.
 
-Typically, SPECIFICATIONs use the `greentop` template, and `GUIDANCE` or `REFERENCE` documents use the `bluetop` template.
+Typically, specifications use the `greentop` template, and guidance or reference documents use the `bluetop` template.
 
 ### Backslash Macros
 
@@ -267,7 +267,7 @@ are expected to use this macro.
 
 Users familiar with Git and who prefer to use their own tools may choose to skip this section.
 
-```mermaid {caption="GitHub Collaboration worklfow" #fig:collab}
+```mermaid {caption="GitHub Collaboration workflow" #fig:collab}
     gitGraph
        commit id: "HEAD"
        branch proposed-edits-1
@@ -297,7 +297,7 @@ clicking on them.
 From this view, there is an "Edit" (pencil) button in the upper right-hand corner, pictured in
 @fig:edit-file-button:
 
-![GitHub Edit Button](edit_this_file.jpg) {#fig:edit-file-button}
+![GitHub Edit Button](edit_this_file.jpg){#fig:edit-file-button}
 
 This will take you to a view where you can edit the file. There is a "Preview" button that you can use
 to see roughly how the changes will look when viewed from GitHub. Most everyday changes to TCG docs
@@ -306,7 +306,7 @@ can be previewed in high enough fidelity with this tool.
 When you're satisfied with your changes, use the green "Commit changes..." button. This will bring up
 the dialog box pictured in @fig:propose-changes:
 
-![Propose Changes Dialog](propose_changes.jpg) {#fig:propose-changes}
+![Propose Changes Dialog](propose_changes.jpg){#fig:propose-changes}
 
 Include a descriptive commit message, extended description, and new branch name for your change,
 then click the green "Propose changes" button.
@@ -324,12 +324,12 @@ This button takes you to a review flow, where you can provide comments on indivi
 You can leave a comment on an individual line by mousing over the line and clicking the blue "+" button,
 which looks like @fig:plus-button:
 
-![Plus Button](plus_button.jpg) {#fig:plus-button}
+![Plus Button](plus_button.jpg){#fig:plus-button}
 
 After you've gone through all the changed files and provided your comments, you can click "Review changes"
 to finish the review. This dialog looks like @fig:finish-review:
 
-![Finish Review](finish_review.jpg) {#fig:finish-review}
+![Finish Review](finish_review.jpg){#fig:finish-review}
 
 Here, you can provide summary comments and mark your review as one of:
 
@@ -485,14 +485,14 @@ to the branch for the PR that reference the image, or you can do it in a subsequ
 Markdown syntax for including an image looks like `![alt text](filename)`. For example:
 
 ```md
-![Adding an Image](add_plus_button.jpg) {#fig:add-plus-button}
+![Adding an Image](add_plus_button.jpg){#fig:add-plus-button}
 ```
 
 becomes:
 
-![Adding an Image](add_plus_button.jpg) {#fig:add-plus-button}
+![Adding an Image](add_plus_button.jpg){#fig:add-plus-button}
 
-The `{#fig:add-plus-button}` attribute does two things:
+The `{#fig:add-plus-button}` attribute (note there are no spaces before it!) does two things:
 
 1. Includes the figure in the List of Figures (if you used `\listoffigures` as described in @sec:toc).
 2. Numbers the figure so you can reference it as @fig:add-plus-button by just typing `@fig:add-plus-button`.
@@ -504,10 +504,10 @@ See the Mermaid website for a more exhaustive list of types of diagrams.
 
 ### Sequence Diagrams
 
-Mermaid supports swim-lane digrams like @fig:startup with the following notation:
+Mermaid supports swim-lane digrams like the below with the following notation:
 
 ````md
-```mermaid {caption="Startup Sequence" #fig:startup}
+```mermaid {caption="Startup Sequence"}
 sequenceDiagram
 Host->>TPM: TPM2_Startup
 loop Measurements
@@ -518,7 +518,7 @@ TPM->>Host: <quoted PCRs>
 ```
 ````
 
-```mermaid {caption="Startup Sequence" #fig:startup}
+```mermaid {caption="Startup Sequence"}
 sequenceDiagram
 Host->>TPM: TPM2_Startup
 loop Measurements
@@ -528,14 +528,14 @@ Host->>TPM: TPM2_Quote
 TPM->>Host: <quoted PCRs>
 ```
 
-Note that both the caption and the cross-reference (i.e., `@fig:startup` to point to @fig:startup) are included inside the `{curly brackets}`.
+Crossreferences to Mermaid diagrams are not currently supported.
 
 ### Flow Charts
 
-Mermaid supports flow-charts like @fig:flowchart with the following notation:
+Mermaid supports flow-charts like the below with the following notation:
 
 ````md
-```mermaid {caption="Flowchart" #fig:flowchart}
+```mermaid {caption="Flowchart"}
 graph TD;
     A-->B;
     A-->C;
@@ -543,8 +543,6 @@ graph TD;
     C-->D;
 ```
 ````
-
-Note that both the caption and the cross-reference (i.e., `@fig:flowchart` to point to @fig:flowchart) are included inside the `{curly brackets}`.
 
 # Tables
 

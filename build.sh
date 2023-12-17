@@ -289,10 +289,11 @@ if [ -n "${pdf_output}" ]; then
 		"${build_dir}/${input_file}.3" \
 		--output="${pdf_output}"
 	echo "PDF Output Generated to file: ${pdf_output}"
+	if [ $? -ne 0 ]; then
+		RESULT=$?
+	fi
 fi
-if [ $? -ne 0 ]; then
-	RESULT=$?
-fi
+
 
 # Generate the LaTeX output
 if [ -n "${latex_output}" ]; then
@@ -325,9 +326,9 @@ if [ -n "${latex_output}" ]; then
 		"${build_dir}/${input_file}.3" \
 		--output="${latex_output}"
 	echo "LaTeX Output Generated to file: ${latex_output}"
-fi
-if [ $? -ne 0 ]; then
-	RESULT=$?
+	if [ $? -ne 0 ]; then
+		RESULT=$?
+	fi
 fi
 
 # Generate the docx output
@@ -350,9 +351,9 @@ if [ -n "${docx_output}" ]; then
 		"${build_dir}/${input_file}.3" \
 		--output="${docx_output}"
 	echo "DOCX Output Generated to file: ${docx_output}"
-fi
-if [ $? -ne 0 ]; then
-	RESULT=$?
+	if [ $? -ne 0 ]; then
+		RESULT=$?
+	fi
 fi
 
 if [ ${RESULT} -ne 0 ]; then
