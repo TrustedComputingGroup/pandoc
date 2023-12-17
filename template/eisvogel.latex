@@ -431,13 +431,13 @@ $endif$
 \setlength\arrayrulewidth{1pt} % thickness of array rules
 \renewcommand{\arraystretch}{1.3}     % spacing (padding)
 
-$if(table-use-row-colors)$
-\usepackage{etoolbox}
-\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
-\preto{\toprule}{\hiderowcolors}{}{}
-\appto{\endhead}{\showrowcolors}{}{}
-\appto{\endfirsthead}{\showrowcolors}{}{}
-$endif$
+% $if(table-use-row-colors)$
+% \usepackage{etoolbox}
+% \AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
+% \preto{\toprule}{\hiderowcolors}{}{}
+% \appto{\endhead}{\showrowcolors}{}{}
+% \appto{\endfirsthead}{\showrowcolors}{}{}
+% $endif$
 
 %
 % remove paragraph indentation
