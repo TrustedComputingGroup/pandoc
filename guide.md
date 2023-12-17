@@ -3,7 +3,7 @@ title: "TCG Markdown User's Guide"
 version: 0.1
 revision: 1
 date-english: December 17, 2023
-date: 12/17/2023
+date: 2023/12/17
 year: 2023
 type: GUIDANCE
 status: DRAFT
@@ -116,7 +116,8 @@ there is probably a newer version of the tools available for you!
 `.github/workflows/main.yml` might look a bit like this:
 
 ```yaml
-# Render the spec to PDF on pull requests, and check in the rendered PDF on commits to main.
+# Render the spec to PDF on pull requests, and check in the rendered PDF on commits
+# to main.
 
 name: Render
 
@@ -218,7 +219,7 @@ REQUIRED.
 
 REQUIRED.
 
-`date` is the full date of the document, in MM/DD/YYYY form.
+`date` is the full date of the document, in YYYY/MM/DD form.
 
 #### type
 
@@ -277,17 +278,19 @@ Users familiar with Git and who prefer to use their own tools may choose to skip
 
 ```mermaid {caption="GitHub Collaboration workflow"}
     gitGraph
-       commit id: "HEAD"
+       commit
        branch proposed-edits-1
-       commit id: "propose-edits-1"
-       commit id: "respond-to-feedback-1"
-       commit id: "respond-to-feedback-2"
-       merge proposed-edits-1 id: "merge-PR-1"
+       commit
+       commit
+       commit
+       checkout main
+       merge proposed-edits-1
        branch proposed-edits-2
-       commit id: "propose-edits-2"
-       commit id: "respond-to-feedback-3"
-       commit id: "respond-to-feedback-4"
-       merge proposed-edits-1 id: "merge-PR-2"
+       commit
+       commit
+       commit
+       checkout main
+       merge proposed-edits-1
 ```
 
 As visualized above, proposed changes to a GitHub Markdown repository take the form of
@@ -399,6 +402,11 @@ Becomes:
 2. Second thing
 
 Hyperlink syntax for the [TCG Website](https://trustedcomputinggroup.org) looks like: `[TCG Website](https://trustedcomputinggroup.org)`.
+
+Hyperlink syntax for the [Using Markdown](#using-markdown) section looks like:
+`[Using Markdown](#using-markdown)`. If you provided a stable cross-referencing link like this
+document for [Cross-References](#sec:cross-references), you can use it like:
+`[Cross-References](#sec:cross-references)`.
 
 You can use triple backticks like so to create blocks of code:
 
@@ -606,7 +614,7 @@ Table: Shapes {#tbl:shapes}
 
 
 
-Note the table caption and cross-reference in curly braces below the table.
+Note the table caption and cross-reference in curly braces above the table.
 
 ## HTML Tables
 
