@@ -200,14 +200,14 @@ $endif$
 \usepackage{calc} % for calculating minipage widths
 
 % % Correct order of tables after \paragraph or \subparagraph
-% \usepackage{etoolbox}
-% \makeatletter
-% \patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
-% \makeatother
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
 
 % % Allow footnotes in longtable head/foot
-% \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
-% \makesavenoteenv{longtable}
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
 
 \usepackage{footnotebackref}
 $if(graphics)$
@@ -413,18 +413,6 @@ $endif$
 %
 % tables
 %
-
-% Patch the longtable so that there are borders.
-% https://tex.stackexchange.com/questions/595615/how-can-i-reformat-a-table-using-markdown-pandoc-pdf
-\usepackage{xstring}
-\setlength{\aboverulesep}{0pt}
-\setlength{\belowrulesep}{0pt}
-\makeatletter
-\patchcmd{\LT@array}{\@mkpream{#2}}{\StrGobbleLeft{#2}{2}[\pream]\StrGobbleRight{\pream}{2}[\pream]\StrSubstitute{\pream}{l}{|l}[\pream]\@mkpream{@{}\pream|@{}}}{}{}
-\def\midrule{}
-\apptocmd{\LT@tabularcr}{\hline}{}{}
-\makeatother
-
 \definecolor{table-row-color}{HTML}{E0E0E0}
 \definecolor{table-alt-color}{HTML}{E0E0E0}
 \definecolor{table-rule-color}{HTML}{4D4D4D}
@@ -435,13 +423,13 @@ $endif$
 \setlength\arrayrulewidth{1pt} % thickness of array rules
 \renewcommand{\arraystretch}{1.3}     % spacing (padding)
 
-% $if(table-use-row-colors)$
-% \usepackage{etoolbox}
-% \AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
-% \preto{\toprule}{\hiderowcolors}{}{}
-% \appto{\endhead}{\showrowcolors}{}{}
-% \appto{\endfirsthead}{\showrowcolors}{}{}
-% $endif$
+$if(table-use-row-colors)$
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
+\preto{\toprule}{\hiderowcolors}{}{}
+\appto{\endhead}{\showrowcolors}{}{}
+\appto{\endfirsthead}{\showrowcolors}{}{}
+$endif$
 
 %
 % remove paragraph indentation
