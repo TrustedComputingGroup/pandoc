@@ -154,7 +154,7 @@ Table: Temperatures
 
 This section contains an HTML Table.
 
-<table>
+<table style="border: 1pt solid black;">
 <caption>HTML Table</caption>
 <colgroup>
 <col style="width: 13%" />
@@ -162,34 +162,35 @@ This section contains an HTML Table.
 </colgroup>
 <thead>
 <tr>
-<th>A || B</th>
-<th>concatenation of B to A</th>
+<th style="border: 1pt solid black;">A || B</th>
+<th style="border: 1pt solid black;">concatenation of B to A</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>⌈x⌉</td>
-<td>the smallest integer not less than x</td>
+<td style="border: 1pt solid black;">⌈x⌉</td>
+<td style="border: 1pt solid black;">the smallest integer not less than x</td>
 </tr>
 <tr>
-<td>⌊x⌋</td>
-<td>the largest integer not greater than x</td>
+<td style="border: 1pt solid black;">⌊x⌋</td>
+<td style="border: 1pt solid black;">the largest integer not greater than x</td>
 </tr>
 <tr>
-<td>A ≔ B</td>
-<td>assignment of the results of the expression on the right (B) to the
+<td style="border: 1pt solid black;">A ≔ B</td>
+<td style="border: 1pt solid black;">assignment of the results of the expression on the right (B) to the
 parameter on the left</td>
 </tr>
 <tr>
-<td>A = B</td>
-<td>equivalence (A is the same as B)</td>
+<td style="border: 1pt solid black;">A = B</td>
+<td style="border: 1pt solid black;">equivalence (A is the same as B)</td>
 </tr>
 <tr>
-<td>{ A }</td>
-<td>an optional element</td>
+<td style="border: 1pt solid black;">{ A }</td>
+<td style="border: 1pt solid black;">an optional element</td>
 </tr>
 </tbody>
 </table>
+
 
 ## Code
 
