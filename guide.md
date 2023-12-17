@@ -645,12 +645,12 @@ Note the table caption in the `<caption>` element, and the table cross-reference
 Markdown supports inline math notation. For example, @eq:fermat can be typeset as:
 
 ```md
-$$ \nexists {n \ge 3; a, b, c \in \Z} \mid a^n + b^n = c^n $$ {#eq:fermat}
+$$ \nexists {n \ge 3; a, b, c \in \mathbb{Z}} \mid a^n + b^n = c^n $$ {#eq:fermat}
 ```
 
 Note the `{#eq:fermat}` at the end of the equation. This allows referencing @eq:fermat with `@eq:fermat`.
 
-$$ \not\exists {n \ge 3; a, b, c \in \Z} \mid a^n + b^n = c^n $$ {#eq:fermat}
+$$ \nexists {n \ge 3; a, b, c \in \mathbb{Z}} \mid a^n + b^n = c^n $$ {#eq:fermat}
 
 Sometimes, you just need a little inline math in the middle of a sentence, like with `$a^2 ^ b^2 = c^2$` to get $a^2 ^ b^2 = c^2$.
 

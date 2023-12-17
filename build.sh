@@ -255,6 +255,9 @@ DATE_ENGLISH="$(date --date="${DATE}" "+%B %-d, %Y")"
 export MERMAID_FILTER_THEME="forest"
 export MERMAID_FILTER_FORMAT="pdf"
 
+# Record the running result
+RESULT=0
+
 # Generate the pdf
 if [ -n "${pdf_output}" ]; then
 	echo "Generating PDF Output"
@@ -286,6 +289,9 @@ if [ -n "${pdf_output}" ]; then
 		"${build_dir}/${input_file}.3" \
 		--output="${pdf_output}"
 	echo "PDF Output Generated to file: ${pdf_output}"
+fi
+if [ $? -ne 0 ]; then
+	RESULT=$?
 fi
 
 # Generate the LaTeX output
@@ -320,6 +326,9 @@ if [ -n "${latex_output}" ]; then
 		--output="${latex_output}"
 	echo "LaTeX Output Generated to file: ${latex_output}"
 fi
+if [ $? -ne 0 ]; then
+	RESULT=$?
+fi
 
 # Generate the docx output
 if [ -n "${docx_output}" ]; then
@@ -343,6 +352,10 @@ if [ -n "${docx_output}" ]; then
 	echo "DOCX Output Generated to file: ${docx_output}"
 fi
 if [ $? -ne 0 ]; then
+	RESULT=$?
+fi
+
+if [ ${RESULT} -ne 0 ]; then
 	exit 1
 fi
 
