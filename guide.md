@@ -580,6 +580,37 @@ Note the table caption and cross-reference in curly braces above the table.
 For larger, or more complex tables like @tbl:fruits, it may be preferable to use HTML. If you want to make
 table cells span rows or columns, this is the only way to do it.
 
+```md
+<table id="#tbl:fruits">
+    <caption>Fruits</caption>
+    <tr>
+        <th colspan="2">Color and Fruit</th>
+        <th>Mistaken for Vegetable</th>
+    </tr>
+    <tr>
+        <td>Red</td>
+        <td rowspan="2">Apple</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>Green</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>Red</td>
+        <td>Tomato</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>Yellow</td>
+        <td>Banana</td>
+        <td>No</td>
+    </tr>
+</table>
+```
+
+The above HTML table becomes the below:
+
 <table id="#tbl:fruits">
     <caption>Fruits</caption>
     <tr>
@@ -619,7 +650,7 @@ $$ \nexists {n \ge 3; a, b, c \in \Z} \mid a^n + b^n = c^n $$ {#eq:fermat}
 
 Note the `{#eq:fermat}` at the end of the equation. This allows referencing @eq:fermat with `@eq:fermat`.
 
-$$ \nexists {n \ge 3; a, b, c \in \Z} \mid a^n + b^n = c^n $$ {#eq:fermat}
+$$ \not\exists {n \ge 3; a, b, c \in \Z} \mid a^n + b^n = c^n $$ {#eq:fermat}
 
 Sometimes, you just need a little inline math in the middle of a sentence, like with `$a^2 ^ b^2 = c^2$` to get $a^2 ^ b^2 = c^2$.
 
