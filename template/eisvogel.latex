@@ -416,11 +416,11 @@ $endif$
 
 % Patch the longtable so that there are borders.
 % https://tex.stackexchange.com/questions/595615/how-can-i-reformat-a-table-using-markdown-pandoc-pdf
-\makeatletter
-\patchcmd{\LT@array}{\@mkpream{#2}}{\StrGobbleLeft{#2}{2}[\pream]\StrGobbleRight{\pream}{2}[\pream]\StrSubstitute{\pream}{l}{|l}[\pream]\@mkpream{@{}\pream|@{}}}{}{}
-\def\midrule{}
-\apptocmd{\LT@tabularcr}{\hline}{}{}
-\makeatother
+% \makeatletter
+% \patchcmd{\LT@array}{\@mkpream{#2}}{\StrGobbleLeft{#2}{2}[\pream]\StrGobbleRight{\pream}{2}[\pream]\StrSubstitute{\pream}{l}{|l}[\pream]\@mkpream{@{}\pream|@{}}}{}{}
+% \def\midrule{}
+% \apptocmd{\LT@tabularcr}{\hline}{}{}
+% \makeatother
 
 \definecolor{table-row-color}{HTML}{E0E0E0}
 \definecolor{table-alt-color}{HTML}{E0E0E0}
