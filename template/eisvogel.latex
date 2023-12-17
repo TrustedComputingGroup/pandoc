@@ -194,9 +194,7 @@ $endif$
 
 % Customizations to the behavior of tables
 \usepackage{longtable,booktabs,array}
-$if(multirow)$
 \usepackage{multirow}
-$endif$
 \usepackage{calc} % for calculating minipage widths
 
 % % Correct order of tables after \paragraph or \subparagraph
