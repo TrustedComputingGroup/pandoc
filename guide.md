@@ -278,19 +278,19 @@ Users familiar with Git and who prefer to use their own tools may choose to skip
 
 ```mermaid {caption="GitHub Collaboration workflow"}
     gitGraph
-       commit
+       commit id: "head"
        branch proposed-edits-1
-       commit
-       commit
-       commit
+       commit id: "propose-1"
+       commit id: "respond-to-feedback-1"
+       commit id: "respond-to-feedback-2"
        checkout main
        merge proposed-edits-1
        branch proposed-edits-2
-       commit
-       commit
-       commit
+       commit id: "propose-2"
+       commit id: "respond-to-feedback-3"
+       commit id: "respond-to-feedback-4"
        checkout main
-       merge proposed-edits-1
+       merge proposed-edits-2
 ```
 
 As visualized above, proposed changes to a GitHub Markdown repository take the form of
@@ -541,7 +541,7 @@ See the Mermaid website for a more exhaustive list of types of diagrams.
 Mermaid supports swim-lane digrams like the below with the following notation:
 
 ````md
-```mermaid {caption="Startup Sequence"}
+```mer​maid {caption="Startup Sequence"}
 sequenceDiagram
 Host->>TPM: TPM2_Startup
 loop Measurements
@@ -569,7 +569,7 @@ Crossreferences to Mermaid diagrams are not currently supported.
 Mermaid supports flow-charts like the below with the following notation:
 
 ````md
-```mermaid {caption="Flowchart"}
+```mer​maid {caption="Flowchart"}
 graph TD;
     A-->B;
     A-->C;
