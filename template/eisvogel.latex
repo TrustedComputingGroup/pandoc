@@ -193,7 +193,6 @@ $endif$
 \sloppy
 
 % Customizations to the behavior of tables
-$if(tables)$
 \usepackage{longtable,booktabs,array}
 $if(multirow)$
 \usepackage{multirow}
@@ -208,7 +207,6 @@ $endif$
 % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
-$endif$
 
 \usepackage{footnotebackref}
 $if(graphics)$
@@ -423,14 +421,14 @@ $endif$
 \apptocmd{\LT@tabularcr}{\hline}{}{}
 \makeatother
 
-\definecolor{table-row-color}{HTML}{C0C0C0}
-\definecolor{table-alt-color}{HTML}{DADADA}
-\definecolor{table-rule-color}{HTML}{FFFFFF}
+\definecolor{table-row-color}{HTML}{E0E0E0}
+\definecolor{table-alt-color}{HTML}{E0E0E0}
+\definecolor{table-rule-color}{HTML}{4D4D4D}
 
 \arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
-\setlength\heavyrulewidth{0em} % thickness of \toprule, \bottomrule
-\setlength\lightrulewidth{0em} % thickness of \midrule
-\setlength\arrayrulewidth{0em} % thickness of array rules
+\setlength\heavyrulewidth{1pt} % thickness of \toprule, \bottomrule
+\setlength\lightrulewidth{1pt} % thickness of \midrule
+\setlength\arrayrulewidth{1pt} % thickness of array rules
 \renewcommand{\arraystretch}{1.3}     % spacing (padding)
 
 $if(table-use-row-colors)$
