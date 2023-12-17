@@ -43,7 +43,8 @@ RUN tlmgr update --self && \
     tools \
     changepage \
     draftwatermark \
-    appendix
+    appendix \
+    multirow
 
 RUN apk upgrade && apk add --no-cache \
     bash \
