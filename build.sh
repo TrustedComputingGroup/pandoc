@@ -262,7 +262,7 @@ RESULT=0
 if [ -n "${pdf_output}" ]; then
 	echo "Generating PDF Output"
 	pandoc \
-		--dpi 150 \
+		--dpi 300 \
 	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
@@ -303,7 +303,7 @@ fi
 if [ -n "${latex_output}" ]; then
 	echo "Generating LaTeX Output"
 	pandoc \
-		--dpi 150 \
+		--dpi 300 \
 	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \

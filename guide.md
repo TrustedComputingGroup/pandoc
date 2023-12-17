@@ -279,15 +279,15 @@ Users familiar with Git and who prefer to use their own tools may choose to skip
     gitGraph
        commit id: "HEAD"
        branch proposed-edits-1
-       commit "propose edits 1"
-       commit "respond to feedback 1"
-       commit "respond to feedback 2"
-       merge proposed-edits-1 id: "merge PR 1"
+       commit id: "propose-edits-1"
+       commit id: "respond-to-feedback-1"
+       commit id: "respond-to-feedback-2"
+       merge proposed-edits-1 id: "merge-PR-1"
        branch proposed-edits-2
-       commit "propose edits 2"
-       commit "respond to feedback 3"
-       commit "respond to feedback 4"
-       merge proposed-edits-1 id: "merge PR 2"
+       commit id: "propose-edits-2"
+       commit id: "respond-to-feedback-3"
+       commit id: "respond-to-feedback-4"
+       merge proposed-edits-1 id: "merge-PR-2"
 ```
 
 As visualized above, proposed changes to a GitHub Markdown repository take the form of
@@ -466,32 +466,34 @@ We use the Markdown "quote block" for this purpose. A quote looks like this:
 ```md
 > This is the only informative text block in this document.
 >
-> These blocks can contain multiple paragraphs, tied together by lines containing just ">".
+> These blocks can contain multiple paragraphs, tied together by lines containing just
+> ">".
 >
-> These blocks can even contain tables! However, be wary of providing tables that are too large
-> in an Informative Text block.
+> These blocks can even contain tables! However, be wary of providing tables that are
+> too large in an Informative Text block.
 >
 > | **Document Type** | **Informative Blocks** |
-> | ----------------- | -------------------- |
-> | SPECIFICATION     | Usually              |
-> | GUIDANCE          | Rarely               |
-> | REFERENCE         | Rarely               |
+> | ----------------- | ---------------------- |
+> | SPECIFICATION     | Usually                |
+> | GUIDANCE          | Rarely                 |
+> | REFERENCE         | Rarely                 |
 ```
 
 The above Markdown code becomes:
 
 > This is the only informative text block in this document.
 >
-> These blocks can contain multiple paragraphs, tied together by lines containing just ">".
+> These blocks can contain multiple paragraphs, tied together by lines containing just
+> ">".
 >
-> These blocks can even contain tables! However, be wary of providing tables that are too large
-> in an Informative Text block.
+> These blocks can even contain tables! However, be wary of providing tables that are
+> too large in an Informative Text block.
 >
 > | **Document Type** | **Informative Blocks** |
-> | ----------------- | -------------------- |
-> | SPECIFICATION     | Usually              |
-> | GUIDANCE          | Rarely               |
-> | REFERENCE         | Rarely               |
+> | ----------------- | ---------------------- |
+> | SPECIFICATION     | Usually                |
+> | GUIDANCE          | Rarely                 |
+> | REFERENCE         | Rarely                 |
 
 # Figures {#sec:figures}
 
@@ -585,15 +587,16 @@ We support two notation styles for tables: Markdown and HTML.
 Small, simple tables like @tbl:shapes are easier to read in raw Markdown form in the following style:
 
 ```md
+Table: Shapes {#tbl:shapes}
+
 | **Shape**    | **Number of sides** |
 | ------------ | ------------------- |
 | Square       | 4                   |
 | Triangle     | 3                   |
 | Möbius strip | 1                   |
-
-: Shapes {#tbl:shapes}
 ```
 
+Table: Shapes {#tbl:shapes}
 
 | **Shape**    | **Number of sides** |
 | ------------ | ------------------- |
@@ -601,7 +604,7 @@ Small, simple tables like @tbl:shapes are easier to read in raw Markdown form in
 | Triangle     | 3                   |
 | Möbius strip | 1                   |
 
-: Shapes {#tbl:shapes}
+
 
 Note the table caption and cross-reference in curly braces below the table.
 
