@@ -108,3 +108,12 @@ jobs:
           path: |
             guide.pdf
             guide.tex
+            mermaid-filter.err
+        if: always() # Even if the render failed, upload whatever we had for debugging.
+
+      - name: Check in latest render
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Generate latest PDF
+          file_pattern: guide.pdf
+        if: github.event_name != 'pull_request'
