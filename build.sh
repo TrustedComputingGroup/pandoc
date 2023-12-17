@@ -262,6 +262,7 @@ RESULT=0
 if [ -n "${pdf_output}" ]; then
 	echo "Generating PDF Output"
 	pandoc \
+		--dpi 150 \
 	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
@@ -279,8 +280,11 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=year:"${YEAR}" \
 		--metadata=titlepage:true \
 		--metadata=titlepage-background:/resources/img/cover.png \
+		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
 		--metadata=logo:/resources/img/tcg.png \
 		--metadata=titlepage-rule-height:0 \
+		--metadata=tables-vrules:true \
+        --metadata=tables-hrules:true \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
 		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
@@ -299,6 +303,7 @@ fi
 if [ -n "${latex_output}" ]; then
 	echo "Generating LaTeX Output"
 	pandoc \
+		--dpi 150 \
 	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
@@ -316,8 +321,11 @@ if [ -n "${latex_output}" ]; then
 		--metadata=year:"${YEAR}" \
 		--metadata=titlepage:true \
 		--metadata=titlepage-background:/resources/img/cover.png \
+		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
 		--metadata=logo:/resources/img/tcg.png \
 		--metadata=titlepage-rule-height:0 \
+		--metadata=tables-vrules:true \
+        --metadata=tables-hrules:true \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
 		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
@@ -335,6 +343,7 @@ fi
 if [ -n "${docx_output}" ]; then
 	echo "Generating DOCX Output"
 	pandoc \
+		--dpi 150 \
 	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
