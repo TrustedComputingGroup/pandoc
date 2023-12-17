@@ -101,8 +101,10 @@ Reference documents. It's included here, mainly to demonstrate the usage of Mark
 
 ## Creating a Repository
 
-You can create a repository from scratch, or you can use https://github.com/TrustedComputingGroup/specification-example
-to get started a little more quickly. There's a little green "Use this template" button in the top right.
+You can create a repository from scratch, or you can use
+[the template repository](https://github.com/TrustedComputingGroup/specification-example)
+to get started a little more quickly. There's a little green "Use this template" button in the top right
+(see @fig:use-template-button).
 
 ![The "Use this template" button](use_template.jpg){#fig:use-template-button}
 
@@ -128,9 +130,11 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
-    # This Docker container contains all the Pandoc dependencies for rendering TCG Markdown docs.
+    # This Docker container contains all the Pandoc dependencies for rendering TCG
+    # Markdown docs.
     container:
-      # IMPORTANT: Check https://github.com/TrustedComputingGroup/pandoc/releases for the latest!
+      # IMPORTANT: Check https://github.com/TrustedComputingGroup/pandoc/releases
+      # for the latest!
       image: ghcr.io/trustedcomputinggroup/pandoc:0.6.2
     name: Render PDF
     steps:
@@ -138,8 +142,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Render
-        # This GitHub action provides an easy way to use the Docker container above with your document.
-        # IMPORTANT: Check https://github.com/TrustedComputingGroup/markdown/releases for the latest!
+        # This GitHub action provides an easy way to use the Docker container above
+        # with your document.
+        # IMPORTANT: Check https://github.com/TrustedComputingGroup/markdown/releases
+        # for the latest!
         uses: trustedcomputinggroup/markdown@v0.4.0
         with:
           input-md: main.md
@@ -147,8 +153,9 @@ jobs:
           output-docx: spec.docx
 
       - name: Upload samples
-        # This GitHub action uploads samples into the "Checks" tab (for pull requests), so
-        # that reviewers can easily see how a proposed change will look in the finished spec.
+        # This GitHub action uploads samples into the "Checks" tab (for pull requests),
+        # so that reviewers can easily see how a proposed change will look in the
+        # finished spec.
         uses: actions/upload-artifact@master
         with:
           name: preview
@@ -157,8 +164,9 @@ jobs:
             spec.docx
 
       - name: Check in latest render
-        # This GitHub action automatically renders and checks-in the PDF produced in the above step.
-        # This makes it easier for people to grab the latest rendered version of the document.
+        # This GitHub action automatically renders and checks-in the PDF produced in
+        # the above step. This makes it easier for people to grab the latest rendered
+        # version of the document.
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Generate latest PDF
@@ -267,7 +275,7 @@ are expected to use this macro.
 
 Users familiar with Git and who prefer to use their own tools may choose to skip this section.
 
-```mermaid {caption="GitHub Collaboration workflow" #fig:collab}
+```mermaid {caption="GitHub Collaboration workflow"}
     gitGraph
        commit id: "HEAD"
        branch proposed-edits-1
@@ -282,7 +290,7 @@ Users familiar with Git and who prefer to use their own tools may choose to skip
        merge proposed-edits-1 id: "merge PR 2"
 ```
 
-As visualized in @fig:collab, proposed changes to a GitHub Markdown repository take the form of
+As visualized above, proposed changes to a GitHub Markdown repository take the form of
 "Pull Requests" (PRs). A *proposer* of a change proposes a PR that changes some files in the repository.
 This PR contains an initial *commit*, which is a unit of change to files.
 *Reviewers* can provide comments and suggestions on the proposed edits. The *proposer* can respond to
@@ -344,7 +352,21 @@ exactly the same as plain text.
 
 ## Basic Formatting
 
-The structure of the document is guided by lines that begin with `#`: `# Section Titles`, `## Subsection Titles`, `### Sub-subsection Titles` and so on.
+The structure of the document is guided by lines that begin with `#`:
+
+```md
+# Section Titles
+```
+
+```md
+## Subsection Titles
+```
+
+```md
+### Sub-subsection Titles
+```
+
+and so on.
 
 When you put `*asterisks*` around a word, it renders as *italics*.
 
@@ -353,6 +375,8 @@ When you put `**double asterisks**` around a word, it renders as **boldface**.
 When you put ``` `backticks` ``` around a word, it renders as `monospace`.
 
 To force a new page, use `---`. This will appear as a horizontal line in GitHub and a page break in the PDF.
+
+---
 
 When you need to write math, use `$ dollar signs $` for inline math notation, or `$$ double dollar signs $$` for equations. This is explained in more detail in @sec:math.
 
@@ -366,7 +390,7 @@ Numbered and bulleted lists begin with numbers and asterisks:
 2. Second thing
 ```
 
-Looks like:
+Becomes:
 
 * Something
 * Something else
@@ -374,7 +398,7 @@ Looks like:
 1. First thing
 2. Second thing
 
-Hyperlink syntax for the [TCG Website](https://trustedcomputinggroup.org) looks like: `[TCG Website](https://trustedcomputinggroup.org)`
+Hyperlink syntax for the [TCG Website](https://trustedcomputinggroup.org) looks like: `[TCG Website](https://trustedcomputinggroup.org)`.
 
 You can use triple backticks like so to create blocks of code:
 
@@ -440,36 +464,36 @@ TCG uses a special visual style to demarcate informative non-binding remarks wit
 We use the Markdown "quote block" for this purpose. A quote looks like this:
 
 ```md
-> Ironically, informative text blocks frequently contain no real information.
+> This is the only informative text block in this document.
 >
 > These blocks can contain multiple paragraphs, tied together by lines containing just ">".
 >
 > These blocks can even contain tables! However, be wary of providing tables that are too large
 > in an Informative Text block.
 >
-> | *Document Type* | *Informative Blocks* |
-> | --------------- | -------------------- |
-> | SPECIFICATION   | Usually              |
-> | GUIDANCE        | Rarely               |
-> | REFERENCE       | Rarely               |
+> | **Document Type** | **Informative Blocks** |
+> | ----------------- | -------------------- |
+> | SPECIFICATION     | Usually              |
+> | GUIDANCE          | Rarely               |
+> | REFERENCE         | Rarely               |
 ```
 
 The above Markdown code becomes:
 
-> Ironically, informative text blocks frequently contain no real information.
+> This is the only informative text block in this document.
 >
 > These blocks can contain multiple paragraphs, tied together by lines containing just ">".
 >
 > These blocks can even contain tables! However, be wary of providing tables that are too large
 > in an Informative Text block.
 >
-> | *Document Type* | *Informative Blocks* |
-> | --------------- | -------------------- |
-> | SPECIFICATION   | Usually              |
-> | GUIDANCE        | Rarely               |
-> | REFERENCE       | Rarely               |
+> | **Document Type** | **Informative Blocks** |
+> | ----------------- | -------------------- |
+> | SPECIFICATION     | Usually              |
+> | GUIDANCE          | Rarely               |
+> | REFERENCE         | Rarely               |
 
-# Figures
+# Figures {#seg:figures}
 
 There are two ways to include a figure in a document: as an image file checked into the repository, and as a [Mermaid](http://mermaid.js.org) diagram.
 
@@ -482,7 +506,7 @@ For compatibility reasons, all image files should be in the root of the reposito
 See @sec:sending-a-pr for the flow that needs to be followed for getting your image uploads reviewed. You can add more changes
 to the branch for the PR that reference the image, or you can do it in a subsequent PR.
 
-Markdown syntax for including an image looks like `![alt text](filename)`. For example:
+Markdown syntax for including an image looks like `![Figure Title](filename)`. For example:
 
 ```md
 ![Adding an Image](add_plus_button.jpg){#fig:add-plus-button}
@@ -492,7 +516,7 @@ becomes:
 
 ![Adding an Image](add_plus_button.jpg){#fig:add-plus-button}
 
-The `{#fig:add-plus-button}` attribute (note there are no spaces before it!) does two things:
+The `{#fig:add-plus-button}` attribute (note there are no spaces between the `)` and the `{`!) does two things:
 
 1. Includes the figure in the List of Figures (if you used `\listoffigures` as described in @sec:toc).
 2. Numbers the figure so you can reference it as @fig:add-plus-button by just typing `@fig:add-plus-button`.
@@ -544,7 +568,15 @@ graph TD;
 ```
 ````
 
-# Tables
+```mermaid {caption="Flowchart"}
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
+
+# Tables {#sec:tables}
 
 We support two notation styles for tables: Markdown and HTML.
 
@@ -553,16 +585,15 @@ We support two notation styles for tables: Markdown and HTML.
 Small, simple tables like @tbl:shapes are easier to read in raw Markdown form in the following style:
 
 ```md
-Table: Shapes {#tbl:shapes}
-
 | **Shape**    | **Number of sides** |
 | ------------ | ------------------- |
 | Square       | 4                   |
 | Triangle     | 3                   |
 | Möbius strip | 1                   |
+
+: Shapes {#tbl:shapes}
 ```
 
-Table: Shapes {#tbl:shapes}
 
 | **Shape**    | **Number of sides** |
 | ------------ | ------------------- |
@@ -570,8 +601,9 @@ Table: Shapes {#tbl:shapes}
 | Triangle     | 3                   |
 | Möbius strip | 1                   |
 
+: Shapes {#tbl:shapes}
 
-Note the table caption and cross-reference in curly braces above the table.
+Note the table caption and cross-reference in curly braces below the table.
 
 ## HTML Tables
 
@@ -579,7 +611,7 @@ For larger, or more complex tables like @tbl:fruits, it may be preferable to use
 table cells span rows or columns, this is the only way to do it.
 
 ```md
-<table id="#tbl:fruits">
+<table id="tbl:fruits">
     <caption>Fruits</caption>
     <tr>
         <th colspan="2">Color and Fruit</th>
@@ -609,8 +641,7 @@ table cells span rows or columns, this is the only way to do it.
 
 The above HTML table becomes the below:
 
-<table id="#tbl:fruits">
-    <caption>Fruits</caption>
+<table id="tbl:fruits">
     <tr>
         <th colspan="2">Color and Fruit</th>
         <th>Mistaken for Vegetable</th>
@@ -634,6 +665,7 @@ The above HTML table becomes the below:
         <td>Banana</td>
         <td>No</td>
     </tr>
+    <caption>Fruits</caption>
 </table>
 
 Note the table caption in the `<caption>` element, and the table cross-reference in the `id` attribute of the `<table>` element.
@@ -656,4 +688,4 @@ Sometimes, you just need a little inline math in the middle of a sentence, like 
 
 # Reporting Issues with the Tools
 
-Please report issues with the tooling at https://github.com/TrustedComputingGroup/pandoc/issues.
+Please report issues with the tooling at [https://github.com/TrustedComputingGroup/pandoc/issues](https://github.com/TrustedComputingGroup/pandoc/issues).
