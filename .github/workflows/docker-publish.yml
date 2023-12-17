@@ -94,31 +94,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Run the action on sample1
+      - name: Run the action on guide
         uses: trustedcomputinggroup/markdown@latest
         with:
-          input-md: sample1.md
-          output-pdf: sample1.pdf
-          output-tex: sample1.tex
-
-      - name: Run the action on sample2
-        uses: trustedcomputinggroup/markdown@latest
-        with:
-          input-md: sample2.md
-          output-pdf: sample2.pdf
-          output-tex: sample2.tex
-
-      - name: Run the action on sample3
-        uses: trustedcomputinggroup/markdown@latest
-        with:
-          input-md: sample3.md
-          output-pdf: sample3.pdf
-          output-tex: sample3.tex
+          input-md: guide.md
+          output-pdf: guide.pdf
+          output-tex: guide.tex
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
           name: samples
           path: |
-            sample*.pdf
-            sample*.tex
+            guide.pdf
+            guide.tex
+            mermaid-filter.err
+        if: always() # Even if the render failed, upload whatever we had for debugging.
+
+      - name: Check in latest render
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Generate latest PDF
+          file_pattern: guide.pdf
+        if: github.event_name != 'pull_request'

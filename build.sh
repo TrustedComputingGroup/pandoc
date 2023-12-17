@@ -255,18 +255,22 @@ DATE_ENGLISH="$(date --date="${DATE}" "+%B %-d, %Y")"
 export MERMAID_FILTER_THEME="forest"
 export MERMAID_FILTER_FORMAT="pdf"
 
+# Record the running result
+RESULT=0
+
 # Generate the pdf
 if [ -n "${pdf_output}" ]; then
 	echo "Generating PDF Output"
 	pandoc \
+		--dpi 300 \
 	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
-		--filter=pandoc-crossref \
 		--lua-filter=parse-html.lua \
 		--lua-filter=table-rules.lua \
+		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--top-level-division=section \
@@ -276,8 +280,11 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=year:"${YEAR}" \
 		--metadata=titlepage:true \
 		--metadata=titlepage-background:/resources/img/cover.png \
+		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
 		--metadata=logo:/resources/img/tcg.png \
 		--metadata=titlepage-rule-height:0 \
+		--metadata=tables-vrules:true \
+        --metadata=tables-hrules:true \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
 		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
@@ -286,20 +293,25 @@ if [ -n "${pdf_output}" ]; then
 		"${build_dir}/${input_file}.3" \
 		--output="${pdf_output}"
 	echo "PDF Output Generated to file: ${pdf_output}"
+	if [ $? -ne 0 ]; then
+		RESULT=$?
+	fi
 fi
+
 
 # Generate the LaTeX output
 if [ -n "${latex_output}" ]; then
 	echo "Generating LaTeX Output"
 	pandoc \
+		--dpi 300 \
 	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
-		--filter=pandoc-crossref \
 		--lua-filter=parse-html.lua \
 		--lua-filter=table-rules.lua \
+		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--top-level-division=section \
@@ -309,8 +321,11 @@ if [ -n "${latex_output}" ]; then
 		--metadata=year:"${YEAR}" \
 		--metadata=titlepage:true \
 		--metadata=titlepage-background:/resources/img/cover.png \
+		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
 		--metadata=logo:/resources/img/tcg.png \
 		--metadata=titlepage-rule-height:0 \
+		--metadata=tables-vrules:true \
+        --metadata=tables-hrules:true \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
 		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
@@ -319,19 +334,23 @@ if [ -n "${latex_output}" ]; then
 		"${build_dir}/${input_file}.3" \
 		--output="${latex_output}"
 	echo "LaTeX Output Generated to file: ${latex_output}"
+	if [ $? -ne 0 ]; then
+		RESULT=$?
+	fi
 fi
 
 # Generate the docx output
 if [ -n "${docx_output}" ]; then
 	echo "Generating DOCX Output"
 	pandoc \
+		--dpi 150 \
 	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--filter=/resources/filters/info.py \
 		--filter=mermaid-filter \
-		--filter=pandoc-crossref \
 		--lua-filter=parse-html.lua \
+		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
@@ -341,8 +360,12 @@ if [ -n "${docx_output}" ]; then
 		"${build_dir}/${input_file}.3" \
 		--output="${docx_output}"
 	echo "DOCX Output Generated to file: ${docx_output}"
+	if [ $? -ne 0 ]; then
+		RESULT=$?
+	fi
 fi
-if [ $? -ne 0 ]; then
+
+if [ ${RESULT} -ne 0 ]; then
 	exit 1
 fi
 
