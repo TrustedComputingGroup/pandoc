@@ -493,7 +493,7 @@ The above Markdown code becomes:
 > | GUIDANCE          | Rarely               |
 > | REFERENCE         | Rarely               |
 
-# Figures {#seg:figures}
+# Figures {#sec:figures}
 
 There are two ways to include a figure in a document: as an image file checked into the repository, and as a [Mermaid](http://mermaid.js.org) diagram.
 
@@ -642,6 +642,7 @@ table cells span rows or columns, this is the only way to do it.
 The above HTML table becomes the below:
 
 <table id="tbl:fruits">
+    <caption>Fruits</caption>
     <tr>
         <th colspan="2">Color and Fruit</th>
         <th>Mistaken for Vegetable</th>
@@ -665,7 +666,6 @@ The above HTML table becomes the below:
         <td>Banana</td>
         <td>No</td>
     </tr>
-    <caption>Fruits</caption>
 </table>
 
 Note the table caption in the `<caption>` element, and the table cross-reference in the `id` attribute of the `<table>` element.
