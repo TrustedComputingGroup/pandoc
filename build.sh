@@ -8,6 +8,7 @@ do_gitstatus="no"
 pdf_output=""
 docx_output=""
 latex_output=""
+table_rules="no"
 
 # Setup an EXIT handler
 on_exit() {
@@ -37,7 +38,8 @@ print_usage() {
 	echo "  --resourcedir=dir: Set the resource directory, defaults to root for pandoc containers"
 	echo "  --notmp: Do not use a tempory directory for processing steps, instead create a directory called \"build\" in CWD"
 	echo "  --gitversion: Use git describe to generate document version and revision metadata."
-        echo "  --gitstatus: Use git describe to generate document version and revision metadata. Implies --gitversion"
+    echo "  --gitstatus: Use git describe to generate document version and revision metadata. Implies --gitversion"
+	echo "  --table_rules: style tables with borders (does not work well for tables that use rowspan or colspan)"
 }
 
 
@@ -82,6 +84,10 @@ while true; do
 	--resourcedir)
 		resource_dir="${2}"
 		shift 2
+		;;
+	--table_rules)
+		table_rules="yes"
+		shift
 		;;
 	--help)
 		print_usage
@@ -200,6 +206,7 @@ echo "resource dir: ${resource_dir}"
 echo "build dir: ${build_dir}"
 echo "browser: ${browser}"
 echo "use git version: ${do_gitversion}"
+echo "use table rules: ${table_rules}"
 if test "${do_gitversion}" == "yes"; then
 	echo "Git Generated Document Version Information"
 	echo "    version: ${major_minor}"
@@ -226,6 +233,10 @@ if [ "${do_puppeteer}" == "yes" ]; then
 		]
 	}
 	EOF
+fi
+
+if [ "${table_rules}" == "yes" ]; then
+	extra_pandoc_options+=" --lua-filter=table-rules.lua"
 fi
 
 # Transform 1
@@ -269,7 +280,6 @@ if [ -n "${pdf_output}" ]; then
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
 		--lua-filter=parse-html.lua \
-		--lua-filter=table-rules.lua \
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
@@ -298,7 +308,6 @@ if [ -n "${pdf_output}" ]; then
 	fi
 fi
 
-
 # Generate the LaTeX output
 if [ -n "${latex_output}" ]; then
 	echo "Generating LaTeX Output"
@@ -310,7 +319,6 @@ if [ -n "${latex_output}" ]; then
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
 		--lua-filter=parse-html.lua \
-		--lua-filter=table-rules.lua \
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
