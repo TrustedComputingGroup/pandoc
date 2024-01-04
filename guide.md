@@ -106,7 +106,7 @@ You can create a repository from scratch, or you can use
 to get started a little more quickly. There's a little green "Use this template" button in the top right
 (see @fig:use-template-button).
 
-![The "Use this template" button](use_template.jpg){#fig:use-template-button}
+![The "Use this template" button](use_template.jpg){#fig:use-template-button width=50%}
 
 ## GitHub Actions
 
@@ -183,7 +183,7 @@ The trickiest section is the YAML front matter at the very top of the Markdown f
 It looks like this:
 
 ```md
----
+--- 
 title: "TCG Markdown User's Guide"
 version: 0.1
 revision: 1
@@ -308,7 +308,7 @@ clicking on them.
 From this view, there is an "Edit" (pencil) button in the upper right-hand corner, pictured in
 @fig:edit-file-button:
 
-![GitHub Edit Button](edit_this_file.jpg){#fig:edit-file-button}
+![GitHub Edit Button](edit_this_file.jpg){#fig:edit-file-button width=30%}
 
 This will take you to a view where you can edit the file. There is a "Preview" button that you can use
 to see roughly how the changes will look when viewed from GitHub. Most everyday changes to TCG docs
@@ -317,7 +317,7 @@ can be previewed in high enough fidelity with this tool.
 When you're satisfied with your changes, use the green "Commit changes..." button. This will bring up
 the dialog box pictured in @fig:propose-changes:
 
-![Propose Changes Dialog](propose_changes.jpg){#fig:propose-changes}
+![Propose Changes Dialog](propose_changes.jpg){#fig:propose-changes width=60%}
 
 Include a descriptive commit message, extended description, and new branch name for your change,
 then click the green "Propose changes" button.
@@ -340,7 +340,7 @@ which looks like @fig:plus-button:
 After you've gone through all the changed files and provided your comments, you can click "Review changes"
 to finish the review. This dialog looks like @fig:finish-review:
 
-![Finish Review](finish_review.jpg){#fig:finish-review}
+![Finish Review](finish_review.jpg){#fig:finish-review width=60%}
 
 Here, you can provide summary comments and mark your review as one of:
 
@@ -359,13 +359,9 @@ The structure of the document is guided by lines that begin with `#`:
 
 ```md
 # Section Titles
-```
 
-```md
 ## Subsection Titles
-```
 
-```md
 ### Sub-subsection Titles
 ```
 
@@ -519,17 +515,19 @@ to the branch for the PR that reference the image, or you can do it in a subsequ
 Markdown syntax for including an image looks like `![Figure Title](filename)`. For example:
 
 ```md
-![Adding an Image](add_plus_button.jpg){#fig:add-plus-button}
+![Adding an Image](add_plus_button.jpg){#fig:add-plus-button width=60%}
 ```
 
 becomes:
 
-![Adding an Image](add_plus_button.jpg){#fig:add-plus-button}
+![Adding an Image](add_plus_button.jpg){#fig:add-plus-button width=60%}
 
 The `{#fig:add-plus-button}` attribute (note there are no spaces between the `)` and the `{`!) does two things:
 
 1. Includes the figure in the List of Figures (if you used `\listoffigures` as described in @sec:toc).
 2. Numbers the figure so you can reference it as @fig:add-plus-button by just typing `@fig:add-plus-button`.
+
+Including `width=60%` here specifies that the image should take up 60% of the page's width.
 
 ## Mermaid Charts
 
@@ -541,7 +539,7 @@ See the Mermaid website for a more exhaustive list of types of diagrams.
 Mermaid supports swim-lane digrams like the below with the following notation:
 
 ````md
-```mer​maid {caption="Startup Sequence"}
+```mermaid  {caption="Startup Sequence"}
 sequenceDiagram
 Host->>TPM: TPM2_Startup
 loop Measurements
@@ -569,7 +567,7 @@ Crossreferences to Mermaid diagrams are not currently supported.
 Mermaid supports flow-charts like the below with the following notation:
 
 ````md
-```mer​maid {caption="Flowchart"}
+```mermaid  {caption="Flowchart"}
 graph TD;
     A-->B;
     A-->C;
