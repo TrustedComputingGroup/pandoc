@@ -359,7 +359,11 @@ $endif$
 \definecolor{blockquote-border}{RGB}{224,224,224}
 \definecolor{blockquote-text}{RGB}{10,10,10}
 \usepackage{mdframed}
-\newmdenv[linewidth=0pt,backgroundcolor=blockquote-border,skipabove=\parskip]{customblockquote}
+\newmdenv[
+  linewidth=0pt,
+  backgroundcolor=blockquote-border,
+  skipabove=\parskip,
+  nobreak=true]{customblockquote}
 \renewenvironment{quote}{
   \vskip 0.5em
   \begin{customblockquote}
