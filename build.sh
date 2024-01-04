@@ -43,7 +43,7 @@ print_usage() {
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,pdf:,latex:,docx:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,table_rules,pdf:,latex:,docx:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -242,9 +242,11 @@ fi
 # Transform 1
 # GitHub Mermaid doesn't recognize the full ```{.mermaid ...} attributes-form
 # Pandoc doesn't recognized mixed ```mermaid {...} form
-# Hack: use sed to transform the former to the latter so everyone is happy
-sed 's/```mermaid *{/```{.mermaid /g' "${input_file}" > "${build_dir}/${input_file}.1"
-
+# Hack: use sed to transform the latter to the former so everyone is happy
+# Only transform if there is exactly one space after ```mermaid
+# Instructional documentation may use more than one space in the source code to suppress this.
+sed 's/```mermaid {/```{.mermaid /g' "${input_file}" > "${build_dir}/${input_file}.1"
+sed 's/```mermaid *{/```mermaid {/g' "${input_file}" > "${build_dir}/${input_file}.1"
 
 # Transform 2
 # \newpage is rendered as the string "\newpage" in GitHub markdown.
@@ -273,14 +275,15 @@ RESULT=0
 if [ -n "${pdf_output}" ]; then
 	echo "Generating PDF Output"
 	pandoc \
-		--dpi 300 \
 	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
+		--lua-filter=center-images.lua \
 		--lua-filter=parse-html.lua \
 		--filter=pandoc-crossref \
+		--lua-filter=divide-code-blocks.lua \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--top-level-division=section \
@@ -312,14 +315,15 @@ fi
 if [ -n "${latex_output}" ]; then
 	echo "Generating LaTeX Output"
 	pandoc \
-		--dpi 300 \
 	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
+		--lua-filter=center-images \
 		--lua-filter=parse-html.lua \
 		--filter=pandoc-crossref \
+		--lua-filter=divide-code-blocks.lua \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--top-level-division=section \
@@ -351,12 +355,12 @@ fi
 if [ -n "${docx_output}" ]; then
 	echo "Generating DOCX Output"
 	pandoc \
-		--dpi 150 \
 	    --pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--filter=/resources/filters/info.py \
 		--filter=mermaid-filter \
+		--lua-filter=center-images.lua \
 		--lua-filter=parse-html.lua \
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \

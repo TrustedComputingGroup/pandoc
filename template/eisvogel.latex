@@ -60,7 +60,8 @@ $endif$
 \documentclass[
   paper=letter,
   captions=tableheading,
-  toc=sectionentrywithdots
+  toc=sectionentrywithdots,
+  numbers=noenddot
 ]{scrartcl}
 
 \usepackage{amsmath,amssymb}
@@ -363,17 +364,17 @@ $endif$
   \vskip 0.5em
   \begin{customblockquote}
   \list{}{\rightmargin=0em\leftmargin=0em}
-  \item\color{blockquote-text}\textbf{\textit{Start of informative comment}}
+  \item\color{blockquote-text}\textbf{\textit{\textcolor{gray}{\small Start of informative comment}}}
   \item\relax\color{blockquote-text}\ignorespaces
 }{
-  \item\color{blockquote-text}\textbf{\textit{End of informative comment}}
+  \item\color{blockquote-text}\textbf{\textit{\textcolor{gray}{\small End of informative comment}}}
   \unskip\unskip\endlist\end{customblockquote}
 }
 
 \usepackage{fontspec}
 \setmainfont{Arial}
 \setsansfont{Arial}
-\setmonofont{Source Code Pro}
+\setmonofont[Scale=0.9]{Source Code Pro}
 
 \usepackage{newunicodechar}
 % Use Arial Unicode to display various unicode symbols that might be present
@@ -698,6 +699,7 @@ $endif$
 % Allow TCG documents to use '\beginappendices' to easily mark the transition to appendices.
 \usepackage{appendix}
 \newcommand{\beginappendices}{
+  \newpage
   \appendix
   \appendixpage
   \addappheadtotoc
