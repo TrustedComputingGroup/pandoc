@@ -692,14 +692,6 @@ $endif$
   beforeskip=.5\baselineskip,
   afterskip=0em]{subparagraph}
 
-% % Subsections don't wrap to a new page by default.
-% % Workaround from https://tex.stackexchange.com/questions/162236/subsection-on-new-page-if-it-doesnt-fit
-\preto{\section}{\clearpageafterfirst}
-\preto{\subsection}{\filbreak}
-\newcommand{\clearpageafterfirst}{%
-  \gdef\clearpageafterfirst{\clearpage}%
-}
-
 % Allow TCG documents to use '\beginappendices' to easily mark the transition to appendices.
 \usepackage{appendix}
 \newcommand{\beginappendices}{
