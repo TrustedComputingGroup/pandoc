@@ -6,6 +6,7 @@ do_gitversion="no"
 do_gitstatus="no"
 pdf_output=""
 docx_output=""
+html_output=""
 latex_output=""
 table_rules="no"
 
@@ -31,6 +32,7 @@ print_usage() {
 	echo "  --docx=output: enable outputing of docx and specify the output file name."
 	echo "  --pdf=output: enable outputing of pdf and specify the output file name."
 	echo "  --latex=output: enable outputing of latex and specify the output file name."
+	echo "  --html=output: enable outputing of html and specify the output file name."
 	echo
 	echo "Miscellaneous"
 	echo "  --resourcedir=dir: Set the resource directory, defaults to root for pandoc containers"
@@ -41,7 +43,7 @@ print_usage() {
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,table_rules,pdf:,latex:,docx:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,table_rules,pdf:,latex:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -77,6 +79,10 @@ while true; do
 		;;
 	--pdf)
 		pdf_output="${2}"
+		shift 2
+		;;
+	--html)
+		html_output="${2}"
 		shift 2
 		;;
 	--resourcedir)
@@ -115,8 +121,8 @@ if [ ! -e "${input_file}" ]; then
    exit 1
 fi
 
-if [ -z "${pdf_output}${latex_output}${docx_output}" ]; then
-	>&2 echo "Expected --pdf, --docx or --latex option"
+if [ -z "${pdf_output}${latex_output}${docx_output}${html_output}" ]; then
+	>&2 echo "Expected --pdf, --docx, --html, or --latex option"
 	print_usage
 	exit 1
 fi
@@ -198,6 +204,7 @@ echo "file: ${input_file}"
 echo "docx: ${docx_output:-none}"
 echo "pdf: ${pdf_output:-none}"
 echo "latex: ${latex_ouput:-none}"
+echo "html: ${html_ouput:-none}"
 echo "use tmp: ${is_tmp}"
 echo "resource dir: ${resource_dir}"
 echo "build dir: ${build_dir}"
@@ -291,8 +298,6 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
 		--metadata=logo:/resources/img/tcg.png \
 		--metadata=titlepage-rule-height:0 \
-		--metadata=tables-vrules:true \
-        --metadata=tables-hrules:true \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
 		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
@@ -315,7 +320,7 @@ if [ -n "${latex_output}" ]; then
 		--standalone \
 		--template=eisvogel.latex \
 		--filter=mermaid-filter \
-		--lua-filter=center-images \
+		--lua-filter=center-images.lua \
 		--lua-filter=parse-html.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
@@ -331,8 +336,6 @@ if [ -n "${latex_output}" ]; then
 		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
 		--metadata=logo:/resources/img/tcg.png \
 		--metadata=titlepage-rule-height:0 \
-		--metadata=tables-vrules:true \
-        --metadata=tables-hrules:true \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
 		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
@@ -367,6 +370,49 @@ if [ -n "${docx_output}" ]; then
 		"${build_dir}/${input_file}.3" \
 		--output="${docx_output}"
 	echo "DOCX Output Generated to file: ${docx_output}"
+	if [ $? -ne 0 ]; then
+		RESULT=$?
+	fi
+fi
+
+export MERMAID_FILTER_FORMAT="svg"
+
+# Generate the html output
+if [ -n "${html_output}" ]; then
+	echo "Generating html Output"
+	pandoc \
+		--toc \
+		-V colorlinks=true \
+		-V linkcolor=blue \
+		-V urlcolor=blue \
+		-V toccolor=blue \
+		--embed-resources \
+		--standalone \
+		--filter=mermaid-filter \
+		--lua-filter=center-images.lua \
+		--lua-filter=parse-html.lua \
+		--filter=pandoc-crossref \
+		--lua-filter=divide-code-blocks.lua \
+		--resource-path=.:/resources \
+		--data-dir=/resources \
+		--top-level-division=section \
+		--variable=block-headings \
+		--variable=numbersections \
+		--metadata=date-english:"${DATE_ENGLISH}" \
+		--metadata=year:"${YEAR}" \
+		--metadata=titlepage:true \
+		--metadata=titlepage-background:/resources/img/cover.png \
+		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
+		--metadata=logo:/resources/img/tcg.png \
+		--metadata=titlepage-rule-height:0 \
+		--metadata=colorlinks:true \
+		--metadata=contact:admin@trustedcomputinggroup.org \
+		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
+		${extra_pandoc_options} \
+		--to=html \
+		"${build_dir}/${input_file}.3" \
+		--output="${html_output}"
+	echo "HTML Output Generated to file: ${html_output}"
 	if [ $? -ne 0 ]; then
 		RESULT=$?
 	fi
