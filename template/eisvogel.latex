@@ -400,10 +400,10 @@ $endif$
 \newunicodechar{→}{\textfallback{→}}
 
 %
-% heading color
+% Set the heading color and ensure that every section begins on its own page.
 %
 \definecolor{heading-color}{RGB}{35,61,130}
-\addtokomafont{section}{\color{heading-color}}
+\addtokomafont{section}{\clearpage \color{heading-color}}
 
 %
 % variables for title, author and date
