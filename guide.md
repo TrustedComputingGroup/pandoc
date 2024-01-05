@@ -679,6 +679,15 @@ The above HTML table becomes the below:
 
 Note the table caption in the `<caption>` element, and the table cross-reference in the `id` attribute of the `<table>` element.
 
+To get an HTML table to word-wrap its contents, use `<colgroup>` to style the width of the columns.
+
+```md
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+```
+
 # Math {#sec:math}
 
 Markdown supports inline math notation. For example, @eq:fermat can be typeset as:
