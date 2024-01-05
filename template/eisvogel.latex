@@ -356,12 +356,12 @@ $endif$
 %
 % blockquote (repurposed for "informative text" blocks)
 %
-\definecolor{blockquote-border}{RGB}{224,224,224}
+\definecolor{blockquote-background}{RGB}{224,224,224}
 \definecolor{blockquote-text}{RGB}{10,10,10}
 \usepackage{mdframed}
 \newmdenv[
   linewidth=0pt,
-  backgroundcolor=blockquote-border,
+  backgroundcolor=blockquote-background,
   skipabove=\parskip,
   nobreak=true]{customblockquote}
 \renewenvironment{quote}{
@@ -374,6 +374,17 @@ $endif$
   \item\color{blockquote-text}\textbf{\textit{\textcolor{gray}{\small End of informative comment}}}
   \unskip\unskip\endlist\end{customblockquote}
 }
+
+%
+% code block style
+%
+\definecolor{codeblock-background}{RGB}{240,244,255}
+\usepackage{mdframed}
+\newmdenv[
+  linewidth=0pt,
+  backgroundcolor=codeblock-background,
+  skipabove=\parskip,
+  nobreak=true]{customcodeblock}
 
 \usepackage{fontspec}
 \setmainfont{Arial}
