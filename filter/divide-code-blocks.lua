@@ -2,8 +2,13 @@
 
 function CodeBlock(block)
     return {
-        pandoc.RawInline('latex', '\\noindent\\textcolor{gray}{\\rule{\\textwidth}{0.25pt}}'),
+        pandoc.RawInline('latex', [[
+            \vskip 0.5em
+            \begin{customcodeblock}
+        ]]),
         block,
-        pandoc.RawInline('latex', '\\noindent\\textcolor{gray}{\\rule{\\textwidth}{0.25pt}}'),
+        pandoc.RawInline('latex', [[
+            \end{customcodeblock}
+        ]]),
     }
 end
