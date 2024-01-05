@@ -2,7 +2,6 @@
 
 is_tmp="yes"	  # default to no tmp directory
 resource_dir="/"  #default to root of pandoc container buildout
-do_puppeteer="no"
 do_gitversion="no"
 do_gitstatus="no"
 pdf_output=""
@@ -34,7 +33,6 @@ print_usage() {
 	echo "  --latex=output: enable outputing of latex and specify the output file name."
 	echo
 	echo "Miscellaneous"
-	echo "  --puppeteer: enable outputing of .puppeteer.json in current directory. This is needed for running in sandboxes eg docker containers."
 	echo "  --resourcedir=dir: Set the resource directory, defaults to root for pandoc containers"
 	echo "  --notmp: Do not use a tempory directory for processing steps, instead create a directory called \"build\" in CWD"
 	echo "  --gitversion: Use git describe to generate document version and revision metadata."
@@ -62,7 +60,7 @@ while true; do
 		shift
 		;;
 	--puppeteer)
-		do_puppeteer="yes"
+		# legacy option; just ignore this
 		shift
 		;;
 	--notmp)
@@ -197,7 +195,6 @@ fi # Done with git version handling
 
 echo "Starting Build with"
 echo "file: ${input_file}"
-echo "puppeteer: ${do_puppeteer}"
 echo "docx: ${docx_output:-none}"
 echo "pdf: ${pdf_output:-none}"
 echo "latex: ${latex_ouput:-none}"
@@ -216,24 +213,22 @@ if test "${do_gitversion}" == "yes"; then
 	fi
 fi
 
-if [ "${do_puppeteer}" == "yes" ]; then
-	if [ "${browser}" == "none" ]; then
-		>&2 echo "No Browser found, looked for chromium-browser and google-chrome"
-		exit 1
-	fi
-
-	# There are some configuration dependencies required for Mermaid.
-	# They have to be in the current directory.
-	cat <<- EOF > ./.puppeteer.json
-	{
-		"executablePath": "$browser",
-		"args": [
-			"--no-sandbox",
-			"--disable-setuid-sandbox"
-		]
-	}
-	EOF
+if [ "${browser}" == "none" ]; then
+	>&2 echo "No Browser found, looked for chromium-browser and google-chrome"
+	exit 1
 fi
+
+# There are some configuration dependencies required for Mermaid.
+# They have to be in the current directory.
+cat <<- EOF > ./.puppeteer.json
+{
+	"executablePath": "$browser",
+	"args": [
+		"--no-sandbox",
+		"--disable-setuid-sandbox"
+	]
+}
+EOF
 
 if [ "${table_rules}" == "yes" ]; then
 	extra_pandoc_options+=" --lua-filter=table-rules.lua"
@@ -383,5 +378,6 @@ fi
 
 # on success remove this output
 rm -f mermaid-filter.err
+rm -f .puppeteer.json
 
 exit 0
