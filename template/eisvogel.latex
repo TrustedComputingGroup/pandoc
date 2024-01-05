@@ -400,10 +400,10 @@ $endif$
 \newunicodechar{→}{\textfallback{→}}
 
 %
-% heading color
+% Set the heading color and ensure that every section begins on its own page.
 %
 \definecolor{heading-color}{RGB}{35,61,130}
-\addtokomafont{section}{\color{heading-color}}
+\addtokomafont{section}{\clearpage \color{heading-color}}
 
 %
 % variables for title, author and date
@@ -691,14 +691,6 @@ $endif$
   runin=false,
   beforeskip=.5\baselineskip,
   afterskip=0em]{subparagraph}
-
-% % Subsections don't wrap to a new page by default.
-% % Workaround from https://tex.stackexchange.com/questions/162236/subsection-on-new-page-if-it-doesnt-fit
-\preto{\section}{\clearpageafterfirst}
-\preto{\subsection}{\filbreak}
-\newcommand{\clearpageafterfirst}{%
-  \gdef\clearpageafterfirst{\clearpage}%
-}
 
 % Allow TCG documents to use '\beginappendices' to easily mark the transition to appendices.
 \usepackage{appendix}
