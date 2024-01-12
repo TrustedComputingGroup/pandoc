@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          filter: 'tree:1'
 
       # Set up QEMU for cross-platform builds below
       - name: Set up QEMU
