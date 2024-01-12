@@ -21,20 +21,8 @@ jobs:
       packages: write
 
     steps:
-      - name: Checkout latest commit on PR branch
-        if: github.event_name == 'pull_request'
+      - name: Checkout repository
         uses: actions/checkout@v4.1.1
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Checkout latest commit
-        if: github.event_name != 'pull_request'
-        uses: actions/checkout@v4.1.1
-        with:
-          fetch-depth: 0
-          fetch-tags: true
 
       # Set up QEMU for cross-platform builds below
       - name: Set up QEMU
@@ -104,7 +92,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Run the action on guide
         uses: trustedcomputinggroup/markdown@latest
