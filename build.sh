@@ -265,8 +265,14 @@ sed 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${build_dir}/${input_file}.1" > "$
 # While we're doing this, transform the case to all-caps.
 sed '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${build_dir}/${input_file}.2" > "${build_dir}/${input_file}.3"
 
-# Grab the date from the front matter and generate the full date and year.
-DATE="$(grep date: "${input_file}" | head -n 1 | cut -d ' ' -f 2)"
+if test "${do_gitversion}" == "yes"; then
+	# If using the git information for versioning, grab the date from there
+	DATE="$(git show -s --date=format:'%Y/%m/%d' --format=%ad)"
+else
+	# Else, grab the date from the front matter and generate the full date and year.
+	DATE="$(grep date: "${input_file}" | head -n 1 | cut -d ' ' -f 2)"
+fi
+
 YEAR="$(date --date="${DATE}" +%Y)"
 DATE_ENGLISH="$(date --date="${DATE}" "+%B %-d, %Y")"
 

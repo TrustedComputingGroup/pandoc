@@ -1,6 +1,5 @@
 ---
 title: "TCG Markdown User's Guide"
-date: 2024/01/12
 type: GUIDANCE
 status: DRAFT
 template: bluetop
