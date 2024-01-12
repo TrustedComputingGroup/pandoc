@@ -243,25 +243,18 @@ if [ "${table_rules}" == "yes" ]; then
 	extra_pandoc_options+=" --lua-filter=table-rules.lua"
 fi
 
-# Transform 1
-# GitHub Mermaid doesn't recognize the full ```{.mermaid ...} attributes-form
-# Pandoc doesn't recognized mixed ```mermaid {...} form
-# Hack: use sed to transform the latter to the former so everyone is happy
-# Only transform if there is exactly one space after ```mermaid
-# Instructional documentation may use more than one space in the source code to suppress this.
-sed 's/```mermaid {/```{.mermaid /g' "${input_file}" > "${build_dir}/${input_file}.1"
-sed 's/```mermaid *{/```mermaid {/g' "${input_file}" > "${build_dir}/${input_file}.1"
+cp "${input_file}" "${build_dir}/${input_file}"
 
-# Transform 2
+# Hacks
+
 # \newpage is rendered as the string "\newpage" in GitHub markdown.
 # Transform horizontal rules into \newpages.
 # Exception: the YAML front matter of the document, so undo the instance on the first line.
-sed 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${build_dir}/${input_file}.1" > "${build_dir}/${input_file}.2"
+sed -i.bak 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${build_dir}/${input_file}"
 
-# Transform 3
 # Transform sections before the table of contents into section*, which does not number them.
 # While we're doing this, transform the case to all-caps.
-sed '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${build_dir}/${input_file}.2" > "${build_dir}/${input_file}.3"
+sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${build_dir}/${input_file}"
 
 if test "${do_gitversion}" == "yes"; then
 	# If using the git information for versioning, grab the date from there
@@ -288,13 +281,21 @@ RESULT=0
 # Generate the pdf
 if [ -n "${pdf_output}" ]; then
 	echo "Generating PDF Output"
+	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
-	    --pdf-engine=lualatex \
+		--filter=mermaid-filter \
+		--standalone \
+		--metadata=date:"${DATE}" \
+		--metadata=date-english:"${DATE_ENGLISH}" \
+		--metadata=year:"${YEAR}" \
+		--from=markdown \
+		"${build_dir}/${input_file}" \
+		--to=markdown \
+	| pandoc \
+		--pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
-		--filter=mermaid-filter \
-		--lua-filter=center-images.lua \
 		--lua-filter=parse-html.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
@@ -303,9 +304,6 @@ if [ -n "${pdf_output}" ]; then
 		--top-level-division=section \
 		--variable=block-headings \
 		--variable=numbersections \
-		--metadata=date:"${DATE}" \
-		--metadata=date-english:"${DATE_ENGLISH}" \
-		--metadata=year:"${YEAR}" \
 		--metadata=titlepage:true \
 		--metadata=titlepage-background:/resources/img/cover.png \
 		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
@@ -316,7 +314,6 @@ if [ -n "${pdf_output}" ]; then
 		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
 		${extra_pandoc_options} \
 		--to=pdf \
-		"${build_dir}/${input_file}.3" \
 		--output="${pdf_output}"
 	echo "PDF Output Generated to file: ${pdf_output}"
 	if [ $? -ne 0 ]; then
@@ -327,13 +324,21 @@ fi
 # Generate the LaTeX output
 if [ -n "${latex_output}" ]; then
 	echo "Generating LaTeX Output"
+	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
-	    --pdf-engine=lualatex \
+		--filter=mermaid-filter \
+		--standalone \
+		--metadata=date:"${DATE}" \
+		--metadata=date-english:"${DATE_ENGLISH}" \
+		--metadata=year:"${YEAR}" \
+		--from=markdown \
+		"${build_dir}/${input_file}" \
+		--to=markdown \
+	| pandoc \
+		--pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
-		--filter=mermaid-filter \
-		--lua-filter=center-images.lua \
 		--lua-filter=parse-html.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
@@ -342,8 +347,6 @@ if [ -n "${latex_output}" ]; then
 		--top-level-division=section \
 		--variable=block-headings \
 		--variable=numbersections \
-		--metadata=date-english:"${DATE_ENGLISH}" \
-		--metadata=year:"${YEAR}" \
 		--metadata=titlepage:true \
 		--metadata=titlepage-background:/resources/img/cover.png \
 		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
@@ -354,7 +357,6 @@ if [ -n "${latex_output}" ]; then
 		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
 		${extra_pandoc_options} \
 		--to=latex \
-		"${build_dir}/${input_file}.3" \
 		--output="${latex_output}"
 	echo "LaTeX Output Generated to file: ${latex_output}"
 	if [ $? -ne 0 ]; then
@@ -365,13 +367,21 @@ fi
 # Generate the docx output
 if [ -n "${docx_output}" ]; then
 	echo "Generating DOCX Output"
+	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
-	    --pdf-engine=lualatex \
+		--filter=mermaid-filter \
+		--standalone \
+		--metadata=date:"${DATE}" \
+		--metadata=date-english:"${DATE_ENGLISH}" \
+		--metadata=year:"${YEAR}" \
+		--from=markdown \
+		"${build_dir}/${input_file}" \
+		--to=markdown \
+	| pandoc \
+		--pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--filter=/resources/filters/info.py \
-		--filter=mermaid-filter \
-		--lua-filter=center-images.lua \
 		--lua-filter=parse-html.lua \
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
@@ -380,7 +390,6 @@ if [ -n "${docx_output}" ]; then
 		--reference-doc=/resources/templates/tcg_template.docx \
 		${extra_pandoc_options} \
 		--to=docx \
-		"${build_dir}/${input_file}.3" \
 		--output="${docx_output}"
 	echo "DOCX Output Generated to file: ${docx_output}"
 	if [ $? -ne 0 ]; then
@@ -393,7 +402,17 @@ export MERMAID_FILTER_FORMAT="svg"
 # Generate the html output
 if [ -n "${html_output}" ]; then
 	echo "Generating html Output"
+	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
+		--filter=mermaid-filter \
+		--standalone \
+		--metadata=date:"${DATE}" \
+		--metadata=date-english:"${DATE_ENGLISH}" \
+		--metadata=year:"${YEAR}" \
+		--from=markdown \
+		"${build_dir}/${input_file}" \
+		--to=markdown \
+	| pandoc \
 		--toc \
 		-V colorlinks=true \
 		-V linkcolor=blue \
@@ -401,8 +420,6 @@ if [ -n "${html_output}" ]; then
 		-V toccolor=blue \
 		--embed-resources \
 		--standalone \
-		--filter=mermaid-filter \
-		--lua-filter=center-images.lua \
 		--lua-filter=parse-html.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
@@ -411,8 +428,6 @@ if [ -n "${html_output}" ]; then
 		--top-level-division=section \
 		--variable=block-headings \
 		--variable=numbersections \
-		--metadata=date-english:"${DATE_ENGLISH}" \
-		--metadata=year:"${YEAR}" \
 		--metadata=titlepage:true \
 		--metadata=titlepage-background:/resources/img/cover.png \
 		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
@@ -423,7 +438,6 @@ if [ -n "${html_output}" ]; then
 		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
 		${extra_pandoc_options} \
 		--to=html \
-		"${build_dir}/${input_file}.3" \
 		--output="${html_output}"
 	echo "HTML Output Generated to file: ${html_output}"
 	if [ $? -ne 0 ]; then
@@ -438,5 +452,6 @@ fi
 # on success remove this output
 rm -f mermaid-filter.err
 rm -f .puppeteer.json
+rm  "${build_dir}/${input_file}.bak"
 
 exit 0

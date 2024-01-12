@@ -389,7 +389,7 @@ $endif$
 \usepackage{fontspec}
 \setmainfont{Arial}
 \setsansfont{Arial}
-\setmonofont[Scale=0.9]{Source Code Pro}
+\setmonofont{Noto Sans Mono}
 
 \usepackage{newunicodechar}
 % Use Arial Unicode to display various unicode symbols that might be present
