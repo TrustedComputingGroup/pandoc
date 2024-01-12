@@ -303,6 +303,7 @@ if [ -n "${pdf_output}" ]; then
 		--top-level-division=section \
 		--variable=block-headings \
 		--variable=numbersections \
+		--metadata=date:"${DATE}" \
 		--metadata=date-english:"${DATE_ENGLISH}" \
 		--metadata=year:"${YEAR}" \
 		--metadata=titlepage:true \

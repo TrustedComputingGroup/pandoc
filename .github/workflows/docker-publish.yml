@@ -24,6 +24,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4.1.1
         with:
+          # We might care to extract version information out of the Git history.
+          fetch-depth: "0"
           fetch-tags: "true"
 
       # Set up QEMU for cross-platform builds below
