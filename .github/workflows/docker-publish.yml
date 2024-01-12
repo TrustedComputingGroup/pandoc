@@ -21,10 +21,18 @@ jobs:
       packages: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout latest commit on PR branch
+        if: github.event_name == 'pull_request'
         uses: actions/checkout@v4.1.1
         with:
-          # We might care to extract version information out of the Git history.
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Checkout latest commit
+        if: github.event_name != 'pull_request'
+        uses: actions/checkout@v4.1.1
+        with:
           fetch-depth: 0
           fetch-tags: true
 
