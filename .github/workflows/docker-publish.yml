@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
 
       # Set up QEMU for cross-platform builds below
       - name: Set up QEMU
@@ -92,11 +92,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Run the action on guide
         uses: trustedcomputinggroup/markdown@latest
         with:
+          extra-build-options: "--gitversion"
           input-md: guide.md
           output-pdf: guide.pdf
           output-tex: guide.tex

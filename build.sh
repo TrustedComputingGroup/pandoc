@@ -149,6 +149,7 @@ if test "${do_gitversion}" == "yes"; then
 
 	# TODO: Should we fail if dirty?
 	raw_version="$(git describe --always --tags)"
+	echo "Git version: ${raw_version}"
 	IFS='-' read -r -a dash_hunks <<< "${raw_version}"
 
     # Could be one of:
@@ -262,10 +263,20 @@ sed 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${build_dir}/${input_file}.1" > "$
 # While we're doing this, transform the case to all-caps.
 sed '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${build_dir}/${input_file}.2" > "${build_dir}/${input_file}.3"
 
-# Grab the date from the front matter and generate the full date and year.
-DATE="$(grep date: "${input_file}" | head -n 1 | cut -d ' ' -f 2)"
+if test "${do_gitversion}" == "yes"; then
+	# If using the git information for versioning, grab the date from there
+	DATE="$(git show -s --date=format:'%Y/%m/%d' --format=%ad)"
+else
+	# Else, grab the date from the front matter and generate the full date and year.
+	DATE="$(grep date: "${input_file}" | head -n 1 | cut -d ' ' -f 2)"
+fi
+
 YEAR="$(date --date="${DATE}" +%Y)"
 DATE_ENGLISH="$(date --date="${DATE}" "+%B %-d, %Y")"
+
+echo "Date: ${DATE}"
+echo "Year: ${YEAR}"
+echo "Date (English): ${DATE_ENGLISH}"
 
 # Run Pandoc
 export MERMAID_FILTER_THEME="forest"
@@ -292,6 +303,7 @@ if [ -n "${pdf_output}" ]; then
 		--top-level-division=section \
 		--variable=block-headings \
 		--variable=numbersections \
+		--metadata=date:"${DATE}" \
 		--metadata=date-english:"${DATE_ENGLISH}" \
 		--metadata=year:"${YEAR}" \
 		--metadata=titlepage:true \
