@@ -24,7 +24,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4.1.1
         with:
-          filter: 'tree:1'
+          fetch-tags: "true"
 
       # Set up QEMU for cross-platform builds below
       - name: Set up QEMU
