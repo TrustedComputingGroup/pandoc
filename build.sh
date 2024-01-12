@@ -288,7 +288,7 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=date:"${DATE}" \
 		--metadata=date-english:"${DATE_ENGLISH}" \
 		--metadata=year:"${YEAR}" \
-		--from=markdown \
+		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
 		"${build_dir}/${input_file}" \
 		--to=markdown \
 	| pandoc \
@@ -331,7 +331,7 @@ if [ -n "${latex_output}" ]; then
 		--metadata=date:"${DATE}" \
 		--metadata=date-english:"${DATE_ENGLISH}" \
 		--metadata=year:"${YEAR}" \
-		--from=markdown \
+		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
 		"${build_dir}/${input_file}" \
 		--to=markdown \
 	| pandoc \
@@ -374,7 +374,7 @@ if [ -n "${docx_output}" ]; then
 		--metadata=date:"${DATE}" \
 		--metadata=date-english:"${DATE_ENGLISH}" \
 		--metadata=year:"${YEAR}" \
-		--from=markdown \
+		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
 		"${build_dir}/${input_file}" \
 		--to=markdown \
 	| pandoc \
@@ -409,7 +409,7 @@ if [ -n "${html_output}" ]; then
 		--metadata=date:"${DATE}" \
 		--metadata=date-english:"${DATE_ENGLISH}" \
 		--metadata=year:"${YEAR}" \
-		--from=markdown \
+		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
 		"${build_dir}/${input_file}" \
 		--to=markdown \
 	| pandoc \
