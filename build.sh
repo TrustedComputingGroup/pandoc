@@ -145,6 +145,9 @@ fi
 # figure out git version and revision if needed.
 extra_pandoc_options=""
 if test "${do_gitversion}" == "yes"; then
+	# We might be working from a depth=0 checkout (e.g., GitHub action).
+	# Fetch the tags that are relevant to this branch.
+	git fetch --filter=tree:0 origin +refs/tags/*:refs/tags/*
 	git config --global --add safe.directory /workspace
 
 	# TODO: Should we fail if dirty?
