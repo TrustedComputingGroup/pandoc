@@ -145,6 +145,7 @@ fi
 # figure out git version and revision if needed.
 extra_pandoc_options=""
 if test "${do_gitversion}" == "yes"; then
+	git config --global --add safe.directory /workspace
 
 	# TODO: Should we fail if dirty?
 	raw_version="$(git describe --always --tags)"
@@ -187,8 +188,8 @@ if test "${do_gitversion}" == "yes"; then
 
 	extra_pandoc_options="--metadata=version:${major_minor} --metadata=revision:${revision}"
 	
-	# Do we set document status pased on git version?
-	if [ "${do_gitversion}" == "yes" ]; then
+	# Do we set document status based on git version?
+	if [ "${do_gitstatus}" == "yes" ]; then
 		if [ "${revision}" == "0" ]; then
 			status="PUBLISHED"
 		else
