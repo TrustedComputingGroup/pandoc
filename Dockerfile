@@ -67,10 +67,8 @@ RUN apk --no-cache add msttcorefonts-installer fontconfig && \
 RUN wget https://github.com/kaienfr/Font/raw/master/font/ARIALUNI.TTF -P /usr/share/fonts/TTF/ && \
     fc-cache -f
 
-# Install Source Code Pro
-RUN wget https://github.com/adobe-fonts/source-code-pro/archive/refs/tags/2.042R-u/1.062R-i/1.026R-vf.zip && \
-    unzip 1.026R-vf.zip && \
-    cp source-code-pro-2.042R-u-1.062R-i-1.026R-vf/TTF/*.ttf /usr/share/fonts/TTF/ && \
+# Install Noto Sans Mono
+RUN apk --no-cache add font-noto && \
     fc-cache -f
 
 RUN pip install pandocfilters
@@ -78,7 +76,7 @@ RUN pip install pandocfilters
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN npm install --global --unsafe-perm mermaid.cli@0.5.1 puppeteer@19.8.5 imgur@2.2.0 mermaid-filter@1.4.7 typescript@5.0.4
+RUN npm install --global --unsafe-perm puppeteer@21.7.0 imgur@2.3.0 mermaid-filter@1.4.7 typescript@5.3.3
 
 # Install latest pandiff, which has not been released in a while
 # This pre-release build has --reference-doc support for docx output

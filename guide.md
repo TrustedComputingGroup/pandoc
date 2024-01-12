@@ -271,7 +271,7 @@ are expected to use this macro.
 
 Users familiar with Git and who prefer to use their own tools may choose to skip this section.
 
-```mermaid {caption="GitHub Collaboration workflow"}
+```mermaid {caption="GitHub Collaboration Workflow" #fig:collaboration-workflow}
     gitGraph
        commit id: "head"
        branch proposed-edits-1
@@ -288,7 +288,7 @@ Users familiar with Git and who prefer to use their own tools may choose to skip
        merge proposed-edits-2
 ```
 
-As visualized above, proposed changes to a GitHub Markdown repository take the form of
+As visualized in @fig:collaboration-workflow, proposed changes to a GitHub Markdown repository take the form of
 "Pull Requests" (PRs). A *proposer* of a change proposes a PR that changes some files in the repository.
 This PR contains an initial *commit*, which is a unit of change to files.
 *Reviewers* can provide comments and suggestions on the proposed edits. The *proposer* can respond to
@@ -531,10 +531,10 @@ See the Mermaid website for a more exhaustive list of types of diagrams.
 
 ### Sequence Diagrams
 
-Mermaid supports swim-lane digrams like the below with the following notation:
+Mermaid supports swim-lane digrams like @fig:startup with the following notation:
 
 ````md
-```mermaid  {caption="Startup Sequence"}
+```mermaid {caption="Startup Sequence" #fig:startup}
 sequenceDiagram
 Host->>TPM: TPM2_Startup
 loop Measurements
@@ -545,7 +545,7 @@ TPM->>Host: <quoted PCRs>
 ```
 ````
 
-```mermaid {caption="Startup Sequence"}
+```mermaid {caption="Startup Sequence" #fig:startup}
 sequenceDiagram
 Host->>TPM: TPM2_Startup
 loop Measurements
@@ -555,14 +555,15 @@ Host->>TPM: TPM2_Quote
 TPM->>Host: <quoted PCRs>
 ```
 
-Crossreferences to Mermaid diagrams are not currently supported.
+Crossreferences to Mermaid diagrams are supported by providing both `caption`
+and `#fig:xxxxx` classes in curly braces.
 
 ### Flow Charts
 
-Mermaid supports flow-charts like the below with the following notation:
+Mermaid supports flow-charts like @fig:flowchart with the following notation:
 
 ````md
-```mermaid  {caption="Flowchart"}
+```mermaid {caption="Flowchart" #fig:flowchart}
 graph TD;
     A-->B;
     A-->C;
@@ -571,7 +572,7 @@ graph TD;
 ```
 ````
 
-```mermaid {caption="Flowchart"}
+```mermaid {caption="Flowchart" #fig:flowchart}
 graph TD;
     A-->B;
     A-->C;
