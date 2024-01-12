@@ -1,10 +1,6 @@
 ---
 title: "TCG Markdown User's Guide"
-version: 0.1
-revision: 1
-date-english: December 17, 2023
-date: 2023/12/17
-year: 2023
+date: 2024/01/12
 type: GUIDANCE
 status: DRAFT
 template: bluetop
