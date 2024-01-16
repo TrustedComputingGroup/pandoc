@@ -170,6 +170,36 @@ jobs:
         if: github.event_name != 'pull_request'
 ```
 
+## Local Testing
+
+These tools have a number of dependencies on LaTeX and LaTeX plugins. The
+simplest way to get a consistent build is to use the docker container that gets
+used for the GitHub actions.
+
+`docker_run` is provided as a convenience script for Linux systems.
+
+Usage:
+
+```sh
+./docker_run --pdf=output.pdf ./input.md
+```
+
+You can specify a particular version of the docker container using the
+`DOCKER_IMAGE` environment variable:
+
+```sh
+DOCKER_IMAGE=ghcr.io/trustedcomputinggroup/pandoc:0.6.5 ./docker_run --pdf=output.pdf ./input.md
+```
+
+If you're working on a change to these tools, it can be beneficial to build and
+tag a local version of the container and then run it locally:
+
+```sh
+docker build --tag working .
+
+DOCKER_IMAGE=working:latest ./docker_run --pdf=output.pdf ./input.md
+```
+
 ## TCG Document Boilerplate
 
 There are several sections that are recommended for use in every TCG Markdown document.
