@@ -454,6 +454,7 @@ if [ -n "${html_output}" ]; then
 fi
 
 if [ ${RESULT} -ne 0 ]; then
+	echo "Overall workflow failed"
 	exit 1
 fi
 
@@ -462,4 +463,5 @@ rm -f mermaid-filter.err
 rm -f .puppeteer.json
 rm  "${build_dir}/${input_file}.bak"
 
+echo "Overall workflow succeeded"
 exit 0

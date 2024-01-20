@@ -1,11 +1,12 @@
 FROM pandoc/latex:3.1.1
 
 # Packages that are needed despite not being used explicitly by the template:
-# hardwrap, lineno
+# catchfile, hardwrap, lineno
 RUN tlmgr update --self && tlmgr install \
     adjustbox \
     anyfontsize \
     appendix \
+    catchfile \
     draftwatermark \
     enumitem \
     fontspec \
