@@ -1,7 +1,7 @@
 FROM pandoc/latex:3.1.1
 
 # Packages that are needed despite not being used explicitly by the template:
-# catchfile, hardwrap, lineno
+# catchfile, hardwrap, lineno, zref
 RUN tlmgr update --self && tlmgr install \
     adjustbox \
     anyfontsize \
@@ -25,7 +25,8 @@ RUN tlmgr update --self && tlmgr install \
     titling \
     transparent \
     unicode-math \
-    xits
+    xits \
+    zref
 
 RUN apk upgrade && apk add --no-cache \
     bash \
