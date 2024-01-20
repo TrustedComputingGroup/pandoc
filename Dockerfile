@@ -1,51 +1,26 @@
 FROM pandoc/latex:3.1.1
 
-RUN tlmgr update --self && \
+RUN tlmgr update --self && tlmgr install \
     adjustbox \
     anyfontsize \
     appendix \
-    awesomebox \
-    background \
-    catchfile \
-    changepage \
-    collectbox \
     draftwatermark \
     enumitem \
-    everypage \
-    fontawesome5 \
-    fontaxes \
     fontspec \
-    footmisc \
     footnotebackref \
     fvextra \
-    hardwrap \
     koma-script \
-    lineno \
-    ly1 \
     mathtools \
     mdframed \
-    merriweather \
     multirow \
-    mweights \
-    needspace \
     newunicodechar \
     pagecolor \
-    pdftexcmds \
     ragged2e \
-    sectsty \
-    sourcecodepro \
-    sourcesanspro \
     textpos \
-    titlesec \
     titling \
-    tlmgr install \
-    tools \
     transparent \
-    ulem \
     unicode-math \
-    xits \
-    xurl \
-    zref
+    xits
 
 RUN apk upgrade && apk add --no-cache \
     bash \
