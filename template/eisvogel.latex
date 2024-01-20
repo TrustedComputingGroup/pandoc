@@ -384,6 +384,10 @@ $endif$
 \setsansfont{Arial}
 \setmonofont{Noto Sans Mono}
 
+\setmathrm{Latin Modern Math}
+\setmathsf{Arial}
+\setmathtt{Noto Sans Mono}
+
 \usepackage{newunicodechar}
 % Use Arial Unicode to display various unicode symbols that might be present
 \newfontfamily{\fallbackfont}{Arial Unicode MS}[Scale=MatchLowercase]
