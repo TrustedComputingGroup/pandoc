@@ -70,8 +70,6 @@ $endif$
 \setstretch{1.0}
 \usepackage[absolute,overlay]{textpos}
 \usepackage{ifxetex,ifluatex}
-\usepackage[mathit=sym]{unicode-math}
-\setmathfont{Latin Modern Math}
 
 % Customize the glue for math to relax the spacing a bit.
 % https://www.reddit.com/r/LaTeX/comments/10qdg9s/is_it_possible_to_slightly_increase_all/
@@ -388,11 +386,14 @@ $endif$
 \usepackage{fontspec}
 \setmainfont{Arial}
 \setsansfont{Arial}
-\setmathsf{Arial}
+% \setmathsf{Arial}
 \setmonofont{Noto Sans Mono}
-\setmathtt{Noto Sans Mono}
+% \setmathtt{Noto Sans Mono}
 % TODO: Understand the redundancy with the unicode-math font setting above.
-\setmathrm{Latin Modern Math}
+% \setmathrm{Latin Modern Math}
+
+\usepackage[mathit=sym]{unicode-math}
+\setmathfont{Latin Modern Math}
 
 \usepackage{newunicodechar}
 % Use Arial Unicode to display various unicode symbols that might be present
