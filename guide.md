@@ -735,7 +735,7 @@ $$ \symbf{HMAC}(K, \symup{"text"}) \coloneq H((\bar{K} \oplus \symup{OPAD}) \Ver
 $$ \symbf{HMAC}(K, \symup{"text"}) \coloneq H((\bar{K} \oplus \symup{OPAD}) \Vert H((\bar{K} \oplus \symup{IPAD}) \Vert \symup{"text"})) $$ {#eq:hmac-iso}
 
 To typeset complex equations with multi-character identifiers (such as the function "HMAC" or the word "OPAD") in @eq:hmac-iso above,
-we recommend using the functions `\symbf` (for functions) and `\symup` (for identifiers). This avoids strange kerning issues like in @q:hmac-iso-bad-kerning:
+we recommend using the functions `\symbf` (for functions) and `\symup` (for identifiers). This avoids strange kerning issues like in @eq:hmac-iso-bad-kerning:
 
 ```md
 $$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
