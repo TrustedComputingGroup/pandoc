@@ -641,11 +641,21 @@ $if(template)$
   {}
 $endif$
 
+% Required to get \includesvg to work with LuaTeX.
+\ifluatex
+  \usepackage{pdftexcmds}
+  \makeatletter
+  \let\pdfstrcmp\pdf@strcmp
+  \let\pdffilemoddate\pdf@filemoddate
+  \makeatother
+\fi
+\usepackage{svg}
+
 \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
 {
   \usepackage[scale=2, colorspec=0.95]{draftwatermark}
   % use an image for the watermark so it doesn't interfere with selection
-  \SetWatermarkText{\includegraphics{/resources/img/draft.svg}}
+  \SetWatermarkText{\includesvg{/resources/img/draft.svg}}
 }
 {}
 

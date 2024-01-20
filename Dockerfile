@@ -22,6 +22,7 @@ RUN tlmgr update --self && tlmgr install \
     newunicodechar \
     pagecolor \
     ragged2e \
+    svg \
     textpos \
     titling \
     transparent \
