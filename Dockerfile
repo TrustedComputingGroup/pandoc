@@ -21,6 +21,7 @@ RUN tlmgr update --self && tlmgr install \
     needspace \
     newunicodechar \
     pagecolor \
+    pdftexcmds \
     ragged2e \
     svg \
     textpos \
