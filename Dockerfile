@@ -1,7 +1,7 @@
 FROM pandoc/latex:3.1.1
 
 # Packages that are needed despite not being used explicitly by the template:
-# catchfile, hardwrap, lineno, needspace, trimspaces, zref
+# catchfile, hardwrap, lineno, needspace, zref
 RUN tlmgr update --self && tlmgr install \
     adjustbox \
     anyfontsize \
@@ -21,13 +21,10 @@ RUN tlmgr update --self && tlmgr install \
     needspace \
     newunicodechar \
     pagecolor \
-    pdftexcmds \
     ragged2e \
-    svg \
     textpos \
     titling \
     transparent \
-    trimspaces \
     unicode-math \
     xits \
     zref
