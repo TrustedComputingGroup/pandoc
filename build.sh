@@ -315,9 +315,11 @@ if [ -n "${pdf_output}" ]; then
 		${extra_pandoc_options} \
 		--to=pdf \
 		--output="${pdf_output}"
-	echo "PDF Output Generated to file: ${pdf_output}"
 	if [ $? -ne 0 ]; then
 		RESULT=$?
+		echo "PDF output failed"
+	else
+		echo "PDF output generated to file: ${pdf_output}"
 	fi
 fi
 
@@ -358,9 +360,11 @@ if [ -n "${latex_output}" ]; then
 		${extra_pandoc_options} \
 		--to=latex \
 		--output="${latex_output}"
-	echo "LaTeX Output Generated to file: ${latex_output}"
 	if [ $? -ne 0 ]; then
 		RESULT=$?
+		echo "LaTeX output failed"
+	else
+		echo "LaTeX output generated to file: ${latex_output}"
 	fi
 fi
 
@@ -391,9 +395,11 @@ if [ -n "${docx_output}" ]; then
 		${extra_pandoc_options} \
 		--to=docx \
 		--output="${docx_output}"
-	echo "DOCX Output Generated to file: ${docx_output}"
 	if [ $? -ne 0 ]; then
 		RESULT=$?
+		echo "DOCX output failed"
+	else
+		echo "DOCX output generated to file: ${docx_output}"
 	fi
 fi
 
@@ -439,9 +445,11 @@ if [ -n "${html_output}" ]; then
 		${extra_pandoc_options} \
 		--to=html \
 		--output="${html_output}"
-	echo "HTML Output Generated to file: ${html_output}"
 	if [ $? -ne 0 ]; then
 		RESULT=$?
+		echo "HTML output failed"
+	else
+		echo "HTML output generated to file: ${html_output}"
 	fi
 fi
 

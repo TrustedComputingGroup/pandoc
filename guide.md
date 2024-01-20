@@ -716,6 +716,8 @@ To get an HTML table to word-wrap its contents, use `<colgroup>` to style the wi
 
 # Math {#sec:math}
 
+## Equations
+
 Markdown supports inline math notation. For example, @eq:fermat can be typeset as:
 
 ```md
@@ -726,7 +728,27 @@ Note the `{#eq:fermat}` at the end of the equation. This allows referencing @eq:
 
 $$ \nexists {n \ge 3; a, b, c \in \mathbb{Z}} \mid a^n + b^n = c^n $$ {#eq:fermat}
 
+## Inline math
+
 Sometimes, you just need a little inline math in the middle of a sentence, like with `$a^2 + b^2 = c^2$` to get $a^2 + b^2 = c^2$.
+
+## Words in equations
+
+To typeset complex equations with multi-character identifiers (such as the function "HMAC" or the word "OPAD") in @eq:hmac-iso,
+we recommend using the functions `\symbf` (for functions) and `\symup` (for identifiers).
+This avoids strange kerning issues where a string is treated as a product of single-character symbols, like in @eq:hmac-iso-bad-kerning:
+
+```md
+$$ \symbf{HMAC}(K, \symup{"text"}) \coloneq H((\bar{K} \oplus \symup{OPAD}) \Vert H((\bar{K} \oplus \symup{IPAD}) \Vert \symup{"text"})) $$ {#eq:hmac-iso}
+```
+
+$$ \symbf{HMAC}(K, \symup{"text"}) \coloneq H((\bar{K} \oplus \symup{OPAD}) \Vert H((\bar{K} \oplus \symup{IPAD}) \Vert \symup{"text"})) $$ {#eq:hmac-iso}
+
+```md
+$$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
+```
+
+$$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
 
 \beginappendices
 

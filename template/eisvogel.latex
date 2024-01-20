@@ -70,18 +70,6 @@ $endif$
 \setstretch{1.0}
 \usepackage[absolute,overlay]{textpos}
 \usepackage{ifxetex,ifluatex}
-$if(mathspec)$
-  \ifxetex{}
-    \usepackage{mathspec}
-  \else
-    \usepackage{unicode-math}
-  \fi
-$else$
-  \usepackage{unicode-math}
-$endif$
-
-\defaultfontfeatures{Scale=MatchLowercase}
-\defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 
 $if(luatexjapresetoptions)$
   \ifluatex{}
@@ -409,6 +397,17 @@ $endif$
 \newunicodechar{©}{\textfallback{©}}
 \newunicodechar{™}{\textfallback{™}}
 \newunicodechar{→}{\textfallback{→}}
+
+\usepackage[mathit=sym]{unicode-math}
+\setmathfont{XITS Math}
+
+% Customize the spacing for math to relax it a bit.
+\thinmuskip=6mu
+\medmuskip=8mu plus 4mu minus 2mu
+\thickmuskip=10mu plus 10mu
+
+\defaultfontfeatures{Scale=MatchLowercase}
+\defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 
 %
 % Set the heading color and ensure that every section begins on its own page.
