@@ -402,9 +402,9 @@ $endif$
 \setmathfont{XITS Math}
 
 % Customize the spacing for math to relax it a bit.
-\thinmuskip=60mu
-\medmuskip=80mu plus 4mu minus 2mu
-\thickmuskip=100mu plus 10mu
+\thinmuskip=6mu
+\medmuskip=8mu plus 4mu minus 2mu
+\thickmuskip=10mu plus 10mu
 
 \defaultfontfeatures{Scale=MatchLowercase}
 \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
