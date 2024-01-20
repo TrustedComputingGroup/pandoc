@@ -377,11 +377,7 @@ $endif$
 \usepackage{fontspec}
 \setmainfont{Arial}
 \setsansfont{Arial}
-% \setmathsf{Arial}
 \setmonofont{Noto Sans Mono}
-% \setmathtt{Noto Sans Mono}
-% TODO: Understand the redundancy with the unicode-math font setting above.
-% \setmathrm{Latin Modern Math}
 
 \usepackage{newunicodechar}
 % Use Arial Unicode to display various unicode symbols that might be present
