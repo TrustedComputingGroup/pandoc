@@ -450,7 +450,7 @@ if [ -n "${html_output}" ]; then
 	fi
 fi
 
-if [ ${FAILED} = true ]; then
+if [ "${FAILED}" = "true" ]; then
 	echo "Overall workflow failed"
 	exit 1
 fi
