@@ -647,7 +647,7 @@ $endif$
   \usepackage[scale=2, colorspec=0.95]{draftwatermark}
   % use accsup to make the "DRAFT" watermark visible but not interactable
   \SetWatermarkText{
-    \BeginAccSupp{method=escape,ActualText={HELLO}}DRAFT\EndAccSupp{}
+    \BeginAccSupp{method=escape,ActualText={HELLO}}ISTHISON\EndAccSupp{}
   }
 }
 {}
