@@ -70,7 +70,7 @@ $endif$
 \setstretch{1.0}
 \usepackage[absolute,overlay]{textpos}
 \usepackage{ifxetex,ifluatex}
-\usepackage{unicode-math}
+\usepackage[mathit=sym]{unicode-math}
 \setmathfont{Latin Modern Math}
 
 % Customize the glue for math to relax the spacing a bit.
