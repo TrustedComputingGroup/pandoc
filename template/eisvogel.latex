@@ -516,18 +516,30 @@ $endif$
       {
         \color{white}
         $title$
+        $if(version)$
         \hskip 0.25em | \hskip 0.25em 
         Version $version$
+        $endif$
+        $if(revision)$
         \hskip 0.25em | \hskip 0.25em 
         Revision $revision$
+        $endif$
+        $if(date)$
         \hskip 0.25em | \hskip 0.25em 
         $date$
+        $endif$
+        $if(status)$
         \hskip 0.25em | \hskip 0.25em 
         $status$
+        $endif$
         \hfill
         Page \thepage
         \hfill
+        $if(status)$
         © TCG $year$
+        $else$
+        © TCG
+        $endif
       }
     }
     \end{textblock*}
