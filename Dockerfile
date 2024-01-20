@@ -10,6 +10,7 @@ RUN tlmgr update --self && tlmgr install \
     footnotebackref \
     fvextra \
     koma-script \
+    lineno \
     mathtools \
     mdframed \
     multirow \
