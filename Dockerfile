@@ -3,7 +3,6 @@ FROM pandoc/latex:3.1.1
 # Packages that are needed despite not being used explicitly by the template:
 # catchfile, hardwrap, lineno, needspace, zref
 RUN tlmgr update --self && tlmgr install \
-    accsupp \
     adjustbox \
     anyfontsize \
     appendix \
