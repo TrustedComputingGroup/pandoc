@@ -738,10 +738,10 @@ To typeset complex equations with multi-character identifiers (such as the funct
 we recommend using the functions `\mathit` (for functions) and `\mathrm` (for identifiers). This avoids strange kerning issues like in @q:hmac-iso-bad-kerning:
 
 ```md
-$$ \mathit{HMAC}(K, text) \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert text)) $$ {#eq:hmac-iso-bad-kerning}
+$$ \mathit{HMAC}(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
 ```
 
-$$ \mathit{HMAC}(K, text) \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert text)) $$ {#eq:hmac-iso-bad-kerning}
+$$ \mathit{HMAC}(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
 
 
 \beginappendices

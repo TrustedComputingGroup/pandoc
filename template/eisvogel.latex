@@ -385,11 +385,16 @@ $endif$
   skipabove=\parskip,
   nobreak=true]{customcodeblock}
 
-% Pass 'no-math' here to let unicode-math above handle the math fonts.
-\usepackage{fontspec}[no-math]
+\usepackage{fontspec}
 \setmainfont{Arial}
 \setsansfont{Arial}
+\setmathsf{Arial}
+
 \setmonofont{Noto Sans Mono}
+\setmathtt{Noto Sans Mono}
+
+% TODO: Understand the redundancy with the unicode-math font setting above.
+\setmathrm{Latin Modern Math}
 
 \usepackage{newunicodechar}
 % Use Arial Unicode to display various unicode symbols that might be present
