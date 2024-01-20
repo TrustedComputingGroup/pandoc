@@ -1,62 +1,62 @@
 FROM pandoc/latex:3.1.1
 
 RUN tlmgr update --self && \
-    tlmgr install \
-    merriweather \
-    fontaxes \
-    mweights \
-    mdframed \
-    needspace \
-    sourcesanspro \
-    sourcecodepro \
-    titling \
-    ly1 \
-    pagecolor \
     adjustbox \
-    collectbox \
-    fvextra \
-    pdftexcmds \
-    footnotebackref \
-    zref \
-    fontawesome5 \
-    footmisc \
-    sectsty \
-    koma-script \
-    lineno \
+    anyfontsize \
+    appendix \
     awesomebox \
     background \
+    catchfile \
+    changepage \
+    collectbox \
+    draftwatermark \
+    enumitem \
     everypage \
-    xurl \
+    fontawesome5 \
+    fontaxes \
+    fontspec \
+    footmisc \
+    footnotebackref \
+    fvextra \
+    hardwrap \
+    koma-script \
+    lineno \
+    ly1 \
+    mathtools \
+    mdframed \
+    merriweather \
+    multirow \
+    mweights \
+    needspace \
+    newunicodechar \
+    pagecolor \
+    pdftexcmds \
+    ragged2e \
+    sectsty \
+    sourcecodepro \
+    sourcesanspro \
     textpos \
-    anyfontsize \
+    titlesec \
+    titling \
+    tlmgr install \
+    tools \
     transparent \
     ulem \
-    hardwrap \
-    catchfile \
-    ragged2e \
-    enumitem \
-    mathtools \
-    fontspec \
     unicode-math \
-    titlesec \
-    newunicodechar \
-    tools \
-    changepage \
-    draftwatermark \
-    appendix \
-    multirow \
-    xits
+    xits \
+    xurl \
+    zref
 
 RUN apk upgrade && apk add --no-cache \
     bash \
+    chromium \
     coreutils \
-    sed \
     git \
     nodejs \
     npm \
-    chromium \
-    python3 \
     py3-pip \
+    python3 \
+    sed \
     yarn
 
 # Install MS core fonts, including Arial
@@ -77,15 +77,7 @@ RUN pip install pandocfilters
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN npm install --global --unsafe-perm puppeteer@21.7.0 imgur@2.3.0 mermaid-filter@1.4.7 typescript@5.3.3
-
-# Install latest pandiff, which has not been released in a while
-# This pre-release build has --reference-doc support for docx output
-RUN mkdir /src
-RUN cd /src && git clone https://github.com/davidar/pandiff.git
-RUN cd /src/pandiff && git checkout d1d468b2c4d81c622ff431ef718b1bf0daaa03db
-RUN cd /src/pandiff && npm install @types/node --save-dev
-RUN npm install --global /src/pandiff
+RUN npm install --global --unsafe-perm puppeteer@21.7.0 imgur@2.3.0 mermaid-filter@1.4.7 typescript@5.3.3 pandiff@0.6.0
 
 COPY ./img/* /resources/img/
 COPY ./template/* /resources/templates/
