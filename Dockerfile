@@ -1,5 +1,7 @@
 FROM pandoc/latex:3.1.1
 
+# Packages that are needed despite not being used explicitly by the template:
+# hardwrap, lineno
 RUN tlmgr update --self && tlmgr install \
     adjustbox \
     anyfontsize \
@@ -9,6 +11,7 @@ RUN tlmgr update --self && tlmgr install \
     fontspec \
     footnotebackref \
     fvextra \
+    hardwrap \
     koma-script \
     lineno \
     mathtools \
