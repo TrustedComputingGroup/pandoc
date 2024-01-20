@@ -729,13 +729,13 @@ $$ \nexists {n \ge 3; a, b, c \in \mathbb{Z}} \mid a^n + b^n = c^n $$ {#eq:ferma
 Sometimes, you just need a little inline math in the middle of a sentence, like with `$a^2 + b^2 = c^2$` to get $a^2 + b^2 = c^2$.
 
 ```md
-$$ \mathit{HMAC}(K, \mathrm{"text"}) \coloneq H((\bar{K} \oplus \mathrm{OPAD}) \Vert H((\bar{K} \oplus \mathrm{IPAD}) \Vert \mathrm{"text"})) $$ {#eq:hmac-iso}
+$$ \mathbf{HMAC}(K, \mathrm{"text"}) \coloneq H((\bar{K} \oplus \mathrm{OPAD}) \Vert H((\bar{K} \oplus \mathrm{IPAD}) \Vert \mathrm{"text"})) $$ {#eq:hmac-iso}
 ```
 
-$$ \mathit{HMAC}(K, \mathrm{"text"}) \coloneq H((\bar{K} \oplus \mathrm{OPAD}) \Vert H((\bar{K} \oplus \mathrm{IPAD}) \Vert \mathrm{"text"})) $$ {#eq:hmac-iso}
+$$ \mathbf{HMAC}(K, \mathrm{"text"}) \coloneq H((\bar{K} \oplus \mathrm{OPAD}) \Vert H((\bar{K} \oplus \mathrm{IPAD}) \Vert \mathrm{"text"})) $$ {#eq:hmac-iso}
 
 To typeset complex equations with multi-character identifiers (such as the function "HMAC" or the word "OPAD") in @eq:hmac-iso above,
-we recommend using the functions `\mathit` (for functions) and `\mathrm` (for identifiers). This avoids strange kerning issues like in @q:hmac-iso-bad-kerning:
+we recommend using the functions `\mathbf` (for functions) and `\mathrm` (for identifiers). This avoids strange kerning issues like in @q:hmac-iso-bad-kerning:
 
 ```md
 $$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
