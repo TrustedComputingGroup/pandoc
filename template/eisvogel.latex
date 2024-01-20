@@ -539,7 +539,7 @@ $endif$
         © TCG $year$
         $else$
         © TCG
-        $endif
+        $endif$
       }
     }
     \end{textblock*}
