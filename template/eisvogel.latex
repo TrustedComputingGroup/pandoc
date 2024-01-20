@@ -73,6 +73,12 @@ $endif$
 \usepackage{unicode-math}
 \setmathfont{Latin Modern Math}
 
+% Customize the glue for math to relax the spacing a bit.
+% https://www.reddit.com/r/LaTeX/comments/10qdg9s/is_it_possible_to_slightly_increase_all/
+\thinmuskip=6mu
+\medmuskip=8mu plus 4mu minus 6mu
+\thickmuskip=10mu plus 10mu
+
 \defaultfontfeatures{Scale=MatchLowercase}
 \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 
@@ -379,14 +385,11 @@ $endif$
   skipabove=\parskip,
   nobreak=true]{customcodeblock}
 
-\usepackage{fontspec}
+% Pass 'no-math' here to let unicode-math above handle the math fonts.
+\usepackage{fontspec}[no-math]
 \setmainfont{Arial}
 \setsansfont{Arial}
 \setmonofont{Noto Sans Mono}
-
-\setmathrm{Latin Modern Math}
-\setmathsf{Arial}
-\setmathtt{Noto Sans Mono}
 
 \usepackage{newunicodechar}
 % Use Arial Unicode to display various unicode symbols that might be present
