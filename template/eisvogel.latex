@@ -48,15 +48,7 @@
 \PassOptionsToPackage{unicode$for(hyperrefoptions)$,$hyperrefoptions$$endfor$}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames*,x11names*,table}{xcolor}
-$if(dir)$
-$if(latex-dir-rtl)$
-\PassOptionsToPackage{RTLdocument}{bidi}
-$endif$
-$endif$
-$if(CJKmainfont)$
-\PassOptionsToPackage{space}{xeCJK}
-$endif$
-%
+
 \documentclass[
   paper=letter,
   captions=tableheading,
@@ -71,12 +63,6 @@ $endif$
 \usepackage[absolute,overlay]{textpos}
 \usepackage{ifxetex,ifluatex}
 
-$if(luatexjapresetoptions)$
-  \ifluatex{}
-    \usepackage[$for(luatexjapresetoptions)$$luatexjapresetoptions$$sep$,$endfor$]{luatexja-preset}
-  \fi
-$endif$
-
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \IfFileExists{microtype.sty}{% use microtype if available
@@ -84,32 +70,13 @@ $endif$
   \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
 
-\makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
-\makeatother
+\KOMAoptions{parskip=half}
 
 \usepackage{xcolor}
 \definecolor{default-linkcolor}{HTML}{4077C0}
 \definecolor{default-filecolor}{HTML}{4077C0}
 \definecolor{default-citecolor}{HTML}{4077C0}
 \definecolor{default-urlcolor}{HTML}{4077C0}
-
-% TODO: Do we need this feature?
-$if(footnotes-pretty)$
-% load footmisc in order to customize footnotes (footmisc has to be loaded before hyperref, cf. https://tex.stackexchange.com/a/169124/144087)
-\usepackage[hang,flushmargin,bottom,multiple]{footmisc}
-\setlength{\footnotemargin}{0.8em} % set space between footnote nr and text
-\setlength{\footnotesep}{\baselineskip} % set space between multiple footnotes
-\setlength{\skip\footins}{0.3cm} % set space between page content and footnote
-\setlength{\footskip}{0.9cm} % set space between footnote and page bottom
-$endif$
 
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 
@@ -145,11 +112,7 @@ $endif$
 
 \urlstyle{same} % disable monospaced font for URLs
 
-$if(geometry)$
-\usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
-$else$
 \usepackage[top=0.5in,left=0.5in,right=0.5in,bottom=0.8in,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
-$endif$
 
 \setlength{\paperheight}{11in}
 \setlength{\paperwidth}{8.5in}
@@ -160,20 +123,6 @@ $if(logo)$
 \usepackage{anyfontsize}
 \usepackage{rotating}
 \usepackage{transparent}
-$endif$
-
-$if(highlighting-macros)$
-$highlighting-macros$
-
-% Workaround/bugfix from jannick0.
-% See https://github.com/jgm/pandoc/issues/4302#issuecomment-360669013)
-% or https://github.com/Wandmalfarbe/pandoc-latex-template/issues/2
-%
-% Redefine the verbatim environment 'Highlighting' to break long lines (with
-% the help of fvextra). Redefinition is necessary because it is unlikely that
-% pandoc includes fvextra in the default template.
-\usepackage{fvextra}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,fontsize=$if(code-block-font-size)$$code-block-font-size$$else$\small$endif$,commandchars=\\\{\}}
 $endif$
 
 % Left-justify the document.
@@ -195,29 +144,7 @@ $endif$
 % % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
-
 \usepackage{footnotebackref}
-$if(graphics)$
-\usepackage{graphicx}
-\makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-% Set default figure placement to htbp
-\makeatletter
-\def\fps@figure{htbp}
-\makeatother
-$endif$
-
-$if(strikeout)$
-\usepackage[normalem]{ulem}
-% Avoid problems with \sout in headers with hyperref
-\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
-$endif$
 
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
@@ -245,10 +172,6 @@ $endif$
 \usepackage{float}
 \floatplacement{figure}{$if(float-placement-figure)$$float-placement-figure$$else$H$endif$}
 
-$for(header-includes)$
-$header-includes$
-$endfor$
-
 % TCG docs tend to have deeply nested lists, too deep for Pandoc/Latex defaults.
 % Increase the limit to 9.
 \usepackage{enumitem}
@@ -262,26 +185,9 @@ $endfor$
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 
-$if(dir)$
-\ifxetex
-  % Load bidi as late as possible as it modifies e.g. graphicx
-  \usepackage{bidi}
-\fi
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
-  \TeXXeTstate=1
-  \newcommand{\RL}[1]{\beginR #1\endR}
-  \newcommand{\LR}[1]{\beginL #1\endL}
-  \newenvironment{RTL}{\beginR}{\endR}
-  \newenvironment{LTR}{\beginL}{\endL}
-\fi
-$endif$
-
-$if(csquotes)$
-\usepackage{csquotes}
-$endif$
 
 $if(title)$
-\title{$title$$if(thanks)$\thanks{$thanks$}$endif$}
+\title{$title$}
 $endif$
 $if(subtitle)$
 \usepackage{etoolbox}
@@ -295,20 +201,9 @@ $endif$
 \author{$for(author)$$author$$sep$ \and $endfor$}
 \date{$date$}
 
-$if(mainfont)$
-$else$
-% Workaround for bug in Polyglossia that breaks `\familydefault` when `\setmainlanguage` is used.
-% See https://github.com/Wandmalfarbe/pandoc-latex-template/issues/8
-% See https://github.com/reutenauer/polyglossia/issues/186
-% See https://github.com/reutenauer/polyglossia/issues/127
-\renewcommand*\familydefault{\sfdefault}
-$endif$
 % load polyglossia as late as possible as it *could* call bidi if RTL lang (e.g. Hebrew or Arabic)
 \usepackage{polyglossia}
 \setmainlanguage[]{english}
-$for(polyglossia-otherlangs)$
-  \setotherlanguage[$polyglossia-otherlangs.options$]{$polyglossia-otherlangs.name$}
-$endfor$
 
 %
 % for the background color of the title page
@@ -317,10 +212,7 @@ $if(titlepage)$
 \usepackage{pagecolor}
 \usepackage{afterpage}
 \usepackage{tikz}
-$if(geometry)$
-$else$
 \usepackage[top=0.5in,left=0.5in,right=0.5in,bottom=0.8in]{geometry}
-$endif$
 $endif$
 
 %
@@ -452,133 +344,8 @@ $endif$
 \setlength{\emergencystretch}{3em}  % prevent overfull lines
 
 %
-%
-% Listings
-%
-%
-
-$if(listings)$
-%
-% general listing colors
-%
-\definecolor{listing-background}{HTML}{F7F7F7}
-\definecolor{listing-rule}{HTML}{B3B2B3}
-\definecolor{listing-numbers}{HTML}{B3B2B3}
-\definecolor{listing-text-color}{HTML}{000000}
-\definecolor{listing-keyword}{HTML}{435489}
-\definecolor{listing-keyword-2}{HTML}{1284CA} % additional keywords
-\definecolor{listing-keyword-3}{HTML}{9137CB} % additional keywords
-\definecolor{listing-identifier}{HTML}{435489}
-\definecolor{listing-string}{HTML}{00999A}
-\definecolor{listing-comment}{HTML}{8E8E8E}
-
-\lstdefinestyle{eisvogel_listing_style}{
-  language         = java,
-$if(listings-disable-line-numbers)$
-  xleftmargin      = 0.6em,
-  framexleftmargin = 0.4em,
-$else$
-  numbers          = left,
-  xleftmargin      = 2.7em,
-  framexleftmargin = 2.5em,
-$endif$
-  backgroundcolor  = \color{listing-background},
-  basicstyle       = \color{listing-text-color}\linespread{1.0}$if(code-block-font-size)$$code-block-font-size$$else$\small$endif$\ttfamily{},
-  breaklines       = true,
-  frame            = single,
-  framesep         = 0.19em,
-  rulecolor        = \color{listing-rule},
-  frameround       = ffff,
-  tabsize          = 4,
-  numberstyle      = \color{listing-numbers},
-  aboveskip        = 1.0em,
-  belowskip        = 0.1em,
-  abovecaptionskip = 0em,
-  belowcaptionskip = 1.0em,
-  keywordstyle     = {\color{listing-keyword}\bfseries},
-  keywordstyle     = {[2]\color{listing-keyword-2}\bfseries},
-  keywordstyle     = {[3]\color{listing-keyword-3}\bfseries\itshape},
-  sensitive        = true,
-  identifierstyle  = \color{listing-identifier},
-  commentstyle     = \color{listing-comment},
-  stringstyle      = \color{listing-string},
-  showstringspaces = false,
-  escapeinside     = {/*@}{@*/}, % Allow LaTeX inside these special comments
-  literate         =
-  {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
-  {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
-  {à}{{\`a}}1 {è}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
-  {À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
-  {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
-  {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
-  {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
-  {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
-  {œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
-  {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
-  {€}{{\EUR}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
-  {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1
-  {…}{{\ldots}}1 {≥}{{>=}}1 {≤}{{<=}}1 {„}{{\glqq}}1 {“}{{\grqq}}1
-  {”}{{''}}1
-}
-\lstset{style=eisvogel_listing_style}
-
-%
-% Java (Java SE 12, 2019-06-22)
-%
-\lstdefinelanguage{Java}{
-  morekeywords={
-    % normal keywords (without data types)
-    abstract,assert,break,case,catch,class,continue,default,
-    do,else,enum,exports,extends,final,finally,for,if,implements,
-    import,instanceof,interface,module,native,new,package,private,
-    protected,public,requires,return,static,strictfp,super,switch,
-    synchronized,this,throw,throws,transient,try,volatile,while,
-    % var is an identifier
-    var
-  },
-  morekeywords={[2] % data types
-    % primitive data types
-    boolean,byte,char,double,float,int,long,short,
-    % String
-    String,
-    % primitive wrapper types
-    Boolean,Byte,Character,Double,Float,Integer,Long,Short
-    % number types
-    Number,AtomicInteger,AtomicLong,BigDecimal,BigInteger,DoubleAccumulator,DoubleAdder,LongAccumulator,LongAdder,Short,
-    % other
-    Object,Void,void
-  },
-  morekeywords={[3] % literals
-    % reserved words for literal values
-    null,true,false,
-  },
-  sensitive,
-  morecomment  = [l]//,
-  morecomment  = [s]{/*}{*/},
-  morecomment  = [s]{/**}{*/},
-  morestring   = [b]",
-  morestring   = [b]',
-}
-
-\lstdefinelanguage{XML}{
-  morestring      = [b]",
-  moredelim       = [s][\bfseries\color{listing-keyword}]{<}{\ },
-  moredelim       = [s][\bfseries\color{listing-keyword}]{</}{>},
-  moredelim       = [l][\bfseries\color{listing-keyword}]{/>},
-  moredelim       = [l][\bfseries\color{listing-keyword}]{>},
-  morecomment     = [s]{<?}{?>},
-  morecomment     = [s]{<!--}{-->},
-  commentstyle    = \color{listing-comment},
-  stringstyle     = \color{listing-string},
-  identifierstyle = \color{listing-identifier}
-}
-$endif$
-
-%
 % header and footer
 %
-$if(disable-header-and-footer)$
-$else$
 \usepackage{fancyhdr}
 
 \fancypagestyle{eisvogel-header-footer}{
@@ -616,18 +383,6 @@ $else$
   \renewcommand{\footrulewidth}{0pt}
 }
 \pagestyle{eisvogel-header-footer}
-$if(page-background)$
-\backgroundsetup{
-scale=1,
-color=black,
-opacity=$if(page-background-opacity)$$page-background-opacity$$else$0.2$endif$,
-angle=0,
-contents={%
-  \includegraphics[width=\paperwidth,height=\paperheight]{$page-background$}
-  }%
-}
-$endif$
-$endif$
 
 %%
 %% end added
@@ -805,28 +560,6 @@ $endif$
 %% end titlepage
 %%
 
-$if(title)$
-$if(abstract)$
-\begin{abstract}
-$abstract$
-\end{abstract}
-$endif$
-$endif$
-
-$for(include-before)$
-$include-before$
-$endfor$
-
-$if(has-frontmatter)$
-\mainmatter{}
-$endif$
 $body$
 
-$if(has-frontmatter)$
-\backmatter{}
-$endif$
-$for(include-after)$
-$include-after$
-
-$endfor$
 \end{document}
