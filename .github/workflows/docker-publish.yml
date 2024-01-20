@@ -104,6 +104,7 @@ jobs:
           input-md: guide.md
           output-pdf: guide.pdf
           output-tex: guide.tex
+          output-docx: guide.docx
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
@@ -112,6 +113,7 @@ jobs:
           path: |
             guide.pdf
             guide.tex
+            guide.docx
             mermaid-filter.err
         if: always() # Even if the render failed, upload whatever we had for debugging.
 
