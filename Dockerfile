@@ -1,62 +1,44 @@
 FROM pandoc/latex:3.1.1
 
-RUN tlmgr update --self && \
-    tlmgr install \
-    merriweather \
-    fontaxes \
-    mweights \
-    mdframed \
-    needspace \
-    sourcesanspro \
-    sourcecodepro \
-    titling \
-    ly1 \
-    pagecolor \
+# Packages that are needed despite not being used explicitly by the template:
+# catchfile, hardwrap, lineno, needspace, zref
+RUN tlmgr update --self && tlmgr install \
     adjustbox \
-    collectbox \
-    fvextra \
-    pdftexcmds \
+    anyfontsize \
+    appendix \
+    catchfile \
+    draftwatermark \
+    enumitem \
+    fontspec \
     footnotebackref \
-    zref \
-    fontawesome5 \
-    footmisc \
-    sectsty \
+    fvextra \
+    hardwrap \
     koma-script \
     lineno \
-    awesomebox \
-    background \
-    everypage \
-    xurl \
-    textpos \
-    anyfontsize \
-    transparent \
-    ulem \
-    hardwrap \
-    catchfile \
-    ragged2e \
-    enumitem \
     mathtools \
-    fontspec \
-    unicode-math \
-    titlesec \
-    newunicodechar \
-    tools \
-    changepage \
-    draftwatermark \
-    appendix \
+    mdframed \
     multirow \
-    xits
+    needspace \
+    newunicodechar \
+    pagecolor \
+    ragged2e \
+    textpos \
+    titling \
+    transparent \
+    unicode-math \
+    xits \
+    zref
 
 RUN apk upgrade && apk add --no-cache \
     bash \
+    chromium \
     coreutils \
-    sed \
     git \
     nodejs \
     npm \
-    chromium \
-    python3 \
     py3-pip \
+    python3 \
+    sed \
     yarn
 
 # Install MS core fonts, including Arial
@@ -77,15 +59,7 @@ RUN pip install pandocfilters
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN npm install --global --unsafe-perm puppeteer@21.7.0 imgur@2.3.0 mermaid-filter@1.4.7 typescript@5.3.3
-
-# Install latest pandiff, which has not been released in a while
-# This pre-release build has --reference-doc support for docx output
-RUN mkdir /src
-RUN cd /src && git clone https://github.com/davidar/pandiff.git
-RUN cd /src/pandiff && git checkout d1d468b2c4d81c622ff431ef718b1bf0daaa03db
-RUN cd /src/pandiff && npm install @types/node --save-dev
-RUN npm install --global /src/pandiff
+RUN npm install --global --unsafe-perm puppeteer@21.7.0 imgur@2.3.0 mermaid-filter@1.4.7 typescript@5.3.3 pandiff@0.6.0
 
 COPY ./img/* /resources/img/
 COPY ./template/* /resources/templates/

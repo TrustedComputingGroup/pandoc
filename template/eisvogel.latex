@@ -48,15 +48,7 @@
 \PassOptionsToPackage{unicode$for(hyperrefoptions)$,$hyperrefoptions$$endfor$}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames*,x11names*,table}{xcolor}
-$if(dir)$
-$if(latex-dir-rtl)$
-\PassOptionsToPackage{RTLdocument}{bidi}
-$endif$
-$endif$
-$if(CJKmainfont)$
-\PassOptionsToPackage{space}{xeCJK}
-$endif$
-%
+
 \documentclass[
   paper=letter,
   captions=tableheading,
@@ -71,12 +63,6 @@ $endif$
 \usepackage[absolute,overlay]{textpos}
 \usepackage{ifxetex,ifluatex}
 
-$if(luatexjapresetoptions)$
-  \ifluatex{}
-    \usepackage[$for(luatexjapresetoptions)$$luatexjapresetoptions$$sep$,$endfor$]{luatexja-preset}
-  \fi
-$endif$
-
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \IfFileExists{microtype.sty}{% use microtype if available
@@ -84,32 +70,13 @@ $endif$
   \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
 
-\makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
-\makeatother
+\KOMAoptions{parskip=half}
 
 \usepackage{xcolor}
 \definecolor{default-linkcolor}{HTML}{4077C0}
 \definecolor{default-filecolor}{HTML}{4077C0}
 \definecolor{default-citecolor}{HTML}{4077C0}
 \definecolor{default-urlcolor}{HTML}{4077C0}
-
-% TODO: Do we need this feature?
-$if(footnotes-pretty)$
-% load footmisc in order to customize footnotes (footmisc has to be loaded before hyperref, cf. https://tex.stackexchange.com/a/169124/144087)
-\usepackage[hang,flushmargin,bottom,multiple]{footmisc}
-\setlength{\footnotemargin}{0.8em} % set space between footnote nr and text
-\setlength{\footnotesep}{\baselineskip} % set space between multiple footnotes
-\setlength{\skip\footins}{0.3cm} % set space between page content and footnote
-\setlength{\footskip}{0.9cm} % set space between footnote and page bottom
-$endif$
 
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 
@@ -145,11 +112,7 @@ $endif$
 
 \urlstyle{same} % disable monospaced font for URLs
 
-$if(geometry)$
-\usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
-$else$
 \usepackage[top=0.5in,left=0.5in,right=0.5in,bottom=0.8in,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
-$endif$
 
 \setlength{\paperheight}{11in}
 \setlength{\paperwidth}{8.5in}
@@ -195,7 +158,6 @@ $endif$
 % % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
-
 \usepackage{footnotebackref}
 $if(graphics)$
 \usepackage{graphicx}
@@ -213,11 +175,6 @@ $if(graphics)$
 \makeatother
 $endif$
 
-$if(strikeout)$
-\usepackage[normalem]{ulem}
-% Avoid problems with \sout in headers with hyperref
-\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
-$endif$
 
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
@@ -245,10 +202,6 @@ $endif$
 \usepackage{float}
 \floatplacement{figure}{$if(float-placement-figure)$$float-placement-figure$$else$H$endif$}
 
-$for(header-includes)$
-$header-includes$
-$endfor$
-
 % TCG docs tend to have deeply nested lists, too deep for Pandoc/Latex defaults.
 % Increase the limit to 9.
 \usepackage{enumitem}
@@ -262,26 +215,9 @@ $endfor$
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 
-$if(dir)$
-\ifxetex
-  % Load bidi as late as possible as it modifies e.g. graphicx
-  \usepackage{bidi}
-\fi
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
-  \TeXXeTstate=1
-  \newcommand{\RL}[1]{\beginR #1\endR}
-  \newcommand{\LR}[1]{\beginL #1\endL}
-  \newenvironment{RTL}{\beginR}{\endR}
-  \newenvironment{LTR}{\beginL}{\endL}
-\fi
-$endif$
-
-$if(csquotes)$
-\usepackage{csquotes}
-$endif$
 
 $if(title)$
-\title{$title$$if(thanks)$\thanks{$thanks$}$endif$}
+\title{$title$}
 $endif$
 $if(subtitle)$
 \usepackage{etoolbox}
@@ -295,20 +231,9 @@ $endif$
 \author{$for(author)$$author$$sep$ \and $endfor$}
 \date{$date$}
 
-$if(mainfont)$
-$else$
-% Workaround for bug in Polyglossia that breaks `\familydefault` when `\setmainlanguage` is used.
-% See https://github.com/Wandmalfarbe/pandoc-latex-template/issues/8
-% See https://github.com/reutenauer/polyglossia/issues/186
-% See https://github.com/reutenauer/polyglossia/issues/127
-\renewcommand*\familydefault{\sfdefault}
-$endif$
 % load polyglossia as late as possible as it *could* call bidi if RTL lang (e.g. Hebrew or Arabic)
 \usepackage{polyglossia}
 \setmainlanguage[]{english}
-$for(polyglossia-otherlangs)$
-  \setotherlanguage[$polyglossia-otherlangs.options$]{$polyglossia-otherlangs.name$}
-$endfor$
 
 %
 % for the background color of the title page
@@ -317,10 +242,7 @@ $if(titlepage)$
 \usepackage{pagecolor}
 \usepackage{afterpage}
 \usepackage{tikz}
-$if(geometry)$
-$else$
 \usepackage[top=0.5in,left=0.5in,right=0.5in,bottom=0.8in]{geometry}
-$endif$
 $endif$
 
 %
@@ -577,8 +499,6 @@ $endif$
 %
 % header and footer
 %
-$if(disable-header-and-footer)$
-$else$
 \usepackage{fancyhdr}
 
 \fancypagestyle{eisvogel-header-footer}{
@@ -596,18 +516,30 @@ $else$
       {
         \color{white}
         $title$
+        $if(version)$
         \hskip 0.25em | \hskip 0.25em 
         Version $version$
+        $endif$
+        $if(revision)$
         \hskip 0.25em | \hskip 0.25em 
         Revision $revision$
+        $endif$
+        $if(date)$
         \hskip 0.25em | \hskip 0.25em 
         $date$
+        $endif$
+        $if(status)$
         \hskip 0.25em | \hskip 0.25em 
         $status$
+        $endif$
         \hfill
         Page \thepage
         \hfill
+        $if(status)$
         © TCG $year$
+        $else$
+        © TCG
+        $endif$
       }
     }
     \end{textblock*}
@@ -616,18 +548,6 @@ $else$
   \renewcommand{\footrulewidth}{0pt}
 }
 \pagestyle{eisvogel-header-footer}
-$if(page-background)$
-\backgroundsetup{
-scale=1,
-color=black,
-opacity=$if(page-background-opacity)$$page-background-opacity$$else$0.2$endif$,
-angle=0,
-contents={%
-  \includegraphics[width=\paperwidth,height=\paperheight]{$page-background$}
-  }%
-}
-$endif$
-$endif$
 
 %%
 %% end added
@@ -805,28 +725,6 @@ $endif$
 %% end titlepage
 %%
 
-$if(title)$
-$if(abstract)$
-\begin{abstract}
-$abstract$
-\end{abstract}
-$endif$
-$endif$
-
-$for(include-before)$
-$include-before$
-$endfor$
-
-$if(has-frontmatter)$
-\mainmatter{}
-$endif$
 $body$
 
-$if(has-frontmatter)$
-\backmatter{}
-$endif$
-$for(include-after)$
-$include-after$
-
-$endfor$
 \end{document}

@@ -275,9 +275,6 @@ echo "Date (English): ${DATE_ENGLISH}"
 export MERMAID_FILTER_THEME="forest"
 export MERMAID_FILTER_FORMAT="pdf"
 
-# Record the running result
-RESULT=0
-
 # Generate the pdf
 if [ -n "${pdf_output}" ]; then
 	echo "Generating PDF Output"
@@ -316,7 +313,7 @@ if [ -n "${pdf_output}" ]; then
 		--to=pdf \
 		--output="${pdf_output}"
 	if [ $? -ne 0 ]; then
-		RESULT=$?
+		FAILED=true
 		echo "PDF output failed"
 	else
 		echo "PDF output generated to file: ${pdf_output}"
@@ -361,7 +358,7 @@ if [ -n "${latex_output}" ]; then
 		--to=latex \
 		--output="${latex_output}"
 	if [ $? -ne 0 ]; then
-		RESULT=$?
+		FAILED=true
 		echo "LaTeX output failed"
 	else
 		echo "LaTeX output generated to file: ${latex_output}"
@@ -396,7 +393,7 @@ if [ -n "${docx_output}" ]; then
 		--to=docx \
 		--output="${docx_output}"
 	if [ $? -ne 0 ]; then
-		RESULT=$?
+		FAILED=true
 		echo "DOCX output failed"
 	else
 		echo "DOCX output generated to file: ${docx_output}"
@@ -446,14 +443,15 @@ if [ -n "${html_output}" ]; then
 		--to=html \
 		--output="${html_output}"
 	if [ $? -ne 0 ]; then
-		RESULT=$?
+		FAILED=true
 		echo "HTML output failed"
 	else
 		echo "HTML output generated to file: ${html_output}"
 	fi
 fi
 
-if [ ${RESULT} -ne 0 ]; then
+if [ "${FAILED}" = "true" ]; then
+	echo "Overall workflow failed"
 	exit 1
 fi
 
@@ -462,4 +460,5 @@ rm -f mermaid-filter.err
 rm -f .puppeteer.json
 rm  "${build_dir}/${input_file}.bak"
 
+echo "Overall workflow succeeded"
 exit 0
