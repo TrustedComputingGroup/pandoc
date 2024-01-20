@@ -70,15 +70,8 @@ $endif$
 \setstretch{1.0}
 \usepackage[absolute,overlay]{textpos}
 \usepackage{ifxetex,ifluatex}
-$if(mathspec)$
-  \ifxetex{}
-    \usepackage{mathspec}
-  \else
-    \usepackage{unicode-math}
-  \fi
-$else$
-  \usepackage{unicode-math}
-$endif$
+\usepackage{unicode-math}
+\setmathfont{Latin Modern Math}
 
 \defaultfontfeatures{Scale=MatchLowercase}
 \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
