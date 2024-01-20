@@ -643,7 +643,9 @@ $endif$
 
 \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
 {
-  \usepackage[scale=2, colorspec=0.95]{draftwatermark}
+  \usepackage[angle=0]{draftwatermark}
+  % use an image for the watermark so it doesn't interfere with selection
+  \SetWatermarkText{\includegraphics{/resources/img/draft.pdf}}
 }
 {}
 
