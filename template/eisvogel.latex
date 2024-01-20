@@ -393,7 +393,7 @@ $endif$
 % \setmathrm{Latin Modern Math}
 
 \usepackage[mathit=sym]{unicode-math}
-\setmathfont{Latin Modern Math}
+\setmathfont{XITS Math}
 
 \usepackage{newunicodechar}
 % Use Arial Unicode to display various unicode symbols that might be present
