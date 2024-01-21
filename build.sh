@@ -184,19 +184,32 @@ if test "${do_gitversion}" == "yes"; then
 		fi
 	fi
 
+	# Before scrubbing, grab the first character from 'major_minor'
+	first_char=${major_minor:0:1}
+
 	# scrub any leading non-numerical arguments from major_minor, ie v4.0, scrub any other nonsense as well
 	major_minor="$(tr -d "[:alpha:]" <<< "${major_minor}")"
 
-	extra_pandoc_options="--metadata=version:${major_minor} --metadata=revision:${revision}"
-	
+	extra_pandoc_options+=" --metadata=version:${major_minor}"
+
+	# Revision 0 = no revision
+	if [ "${revision}" -ne "0" ]; then
+		extra_pandoc_options+=" --metadata=revision:${revision}"
+	fi
+
 	# Do we set document status based on git version?
 	if [ "${do_gitstatus}" == "yes" ]; then
-		if [ "${revision}" == "0" ]; then
+		# If revision is 0 and the first character of the tag is 'p' (for Published)
+		if [ "${revision}" == "0" ] && [ "${first_char}" == "p" ]; then
 			status="PUBLISHED"
+		# If revision is 0 and the first character of the tag is 'r' (for Review)
+		elif [ "${revision}" == "0" ] && [ "${first_char}" == "r" ]; then
+			status="PUBLIC REVIEW"
+		# Revision is not 0, or the tag doesn't begin with a p or an r.
 		else
 			status="DRAFT"
 		fi
-		extra_pandoc_options+=" --metadata=status:${status}"
+		extra_pandoc_options+=" --metadata=status:\"${status}\""
 	fi
 
 fi # Done with git version handling

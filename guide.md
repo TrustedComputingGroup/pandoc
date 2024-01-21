@@ -1,7 +1,7 @@
 ---
 title: "TCG Markdown User's Guide"
 type: GUIDANCE
-status: DRAFT
+status: PUBLIC REVIEW
 template: bluetop
 ...
 
