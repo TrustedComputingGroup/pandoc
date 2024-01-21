@@ -321,7 +321,7 @@ $endif$
 \newunicodechar{→}{\textfallback{→}}
 
 \usepackage[mathit=sym]{unicode-math}
-\setmathfont{XITS Math}
+% \setmathfont{XITS Math}
 
 % Customize the spacing for math to relax it a bit.
 \thinmuskip=6mu

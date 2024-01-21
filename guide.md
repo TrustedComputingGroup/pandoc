@@ -739,16 +739,16 @@ we recommend using the functions `\symbf` (for functions) and `\symit` (for iden
 This avoids strange kerning issues where a string is treated as a product of single-character symbols, like in @eq:hmac-iso-bad-kerning:
 
 ```md
-$$ \symbf{HMAC}(K, \symit{"text"}) \coloneq H((\bar{K} \oplus \symit{OPAD}) \Vert H((\bar{K} \oplus \symit{IPAD}) \Vert \symit{"text"})) $$ {#eq:hmac-iso}
+$$ \symbf{HMAC}(K, \symit{someTEXT}) \coloneq H((\bar{K} \oplus \symit{OPAD}) \Vert H((\bar{K} \oplus \symit{IPAD}) \Vert \symit{someTEXT})) $$ {#eq:hmac-iso}
 ```
 
-$$ \symbf{HMAC}(K, \symit{"text"}) \coloneq H((\bar{K} \oplus \symit{OPAD}) \Vert H((\bar{K} \oplus \symit{IPAD}) \Vert \symit{"text"})) $$ {#eq:hmac-iso}
+$$ \symbf{HMAC}(K, \symit{someTEXT}) \coloneq H((\bar{K} \oplus \symit{OPAD}) \Vert H((\bar{K} \oplus \symit{IPAD}) \Vert \symit{someTEXT})) $$ {#eq:hmac-iso}
 
 ```md
-$$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
+$$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert someTEXT)) $$ {#eq:hmac-iso-bad-kerning}
 ```
 
-$$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
+$$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert someTEXT)) $$ {#eq:hmac-iso-bad-kerning}
 
 # Advanced Features
 
