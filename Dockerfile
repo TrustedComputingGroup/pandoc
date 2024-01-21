@@ -15,6 +15,7 @@ RUN tlmgr update --self && tlmgr install \
     hardwrap \
     koma-script \
     lineno \
+    luacode \
     mathtools \
     mdframed \
     multirow \

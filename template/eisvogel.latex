@@ -680,6 +680,15 @@ $if(logo)$
 }
 $endif$
 
+\usepackage{luacode}
+
+\begin{luacode}
+  function delete_quotes ( s )
+     s = string.gsub ( s, '"', '')
+     tex.sprint ( s )
+  end
+\end{luacode}
+
 % https://tex.stackexchange.com/questions/259015/one-liner-for-removing-characters-from-a-string
 \newcommand\DeleteQuotes[1]{\directlua{delete_quotes(\luastring{#1})}}
 
