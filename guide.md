@@ -1,7 +1,7 @@
 ---
 title: "TCG Markdown User's Guide"
 type: GUIDANCE
-status: '"DRAFT"'
+status: Draft
 template: bluetop
 ...
 
@@ -214,7 +214,7 @@ version: 0.1
 revision: 1
 date: 12/17/2023
 type: GUIDANCE
-status: DRAFT
+status: Draft
 ...
 ```
 
@@ -256,9 +256,9 @@ REQUIRED.
 
 REQUIRED.
 
-`status` should be one of: "DRAFT", or "PUBLISHED".
+`status` should be one of: "Draft", "Review", or "Published".
 
-If it is "DRAFT", then a gray watermark "DRAFT" will appear on all pages after the title page.
+If it is not "Published", then a gray watermark "DRAFT" will appear on all pages after the title page.
 
 #### template
 
