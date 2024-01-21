@@ -1,7 +1,7 @@
 ---
 title: "TCG Markdown User's Guide"
 type: GUIDANCE
-status: DRAFT
+status: Draft
 template: bluetop
 ...
 
@@ -214,7 +214,7 @@ version: 0.1
 revision: 1
 date: 12/17/2023
 type: GUIDANCE
-status: DRAFT
+status: Draft
 ...
 ```
 
@@ -256,9 +256,9 @@ REQUIRED.
 
 REQUIRED.
 
-`status` should be one of: "DRAFT", or "PUBLISHED".
+`status` should be one of: "Draft", "Review", or "Published".
 
-If it is "DRAFT", then a gray watermark "DRAFT" will appear on all pages after the title page.
+If it is not "Published", then a gray watermark "DRAFT" will appear on all pages after the title page.
 
 #### template
 
@@ -735,14 +735,14 @@ Sometimes, you just need a little inline math in the middle of a sentence, like 
 ## Words in equations
 
 To typeset complex equations with multi-character identifiers (such as the function "HMAC" or the word "OPAD") in @eq:hmac-iso,
-we recommend using the functions `\symbf` (for functions) and `\symup` (for identifiers).
+we recommend using the functions `\symbf` (for functions) and `\symit` (for identifiers).
 This avoids strange kerning issues where a string is treated as a product of single-character symbols, like in @eq:hmac-iso-bad-kerning:
 
 ```md
-$$ \symbf{HMAC}(K, \symup{"text"}) \coloneq H((\bar{K} \oplus \symup{OPAD}) \Vert H((\bar{K} \oplus \symup{IPAD}) \Vert \symup{"text"})) $$ {#eq:hmac-iso}
+$$ \symbf{HMAC}(K, \symit{"text"}) \coloneq H((\bar{K} \oplus \symit{OPAD}) \Vert H((\bar{K} \oplus \symit{IPAD}) \Vert \symit{"text"})) $$ {#eq:hmac-iso}
 ```
 
-$$ \symbf{HMAC}(K, \symup{"text"}) \coloneq H((\bar{K} \oplus \symup{OPAD}) \Vert H((\bar{K} \oplus \symup{IPAD}) \Vert \symup{"text"})) $$ {#eq:hmac-iso}
+$$ \symbf{HMAC}(K, \symit{"text"}) \coloneq H((\bar{K} \oplus \symit{OPAD}) \Vert H((\bar{K} \oplus \symit{IPAD}) \Vert \symit{"text"})) $$ {#eq:hmac-iso}
 
 ```md
 $$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}

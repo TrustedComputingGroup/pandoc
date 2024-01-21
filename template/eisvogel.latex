@@ -641,7 +641,7 @@ $if(template)$
   {}
 $endif$
 
-\ifthenelse{\equal{\detokenize{$status$}}{\detokenize{PUBLISHED}}}
+\ifthenelse{\equal{\detokenize{$status$}}{\detokenize{Published}}}
 {}
 {
   \usepackage[angle=0]{draftwatermark}
@@ -700,16 +700,18 @@ $endif$
     \vskip 1.5em
     Contact: \hyperlink{mailto:admin@trustedcomputinggroup.org}{admin@trustedcomputinggroup.org}
     \vskip 1.5em
-    \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{PUBLIC REVIEW}}}
+    \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{Review}}}
     {
       \textit{This document is an intermediate draft for comment only and is subject to change without notice. Readers should not design products based on this document.}
       \vskip 1.5em
-    }
-    {}
 
-    $if(status)$
-    \LARGE \textbf{$status$}\\
-    $endif$
+      \LARGE \textbf{TCG Public Review}\\
+    }
+    {
+      $if(status)$
+      \LARGE \textbf{TCG $status$}\\
+      $endif$
+    }
   \end{textblock*}
   \begin{textblock*}{2cm}(2cm,10.8cm)
   $if(type)$

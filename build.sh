@@ -201,15 +201,15 @@ if test "${do_gitversion}" == "yes"; then
 	if [ "${do_gitstatus}" == "yes" ]; then
 		# If revision is 0 and the first character of the tag is 'p' (for Published)
 		if [ "${revision}" == "0" ] && [ "${first_char}" == "p" ]; then
-			status="PUBLISHED"
+			status="Published"
 		# If revision is 0 and the first character of the tag is 'r' (for Review)
 		elif [ "${revision}" == "0" ] && [ "${first_char}" == "r" ]; then
-			status="PUBLIC REVIEW"
+			status="Review"
 		# Revision is not 0, or the tag doesn't begin with a p or an r.
 		else
-			status="DRAFT"
+			status="Draft"
 		fi
-		extra_pandoc_options+=" --metadata=status:\"${status}\""
+		extra_pandoc_options+=" --metadata=status:${status}"
 	fi
 
 fi # Done with git version handling
