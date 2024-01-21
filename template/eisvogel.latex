@@ -649,6 +649,8 @@ $endif$
   \SetWatermarkText{\includegraphics{/resources/img/draft.pdf}}
 }
 
+\usepackage{luacode}
+
 \begin{document}
 
 %%
@@ -679,8 +681,6 @@ $if(logo)$
   \includegraphics[width=$if(logo-width)$$logo-width$$else$52mm$endif$, left]{$logo$}
 }
 $endif$
-
-\usepackage{luacode}
 
 \begin{luacode}
   function delete_quotes ( s )
