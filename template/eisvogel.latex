@@ -320,8 +320,9 @@ $endif$
 \newunicodechar{™}{\textfallback{™}}
 \newunicodechar{→}{\textfallback{→}}
 
-\usepackage[mathit=sym]{unicode-math}
-\setmathfont{XITS Math}
+\usepackage{unicode-math}
+\setmathfont{TeX Gyre Schola} % For math mode in equations
+\setmathrm{TeX Gyre Schola} % For text mode in equations
 
 % Customize the spacing for math to relax it a bit.
 \thinmuskip=6mu
@@ -646,7 +647,7 @@ $endif$
 {
   \usepackage[angle=0]{draftwatermark}
   % use an image for the watermark so it doesn't interfere with selection
-  \SetWatermarkText{\includegraphics{/resources/img/draft.pdf}}
+  \SetWatermarkText{\includegraphics[width=8.5in, height=11in]{/resources/img/draft.pdf}}
 }
 
 \begin{document}

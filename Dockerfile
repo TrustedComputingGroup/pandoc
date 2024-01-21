@@ -23,11 +23,11 @@ RUN tlmgr update --self && tlmgr install \
     newunicodechar \
     pagecolor \
     ragged2e \
+    tex-gyre \
     textpos \
     titling \
     transparent \
     unicode-math \
-    xits \
     zref
 
 RUN apk upgrade && apk add --no-cache \

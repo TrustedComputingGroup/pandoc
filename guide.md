@@ -230,19 +230,19 @@ REQUIRED.
 
 #### version
 
-REQUIRED.
+REQUIRED unless you're using [`--gitversion`](#git-version-parsing)
 
 `version` is the version of the document.
 
 #### revision
 
-REQUIRED.
+OPTIONAL.
 
-`revision` is the revision of the document.
+`revision` is the revision of the document. If not provided, the revision is not printed.
 
 #### date
 
-REQUIRED.
+REQUIRED unless you're using [`--gitversion`](#git-version-parsing).
 
 `date` is the full date of the document, in YYYY/MM/DD form.
 
@@ -254,7 +254,7 @@ REQUIRED.
 
 #### status
 
-REQUIRED.
+REQUIRED unless you're using [`--gitstatus`](#git-status-parsing).
 
 `status` should be one of: "Draft", "Review", or "Published".
 
@@ -735,20 +735,20 @@ Sometimes, you just need a little inline math in the middle of a sentence, like 
 ## Words in equations
 
 To typeset complex equations with multi-character identifiers (such as the function "HMAC" or the word "OPAD") in @eq:hmac-iso,
-we recommend using the functions `\symbf` (for functions) and `\symit` (for identifiers).
+we recommend using the functions `\mathbf` (for functions) and `\mathit` (for identifiers).
 This avoids strange kerning issues where a string is treated as a product of single-character symbols, like in @eq:hmac-iso-bad-kerning:
 
 ```md
-$$ \symbf{HMAC}(K, \symit{"text"}) \coloneq H((\bar{K} \oplus \symit{OPAD}) \Vert H((\bar{K} \oplus \symit{IPAD}) \Vert \symit{"text"})) $$ {#eq:hmac-iso}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq H((\bar{K} \oplus \mathit{OPAD}) \Vert H((\bar{K} \oplus \mathit{IPAD}) \Vert \mathit{someTEXT})) $$ {#eq:hmac-iso}
 ```
 
-$$ \symbf{HMAC}(K, \symit{"text"}) \coloneq H((\bar{K} \oplus \symit{OPAD}) \Vert H((\bar{K} \oplus \symit{IPAD}) \Vert \symit{"text"})) $$ {#eq:hmac-iso}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq H((\bar{K} \oplus \mathit{OPAD}) \Vert H((\bar{K} \oplus \mathit{IPAD}) \Vert \mathit{someTEXT})) $$ {#eq:hmac-iso}
 
 ```md
-$$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
+$$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert someTEXT)) $$ {#eq:hmac-iso-bad-kerning}
 ```
 
-$$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
+$$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert someTEXT)) $$ {#eq:hmac-iso-bad-kerning}
 
 # Advanced Features
 
