@@ -530,7 +530,7 @@ $endif$
         $endif$
         $if(status)$
         \hskip 0.25em | \hskip 0.25em 
-        $status$
+        \DeleteQuotes{$status$}
         $endif$
         \hfill
         Page \thepage
@@ -641,7 +641,7 @@ $if(template)$
   {}
 $endif$
 
-\ifthenelse{\equal{\detokenize{$status$}}{\detokenize{PUBLISHED}}}
+\ifthenelse{\equal{\detokenize{\DeleteQuotes{$status$}}}{\detokenize{PUBLISHED}}}
 {}
 {
   \usepackage[angle=0]{draftwatermark}
@@ -680,6 +680,9 @@ $if(logo)$
 }
 $endif$
 
+% https://tex.stackexchange.com/questions/259015/one-liner-for-removing-characters-from-a-string
+\newcommand\DeleteQuotes[1]{\directlua{delete_quotes(\luastring{#1})}}
+
 % The titlepage with a background image has other text spacing and text size
 {
   \begin{textblock*}{10.5cm}(7cm,11cm)
@@ -700,7 +703,7 @@ $endif$
     \vskip 1.5em
     Contact: \hyperlink{mailto:admin@trustedcomputinggroup.org}{admin@trustedcomputinggroup.org}
     \vskip 1.5em
-    \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{PUBLIC REVIEW}}}
+    \ifthenelse{\equal{\detokenize{\DeleteQuotes{$status$}}}{\detokenize{PUBLIC REVIEW}}}
     {
       \textit{This document is an intermediate draft for comment only and is subject to change without notice. Readers should not design products based on this document.}
       \vskip 1.5em
@@ -708,7 +711,7 @@ $endif$
     {}
 
     $if(status)$
-    \LARGE \textbf{$status$}\\
+    \LARGE \textbf{\DeleteQuotes{$status$}}\\
     $endif$
   \end{textblock*}
   \begin{textblock*}{2cm}(2cm,10.8cm)
