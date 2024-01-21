@@ -769,7 +769,7 @@ When you do this, the tool will check for a recent [release](https://docs.github
 version number from the tag as the document version, and the number of commits since that tag as the revision.
 This way, you don't have to manually update the version or revision numbers in your document!
 
-### Conventions for Release Naming {#versioning-convensions}
+### Conventions for Release Naming
 
 The tooling expects the following conventions for tagging your releases:
 
@@ -788,7 +788,7 @@ Use `extra-build-options: "--gitstatus"` to let Git number AND set the status of
           extra-build-options: "--gitstatus"
 ```
 
-See [conventions](#versioning-conventions). When `--gitstatus` is enabled, the leading character
+See [Conventions](#conventions-for-release-naming). When `--gitstatus` is enabled, the leading character
 (which is expected to be one of: `v`, `r`, or `p`) is used to determine the document's status at
 revision 0. Commits on top of any type of version are always considered to be drafts.
 
