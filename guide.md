@@ -103,7 +103,7 @@ to get started a little more quickly. There's a little green "Use this template"
 
 ![The "Use this template" button](use_template.jpg){#fig:use-template-button width=50%}
 
-## GitHub Actions
+## GitHub Actions {#sec:basic-gh-action}
 
 Even if you used the template repository, please double-check this. As the tools are being actively developed,
 there is probably a newer version of the tools available for you!
@@ -749,6 +749,121 @@ $$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD
 ```
 
 $$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
+
+# Advanced Features
+
+In the GitHub action YAML, you can enable some advanced features.
+
+## Git Version Parsing
+
+Use `extra-build-options: "--gitversion"` to let Git number the document for you.
+
+```yaml
+      - name: Run the action
+        uses: trustedcomputinggroup/markdown@latest
+        with:
+          extra-build-options: "--gitversion"
+```
+
+When you do this, the tool will check for a recent [release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) in the repository. It will use the major.minor
+version number from the tag as the document version, and the number of commits since that tag as the revision.
+This way, you don't have to manually update the version or revision numbers in your document!
+
+### Conventions for Release Naming
+
+The tooling expects the following conventions for tagging your releases:
+
+* `vX.Y` indicates a regular draft of version X.Y.
+* `rX.Y` indicates a review draft of version X.Y.
+* `pX.Y` indicates a published version.
+
+## Git Status Parsing
+
+Use `extra-build-options: "--gitstatus"` to let Git number AND set the status of the document for you.
+
+```yaml
+      - name: Run the action
+        uses: trustedcomputinggroup/markdown@latest
+        with:
+          extra-build-options: "--gitstatus"
+```
+
+See [Conventions](#conventions-for-release-naming). When `--gitstatus` is enabled, the leading character
+(which is expected to be one of: `v`, `r`, or `p`) is used to determine the document's status at
+revision 0. Commits on top of any type of version are always considered to be drafts.
+
+## Running Pandoc with Releases
+
+@sec:basic-gh-action shows an example of a GitHub action that automatically runs Pandoc on every
+pull request and push to the repository.
+
+You may wish to run the workflow on releases, and attach the results to the release page, for
+example to have it generate a docx file to send to the Technical Committee for review, or when
+publishing a final version of a document.
+
+Use the example below as a guide for how you can have Pandoc automatically render the doc
+(maybe basing its [status](#git-status-parsing) on the released tag).
+
+```yaml
+# Render the spec to PDF and Word on releases.
+
+name: Render (PDF and Word)
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  render-spec-pdf:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/trustedcomputinggroup/pandoc:0.7.1
+    name: Render (pdf)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Render
+        uses: trustedcomputinggroup/markdown@v0.4.2
+        with:
+          input-md: spec.md
+          extra-build-options: "--gitstatus"
+          output-pdf: spec.pdf
+
+      - name: Upload to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: spec.pdf
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Part 1 (PDF)"
+
+  render-spec-docx:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/trustedcomputinggroup/pandoc:0.6.8
+    name: Render Part 1 (docx)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Render
+        uses: trustedcomputinggroup/markdown@v0.4.2
+        with:
+          input-md: spec.md
+          extra-build-options: "--gitstatus"
+          output-docx: spec.docx
+
+      - name: Upload to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: spec.docx
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Part 1 (Word)"
+```
 
 \beginappendices
 

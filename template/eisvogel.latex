@@ -641,13 +641,13 @@ $if(template)$
   {}
 $endif$
 
-\ifthenelse{\equal{\detokenize{$status$}}{\detokenize{DRAFT}}}
+\ifthenelse{\equal{\detokenize{$status$}}{\detokenize{PUBLISHED}}}
+{}
 {
   \usepackage[angle=0]{draftwatermark}
   % use an image for the watermark so it doesn't interfere with selection
   \SetWatermarkText{\includegraphics{/resources/img/draft.pdf}}
 }
-{}
 
 \begin{document}
 
@@ -700,8 +700,15 @@ $endif$
     \vskip 1.5em
     Contact: \hyperlink{mailto:admin@trustedcomputinggroup.org}{admin@trustedcomputinggroup.org}
     \vskip 1.5em
+    \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{PUBLIC REVIEW}}}
+    {
+      \textit{This document is an intermediate draft for comment only and is subject to change without notice. Readers should not design products based on this document.}
+      \vskip 1.5em
+    }
+    {}
+
     $if(status)$
-    \large \textsf{$status$}\\
+    \LARGE \textbf{$status$}\\
     $endif$
   \end{textblock*}
   \begin{textblock*}{2cm}(2cm,10.8cm)
