@@ -320,7 +320,7 @@ $endif$
 \newunicodechar{™}{\textfallback{™}}
 \newunicodechar{→}{\textfallback{→}}
 
-\usepackage[mathit=sym]{unicode-math}
+\usepackage{unicode-math}
 \setmathfont{XITS Math}
 
 % Customize the spacing for math to relax it a bit.
