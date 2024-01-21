@@ -735,14 +735,14 @@ Sometimes, you just need a little inline math in the middle of a sentence, like 
 ## Words in equations
 
 To typeset complex equations with multi-character identifiers (such as the function "HMAC" or the word "OPAD") in @eq:hmac-iso,
-we recommend using the functions `\symbf` (for functions) and `\symit` (for identifiers).
+we recommend using the functions `\mathbf` (for functions) and `\mathit` (for identifiers).
 This avoids strange kerning issues where a string is treated as a product of single-character symbols, like in @eq:hmac-iso-bad-kerning:
 
 ```md
-$$ \symbf{HMAC}(K, \symit{someTEXT}) \coloneq H((\bar{K} \oplus \symit{OPAD}) \Vert H((\bar{K} \oplus \symit{IPAD}) \Vert \symit{someTEXT})) $$ {#eq:hmac-iso}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq H((\bar{K} \oplus \mathit{OPAD}) \Vert H((\bar{K} \oplus \mathit{IPAD}) \Vert \mathit{someTEXT})) $$ {#eq:hmac-iso}
 ```
 
-$$ \symbf{HMAC}(K, \symit{someTEXT}) \coloneq H((\bar{K} \oplus \symit{OPAD}) \Vert H((\bar{K} \oplus \symit{IPAD}) \Vert \symit{someTEXT})) $$ {#eq:hmac-iso}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq H((\bar{K} \oplus \mathit{OPAD}) \Vert H((\bar{K} \oplus \mathit{IPAD}) \Vert \mathit{someTEXT})) $$ {#eq:hmac-iso}
 
 ```md
 $$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert someTEXT)) $$ {#eq:hmac-iso-bad-kerning}
