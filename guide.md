@@ -230,19 +230,19 @@ REQUIRED.
 
 #### version
 
-REQUIRED.
+REQUIRED unless you're using [`--gitversion`](#git-version-parsing)
 
 `version` is the version of the document.
 
 #### revision
 
-REQUIRED.
+OPTIONAL.
 
-`revision` is the revision of the document.
+`revision` is the revision of the document. If not provided, the revision is not printed.
 
 #### date
 
-REQUIRED.
+REQUIRED unless you're using [`--gitversion`](#git-version-parsing).
 
 `date` is the full date of the document, in YYYY/MM/DD form.
 
@@ -254,7 +254,7 @@ REQUIRED.
 
 #### status
 
-REQUIRED.
+REQUIRED unless you're using [`--gitstatus`](#git-status-parsing).
 
 `status` should be one of: "Draft", "Review", or "Published".
 
