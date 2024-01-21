@@ -750,6 +750,48 @@ $$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD
 
 $$ HMAC(K, "text") \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert "text")) $$ {#eq:hmac-iso-bad-kerning}
 
+# Advanced Features
+
+In the GitHub action YAML, you can enable some advanced features.
+
+## Git Version Parsing
+
+Use `extra-build-options: "--gitversion"` to let Git number the document for you.
+
+```yaml
+      - name: Run the action
+        uses: trustedcomputinggroup/markdown@latest
+        with:
+          extra-build-options: "--gitversion"
+```
+
+When you do this, the tool will check for a recent [release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) in the repository. It will use the major.minor
+version number from the tag as the document version, and the number of commits since that tag as the revision.
+This way, you don't have to manually update the version or revision numbers in your document!
+
+### Conventions for Release Naming {#versioning-convensions}
+
+The tooling expects the following conventions for tagging your releases:
+
+* `vX.Y` indicates a regular draft of version X.Y.
+* `rX.Y` indicates a review draft of version X.Y.
+* `pX.Y` indicates a published version.
+
+## Git Status Parsing
+
+Use `extra-build-options: "--gitstatus"` to let Git number AND set the status of the document for you.
+
+```yaml
+      - name: Run the action
+        uses: trustedcomputinggroup/markdown@latest
+        with:
+          extra-build-options: "--gitstatus"
+```
+
+See [conventions](#versioning-conventions). When `--gitstatus` is enabled, the leading character
+(which is expected to be one of: `v`, `r`, or `p`) is used to determine the document's status at
+revision 0. Commits on top of any type of version are always considered to be drafts.
+
 \beginappendices
 
 # Reporting Issues with the Tools
