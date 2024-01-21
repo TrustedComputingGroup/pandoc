@@ -777,7 +777,7 @@ The tooling expects the following conventions for tagging your releases:
 * `rX.Y` indicates a review draft of version X.Y.
 * `pX.Y` indicates a published version.
 
-## Git Status Parsing {#git-status}
+## Git Status Parsing
 
 Use `extra-build-options: "--gitstatus"` to let Git number AND set the status of the document for you.
 
@@ -802,7 +802,7 @@ example to have it generate a docx file to send to the Technical Committee for r
 publishing a final version of a document.
 
 Use the example below as a guide for how you can have Pandoc automatically render the doc
-(maybe basing its [status]{#git-status} on the released tag).
+(maybe basing its [status](#git-status-parsing) on the released tag).
 
 ```yaml
 # Render the spec to PDF and Word on releases.
