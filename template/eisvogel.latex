@@ -647,7 +647,7 @@ $endif$
 {
   \usepackage[angle=0]{draftwatermark}
   % use an image for the watermark so it doesn't interfere with selection
-  \SetWatermarkText{\includegraphics{/resources/img/draft.pdf}}
+  \SetWatermarkText{\includegraphics[width=8.5in, height=11in]{/resources/img/draft.pdf}}
 }
 
 \begin{document}
