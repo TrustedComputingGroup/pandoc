@@ -320,9 +320,9 @@ $endif$
 \newunicodechar{™}{\textfallback{™}}
 \newunicodechar{→}{\textfallback{→}}
 
-\usepackage[math-style=ISO]{unicode-math}
-\setmathfont{XITS Math} % For math mode in equations
-\setmathrm{XITS Math} % For text mode in equations
+\usepackage{unicode-math}
+\setmathfont{TeX Gyre Schola} % For math mode in equations
+\setmathrm{TeX Gyre Schola} % For text mode in equations
 
 % Customize the spacing for math to relax it a bit.
 \thinmuskip=6mu
