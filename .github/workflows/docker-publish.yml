@@ -101,19 +101,19 @@ jobs:
         uses: trustedcomputinggroup/markdown@latest
         with:
           extra-build-options: "--gitversion"
-          input-md: guide.md
-          output-pdf: guide.pdf
-          output-tex: guide.tex
-          output-docx: guide.docx
+          input-md: a_folder/guide.md
+          output-pdf: a_folder/guide.pdf
+          output-tex: a_folder/guide.tex
+          output-docx: a_folder/guide.docx
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
           name: samples
           path: |
-            guide.pdf
-            guide.tex
-            guide.docx
+            a_folder/guide.pdf
+            a_folder/guide.tex
+            a_folder/guide.docx
             mermaid-filter.err
         if: always() # Even if the render failed, upload whatever we had for debugging.
 
@@ -121,5 +121,5 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Generate latest PDF
-          file_pattern: guide.pdf
+          file_pattern: a_folder/guide.pdf
         if: github.event_name != 'pull_request'
