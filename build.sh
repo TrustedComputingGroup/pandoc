@@ -256,6 +256,7 @@ if [ "${table_rules}" == "yes" ]; then
 	extra_pandoc_options+=" --lua-filter=table-rules.lua"
 fi
 
+mkdir -p "${build_dir}/$(dirname ${input_file})"
 cp "${input_file}" "${build_dir}/${input_file}"
 
 # Hacks
