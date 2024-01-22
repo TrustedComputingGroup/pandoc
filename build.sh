@@ -256,6 +256,7 @@ if [ "${table_rules}" == "yes" ]; then
 	extra_pandoc_options+=" --lua-filter=table-rules.lua"
 fi
 
+mkdir -p "${build_dir}/$(dirname ${input_file})"
 cp "${input_file}" "${build_dir}/${input_file}"
 
 # Hacks
@@ -290,6 +291,7 @@ export MERMAID_FILTER_FORMAT="pdf"
 
 # Generate the pdf
 if [ -n "${pdf_output}" ]; then
+	mkdir -p "$(dirname ${pdf_output})"
 	echo "Generating PDF Output"
 	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
@@ -335,6 +337,7 @@ fi
 
 # Generate the LaTeX output
 if [ -n "${latex_output}" ]; then
+	mkdir -p "$(dirname ${latex_output})"
 	echo "Generating LaTeX Output"
 	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
@@ -380,6 +383,7 @@ fi
 
 # Generate the docx output
 if [ -n "${docx_output}" ]; then
+	mkdir -p "$(dirname ${docx_output})"
 	echo "Generating DOCX Output"
 	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
@@ -417,6 +421,7 @@ export MERMAID_FILTER_FORMAT="svg"
 
 # Generate the html output
 if [ -n "${html_output}" ]; then
+	mkdir -p "$(dirname ${html_output})"
 	echo "Generating html Output"
 	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
