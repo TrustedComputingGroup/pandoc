@@ -486,7 +486,9 @@ See @sec:figures for more information about cross-references to figures.
 
 See @sec:math for more information about cross-references to equations.
 
-## Informative Blocks
+## TCG-Specific Blocks
+
+### Informative Text
 
 TCG uses a special visual style to demarcate informative non-binding remarks within specifications.
 
@@ -523,6 +525,62 @@ The above Markdown code becomes:
 > | SPECIFICATION     | Usually                |
 > | GUIDANCE          | Rarely                 |
 > | REFERENCE         | Rarely                 |
+
+### Other Informative Blocks
+
+::: Warning :::
+These types of blocks are supported by the toolset, but not yet approved by TCG
+Marketing WG.
+:::::::::::::::
+
+Writers of a document may prefer more compact "informative" blocks with more
+obvious semantics, like the warning above. In this case, the text ist still
+contained within a "TCG Informative" gray box, but with a more meaningful
+header and no footer.
+
+To create an informative note, use the following syntax:
+
+```md
+::: Informative :::
+Pandoc calls this a
+["fenced div"](https://pandoc.org/chunkedhtml-demo/8.18-divs-and-spans.html).
+:::::::::::::::::::
+```
+
+::: Informative :::
+Pandoc calls this a
+["fenced div"](https://pandoc.org/chunkedhtml-demo/8.18-divs-and-spans.html).
+:::::::::::::::::::
+
+In addition to "Informative", the following other types of notes are supported:
+
+* Note
+* Example
+* Caveat
+* Tip
+* Warning
+
+::: Note :::
+This is a "Note" block.
+::::::::::::
+
+::: Example :::
+This is an "Example" block.
+:::::::::::::::
+
+::: Caveat :::
+This is a "Caveat" block.
+::::::::::::::
+
+::: Tip :::
+This is a "Tip" block.
+:::::::::::
+
+::: Warning :::
+This is a "Warning" block.
+:::::::::::::::
+
+The behavior of blocks with labels not specified above may change meaningfully in future versions of this toolkit, so use them at your own risk.
 
 # Figures {#sec:figures}
 
@@ -759,7 +817,7 @@ Table: Fruits (Pipe) {#tbl:fruits-grid}
 
 ## HTML Tables {#sec:html-tables}
 
-A rowspan/colspan table like @tbl:fruits-pipe can be implemented in HTML like
+A rowspan/colspan table like @tbl:fruits-grid can be implemented in HTML like
 the below. Note that this is a little easier to type, and a little harder to
 read in plain-text form. We recommend preferring [grid tables](#sec:grid-tables)
 to HTML tables, but HTML tables can be fine in certain situations (for example,
