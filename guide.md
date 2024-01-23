@@ -612,9 +612,13 @@ graph TD;
 
 # Tables {#sec:tables}
 
-We support two notation styles for tables: Markdown and HTML.
+We support several notation styles for tables.
 
 ## Markdown Tables
+
+There are several ways to write a table in Markdown.
+
+### Simple Markdown Tables {#sec:simple-markdown-tables}
 
 Small, simple tables like @tbl:shapes are easier to read in raw Markdown form in the following style:
 
@@ -636,25 +640,142 @@ Table: Shapes {#tbl:shapes}
 | Triangle     | 3                   |
 | Möbius strip | 1                   |
 
-
-
 Note the table caption and cross-reference in curly braces above the table.
 
-## HTML Tables
+### Multiline Markdown Tables {#sec:multiline-markdown-tables}
 
-For larger, or more complex tables like @tbl:fruits, it may be preferable to use HTML. If you want to make
-table cells span rows or columns, this is the only way to do it.
+Sometimes, you may need to write a lot of Markdown content in the cell of a table,
+and this content may need multiple lines in your editor.
 
 ```md
-<table id="tbl:fruits">
-    <caption>Fruits</caption>
+Table: Table Types {#tbl:table-types}
+
+-------------------------------------------------------------------------------
+**Table Kind**  **Easy?**   **Recommended?**    **References**
+--------------- ----------- ------------------- -------------------------------
+Simple          Yes         When each cell      @sec:simple-markdown-tables,
+Markdown                    is about one        @tbl:shapes
+Tables                      word or so.
+
+Multiline       Yes         When you have       @sec:multiline-markdown-tables,
+Markdown                    content that's      @tbl:table-types
+Tables                      more than a few
+                            words.
+
+Grid Markdown   No          When you have       @sec:grid-tables,
+Tables                      row or column       @tbl:fruits-grid
+                            spans and need
+                            full Markdown
+                            support (e.g.,
+                            crossrefs or
+                            equations).
+
+HTML            Yes         When you have       @sec:html-tables,
+Tables                      row or column       @tbl:fruits-html
+                            spans, and
+                            don't need
+                            full Markdown
+                            or don't mind
+                            doing all the
+                            styling in
+                            HTML.
+-------------------------------------------------------------------------------
+```
+
+Table: Table Types {#tbl:table-types}
+
+-------------------------------------------------------------------------------
+**Table Kind**  **Easy?**   **Recommended?**    **References**
+--------------- ----------- ------------------- -------------------------------
+Simple          Yes         When each cell      @sec:simple-markdown-tables,
+Markdown                    is about one        @tbl:shapes
+Tables                      word or so.
+
+Multiline       Yes         When you have       @sec:multiline-markdown-tables,
+Markdown                    content that's      @tbl:table-types
+Tables                      more than a few
+                            words.
+
+Grid Markdown   No          When you have       @sec:grid-tables,
+Tables                      row or column       @tbl:fruits-grid
+                            spans and need
+                            full Markdown
+                            support (e.g.,
+                            crossrefs or
+                            equations).
+
+HTML            Yes         When you have       @sec:html-tables,
+Tables                      row or column       @tbl:fruits-html
+                            spans, and
+                            don't need
+                            full Markdown
+                            or don't mind
+                            doing all the
+                            styling in
+                            HTML.
+-------------------------------------------------------------------------------
+
+### Grid Tables {#sec:grid-tables}
+
+You may have some data that needs to be presented in a table that allows you
+to make cells span rows or columns. Grid tables like @tbl:fruits-grid can be
+used for this. Note that editing these tables requires a bit more typing. It's
+recommended to use these only when you need row and column spanning.
+
+Some tools provide assistance for generating tables of this type. If you find
+a tool that is handy for editing Markdown grid-style tables, please send a PR
+to github.com/trustedcomputinggroup/pandoc!
+
+```md
+Table: Fruits (Pipe) {#tbl:fruits-grid}
+
++----------------------+----------------------------+
+| **Color and Fruit**  | **Mistaken for Vegetable** |
++=============+========+============================+
+|             | Red    | No                         |
+| Apple       +--------+----------------------------+
+|             | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+```
+
+Table: Fruits (Pipe) {#tbl:fruits-grid}
+
++----------------------+----------------------------+
+| **Color and Fruit**  | **Mistaken for Vegetable** |
++=============+========+============================+
+|             | Red    | No                         |
+| Apple       +--------+----------------------------+
+|             | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+
+## HTML Tables {#sec:html-tables}
+
+A rowspan/colspan table like @tbl:fruits-pipe can be implemented in HTML like
+the below. Note that this is a little easier to type, and a little harder to
+read in plain-text form. We recommend preferring [grid tables](#sec:grid-tables)
+to HTML tables, but HTML tables can be fine in certain situations (for example,
+a gradual migration away from a Word document using Pandoc, which typically
+converts Word tables into HTML).
+
+```md
+<table id="tbl:fruits-html">
+    <caption>Fruits (HTML)</caption>
     <tr>
-        <th colspan="2">Color and Fruit</th>
-        <th>Mistaken for Vegetable</th>
+        <th colspan="2"><strong>Color and Fruit</strong></th>
+        <th><strong>Mistaken for Vegetable</strong></th>
     </tr>
     <tr>
-        <td>Red</td>
         <td rowspan="2">Apple</td>
+        <td>Red</td>
         <td>No</td>
     </tr>
     <tr>
@@ -662,13 +783,13 @@ table cells span rows or columns, this is the only way to do it.
         <td>No</td>
     </tr>
     <tr>
-        <td>Red</td>
         <td>Tomato</td>
+        <td>Red</td>
         <td>Yes</td>
     </tr>
     <tr>
-        <td>Yellow</td>
         <td>Banana</td>
+        <td>Yellow</td>
         <td>No</td>
     </tr>
 </table>
@@ -676,15 +797,15 @@ table cells span rows or columns, this is the only way to do it.
 
 The above HTML table becomes the below:
 
-<table id="tbl:fruits">
-    <caption>Fruits</caption>
+<table id="tbl:fruits-html">
+    <caption>Fruits (HTML)</caption>
     <tr>
-        <th colspan="2">Color and Fruit</th>
-        <th>Mistaken for Vegetable</th>
+        <th colspan="2"><strong>Color and Fruit</strong></th>
+        <th><strong>Mistaken for Vegetable</strong></th>
     </tr>
     <tr>
-        <td>Red</td>
         <td rowspan="2">Apple</td>
+        <td>Red</td>
         <td>No</td>
     </tr>
     <tr>
@@ -692,13 +813,13 @@ The above HTML table becomes the below:
         <td>No</td>
     </tr>
     <tr>
-        <td>Red</td>
         <td>Tomato</td>
+        <td>Red</td>
         <td>Yes</td>
     </tr>
     <tr>
-        <td>Yellow</td>
         <td>Banana</td>
+        <td>Yellow</td>
         <td>No</td>
     </tr>
 </table>

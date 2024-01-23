@@ -300,7 +300,7 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=date:"${DATE}" \
 		--metadata=date-english:"${DATE_ENGLISH}" \
 		--metadata=year:"${YEAR}" \
-		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
+		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
 		"${build_dir}/${input_file}" \
 		--to=markdown \
 	| pandoc \
@@ -323,7 +323,7 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
+		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
 		${extra_pandoc_options} \
 		--to=pdf \
 		--output="${pdf_output}"
@@ -369,7 +369,7 @@ if [ -n "${latex_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
+		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
 		${extra_pandoc_options} \
 		--to=latex \
 		--output="${latex_output}"
@@ -392,7 +392,7 @@ if [ -n "${docx_output}" ]; then
 		--metadata=date:"${DATE}" \
 		--metadata=date-english:"${DATE_ENGLISH}" \
 		--metadata=year:"${YEAR}" \
-		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
+		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
 		"${build_dir}/${input_file}" \
 		--to=markdown \
 	| pandoc \
@@ -404,7 +404,7 @@ if [ -n "${docx_output}" ]; then
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
-		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
+		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
 		--reference-doc=/resources/templates/tcg_template.docx \
 		${extra_pandoc_options} \
 		--to=docx \
@@ -430,7 +430,7 @@ if [ -n "${html_output}" ]; then
 		--metadata=date:"${DATE}" \
 		--metadata=date-english:"${DATE_ENGLISH}" \
 		--metadata=year:"${YEAR}" \
-		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
+		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
 		"${build_dir}/${input_file}" \
 		--to=markdown \
 	| pandoc \
@@ -456,7 +456,7 @@ if [ -n "${html_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
+		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
 		${extra_pandoc_options} \
 		--to=html \
 		--output="${html_output}"
