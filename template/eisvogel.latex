@@ -286,6 +286,26 @@ $endif$
 }
 
 %
+% Define some colors that we'll use from style-fenced-divs.lua.
+%
+
+% Classic informative text color, for notes and examples.
+\definecolor{informative-background}{RGB}{224,224,224}
+\definecolor{informative-foreground}{RGB}{10,10,10}
+
+% Happy color, for tips.
+\definecolor{green-background}{RGB}{220,250,224}
+\definecolor{green-foreground}{RGB}{6,45,12}
+
+% Slightly scarier color, for caveats.
+\definecolor{orange-background}{RGB}{250,236,220}
+\definecolor{orange-foreground}{RGB}{46,27,5}
+
+% Very scary color, for warnings.
+\definecolor{red-background}{RGB}{250,220,220}
+\definecolor{red-foreground}{RGB}{46,5,5}
+
+%
 % code block style
 %
 \definecolor{codeblock-background}{RGB}{240,244,255}
