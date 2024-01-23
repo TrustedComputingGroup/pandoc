@@ -285,30 +285,54 @@ echo "Date: ${DATE}"
 echo "Year: ${YEAR}"
 echo "Date (English): ${DATE_ENGLISH}"
 
-# Run Pandoc
-export MERMAID_FILTER_THEME="forest"
-export MERMAID_FILTER_FORMAT="pdf"
+# We use the following Markdown and pandoc plugins:
+# * Regular (Pandoc) markdown flavor
+# * Support fenced_divs (for informative block div syntax)
+# * Implicit_figures for figure numbering/table-of-figures support for images and diagrams
+# * Multiline_tables and grid_tables to support nontrivial table content
+# * Table_captions so that tables can be captioned
+# * DISABLING 'markdown_in_html_blocks' which breaks the ability to embed tables in HTML form.
+FROM="markdown+fenced_divs+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks"
+
+# First, we do a Markdown->Markdown Pandoc pass. This serves two purposes:
+# 1. Generate the diagrams before pandoc-crossref starts its work. https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
+# 2. Mermaid-filter uses an actual browser to do its work, and sometimes that process times out. Retry if needed.
+do_mermaid() {
+	format=$1
+	md_file_in=$2
+	md_file_out=$3
+	export MERMAID_FILTER_THEME="forest"
+	export MERMAID_FILTER_FORMAT="${format}"
+	pandoc \
+		--filter=mermaid-filter \
+		--standalone \
+		--from=${FROM} \
+		"${md_file_in}" \
+		--to=markdown \
+		--output="${md_file_out}"
+}
+
+# For PDF, latex, and docx outputs, create PDF figures.
+if [ -n "${pdf_output}" -o "${latex_output}" -o "${docx_output}" ]; then
+	# Try up to 5 times to run the Mermaid filter.
+	n=0
+	until [ "$n" -ge 5 ]; do
+		do_mermaid "pdf" "${build_dir}/${input_file}" "${build_dir}/${input_file}.pdfmermaid.md" && break
+		n=$((n+1)) 
+	done
+fi
 
 # Generate the pdf
 if [ -n "${pdf_output}" ]; then
 	mkdir -p "$(dirname ${pdf_output})"
 	echo "Generating PDF Output"
-	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
-		--filter=mermaid-filter \
-		--standalone \
-		--metadata=date:"${DATE}" \
-		--metadata=date-english:"${DATE_ENGLISH}" \
-		--metadata=year:"${YEAR}" \
-		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
-		"${build_dir}/${input_file}" \
-		--to=markdown \
-	| pandoc \
 		--pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
 		--lua-filter=parse-html.lua \
+		--lua-filter=style-fenced-divs.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
 		--resource-path=.:/resources \
@@ -316,6 +340,9 @@ if [ -n "${pdf_output}" ]; then
 		--top-level-division=section \
 		--variable=block-headings \
 		--variable=numbersections \
+		--metadata=date:"${DATE}" \
+		--metadata=date-english:"${DATE_ENGLISH}" \
+		--metadata=year:"${YEAR}" \
 		--metadata=titlepage:true \
 		--metadata=titlepage-background:/resources/img/cover.png \
 		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
@@ -323,10 +350,11 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
+		--from=${FROM} \
 		${extra_pandoc_options} \
 		--to=pdf \
-		--output="${pdf_output}"
+		--output="${pdf_output}" \
+		"${build_dir}/${input_file}.pdfmermaid.md"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "PDF output failed"
@@ -339,22 +367,13 @@ fi
 if [ -n "${latex_output}" ]; then
 	mkdir -p "$(dirname ${latex_output})"
 	echo "Generating LaTeX Output"
-	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
-		--filter=mermaid-filter \
-		--standalone \
-		--metadata=date:"${DATE}" \
-		--metadata=date-english:"${DATE_ENGLISH}" \
-		--metadata=year:"${YEAR}" \
-		--from=markdown+implicit_figures+grid_tables+table_captions-markdown_in_html_blocks \
-		"${build_dir}/${input_file}" \
-		--to=markdown \
-	| pandoc \
 		--pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
 		--lua-filter=parse-html.lua \
+		--lua-filter=style-fenced-divs.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
 		--resource-path=.:/resources \
@@ -369,10 +388,11 @@ if [ -n "${latex_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
+		--from=${FROM} \
 		${extra_pandoc_options} \
 		--to=latex \
-		--output="${latex_output}"
+		--output="${latex_output}" \
+		"${build_dir}/${input_file}.pdfmermaid.md"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "LaTeX output failed"
@@ -387,28 +407,21 @@ if [ -n "${docx_output}" ]; then
 	echo "Generating DOCX Output"
 	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
-		--filter=mermaid-filter \
-		--standalone \
-		--metadata=date:"${DATE}" \
-		--metadata=date-english:"${DATE_ENGLISH}" \
-		--metadata=year:"${YEAR}" \
-		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
-		"${build_dir}/${input_file}" \
-		--to=markdown \
-	| pandoc \
 		--pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
 		--filter=/resources/filters/info.py \
 		--lua-filter=parse-html.lua \
+		--lua-filter=style-fenced-divs.lua \
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
-		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
+		--from=${FROM} \
 		--reference-doc=/resources/templates/tcg_template.docx \
 		${extra_pandoc_options} \
 		--to=docx \
-		--output="${docx_output}"
+		--output="${docx_output}" \
+		"${build_dir}/${input_file}.pdfmermaid.md"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "DOCX output failed"
@@ -417,23 +430,22 @@ if [ -n "${docx_output}" ]; then
 	fi
 fi
 
-export MERMAID_FILTER_FORMAT="svg"
+# For HTML outputs, create SVG figures.
+if [ -n "${html_output}" ]; then
+	# Try up to 5 times to run the Mermaid filter.
+	n=0
+	until [ "$n" -ge 5 ]; do
+		do_mermaid "svg" "${build_dir}/${input_file}" "${build_dir}/${input_file}.svgmermaid.md" && break
+		n=$((n+1)) 
+	done
+fi
+
 
 # Generate the html output
 if [ -n "${html_output}" ]; then
 	mkdir -p "$(dirname ${html_output})"
 	echo "Generating html Output"
-	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
 	pandoc \
-		--filter=mermaid-filter \
-		--standalone \
-		--metadata=date:"${DATE}" \
-		--metadata=date-english:"${DATE_ENGLISH}" \
-		--metadata=year:"${YEAR}" \
-		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
-		"${build_dir}/${input_file}" \
-		--to=markdown \
-	| pandoc \
 		--toc \
 		-V colorlinks=true \
 		-V linkcolor=blue \
@@ -444,6 +456,7 @@ if [ -n "${html_output}" ]; then
 		--lua-filter=parse-html.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
+		--lua-filter=style-fenced-divs.lua \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--top-level-division=section \
@@ -456,10 +469,11 @@ if [ -n "${html_output}" ]; then
 		--metadata=titlepage-rule-height:0 \
 		--metadata=colorlinks:true \
 		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=markdown+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks \
+		--from=${FROM} \
 		${extra_pandoc_options} \
 		--to=html \
-		--output="${html_output}"
+		--output="${html_output}" \
+		"${build_dir}/${input_file}.svgmermaid.md"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "HTML output failed"
@@ -474,6 +488,7 @@ if [ "${FAILED}" = "true" ]; then
 fi
 
 # on success remove this output
+rm -f core
 rm -f mermaid-filter.err
 rm -f .puppeteer.json
 rm  "${build_dir}/${input_file}.bak"
