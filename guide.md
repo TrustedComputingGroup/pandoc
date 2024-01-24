@@ -65,15 +65,17 @@ comment_, it can be considered a _normative statement_.
 
 EXAMPLE:
 
-> This is the first paragraph of 1–n paragraphs containing text of the kind
-> informative comment ...
->
-> This is the second paragraph of text of the kind informative comment ...
->
-> This is the nth paragraph of text of the kind informative comment ...
->
-> To understand the TCG specification, the user must read the specification.
-> (This use of MUST does not require any action).
+::: Informative :::
+This is the first paragraph of 1–n paragraphs containing text of the kind
+informative comment ...
+
+This is the second paragraph of text of the kind informative comment ...
+
+This is the nth paragraph of text of the kind informative comment ...
+
+To understand the TCG specification, the user must read the specification.
+(This use of MUST does not require any action).
+:::::::::::::::::::
 
 \tableofcontents
 
@@ -488,11 +490,11 @@ See @sec:math for more information about cross-references to equations.
 
 ## TCG-Specific Blocks
 
-### Informative Text
+### Informative Text Blocks
 
 TCG uses a special visual style to demarcate informative non-binding remarks within specifications.
 
-We use the Markdown "quote block" for this purpose. A quote looks like this:
+To create an informative note, use the following syntax:
 
 ```md
 > This is the only informative text block in this document.
@@ -512,33 +514,28 @@ We use the Markdown "quote block" for this purpose. A quote looks like this:
 
 The above Markdown code becomes:
 
-> This is the only informative text block in this document.
->
-> These blocks can contain multiple paragraphs, tied together by lines containing just
-> ">".
->
-> These blocks can even contain tables! However, be wary of providing tables that are
-> too large in an Informative Text block.
->
-> | **Document Type** | **Informative Blocks** |
-> | ----------------- | ---------------------- |
-> | SPECIFICATION     | Usually                |
-> | GUIDANCE          | Rarely                 |
-> | REFERENCE         | Rarely                 |
+<!---
+N.B., because this guide renders with '--plain_quotes', this particular
+informative block actually uses the ::: syntax.
+-->
 
-### Other Informative Blocks
+::: Informative :::
+This is the only informative text block in this document.
 
-::: Warning :::
-These types of blocks are supported by the toolset, but not yet approved by TCG
-Marketing WG.
-:::::::::::::::
+These blocks can contain multiple paragraphs, tied together by lines containing just
+">".
 
-Writers of a document may prefer more compact "informative" blocks with more
-obvious semantics, like the warning above. In this case, the text ist still
-contained within a "TCG Informative" gray box, but with a more meaningful
-header and no footer.
+These blocks can even contain tables! However, be wary of providing tables that are
+too large in an Informative Text block.
 
-To create an informative note, use the following syntax:
+| **Document Type** | **Informative Blocks** |
+| ----------------- | ---------------------- |
+| SPECIFICATION     | Usually                |
+| GUIDANCE          | Rarely                 |
+| REFERENCE         | Rarely                 |
+:::::::::::::::::::
+
+#### Alternative Syntax for Informative Text {#sec:informative-text-alt-syntax}
 
 ```md
 ::: Informative :::
@@ -553,6 +550,18 @@ Pandoc calls this a
 :::::::::::::::::::
 
 In addition to "Informative", the following other types of notes are supported:
+
+### Other Informative Blocks
+
+::: Warning :::
+These types of blocks are supported by the toolset, but not yet approved by TCG
+Marketing WG.
+:::::::::::::::
+
+Writers of a document may prefer more compact "informative" blocks with more
+obvious semantics, like the warning above. In this case, the text ist still
+contained within a "TCG Informative" gray box, but with a more meaningful
+header and no footer.
 
 * Note
 * Example
@@ -966,6 +975,25 @@ Use `extra-build-options: "--gitstatus"` to let Git number AND set the status of
         with:
           extra-build-options: "--gitstatus"
 ```
+
+## Regular Quote Support
+
+Use `extra-build-options: "--plain_quotes"` to disable the automatic conversion
+of block-quotes into TCG Informative Text blocks (see
+@sec:informative-text-alt-syntax). If you use this feature, block-quotes will
+look like the below:
+
+> I'm a block quote!
+>
+> Look at me!
+
+Instead of like the below:
+
+::: Informative :::
+I'm a block quote!
+
+Look at me!
+:::::::::::::::::::
 
 See [Conventions](#conventions-for-release-naming). When `--gitstatus` is enabled, the leading character
 (which is expected to be one of: `v`, `r`, or `p`) is used to determine the document's status at

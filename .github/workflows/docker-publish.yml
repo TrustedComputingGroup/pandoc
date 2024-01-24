@@ -100,7 +100,7 @@ jobs:
       - name: Run the action on guide
         uses: trustedcomputinggroup/markdown@latest
         with:
-          extra-build-options: "--gitversion"
+          extra-build-options: "--gitversion --plain_quotes"
           input-md: guide.md
           output-pdf: guide.pdf
           output-tex: guide.tex

@@ -9,6 +9,7 @@ docx_output=""
 html_output=""
 latex_output=""
 table_rules="no"
+block_quotes_are_informative_text="yes"
 
 # Setup an EXIT handler
 on_exit() {
@@ -40,10 +41,11 @@ print_usage() {
 	echo "  --gitversion: Use git describe to generate document version and revision metadata."
     echo "  --gitstatus: Use git describe to generate document version and revision metadata. Implies --gitversion"
 	echo "  --table_rules: style tables with borders (does not work well for tables that use rowspan or colspan)"
+	echo "  --plain_quotes: Support quote blocks as quote blocks instead of repurposing them as Informative Text blocks."
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,table_rules,pdf:,latex:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,table_rules,plain_quotes,pdf:,latex:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -91,6 +93,10 @@ while true; do
 		;;
 	--table_rules)
 		table_rules="yes"
+		shift
+		;;
+	--plain_quotes)
+		block_quotes_are_informative_text="no"
 		shift
 		;;
 	--help)
@@ -226,6 +232,7 @@ echo "build dir: ${build_dir}"
 echo "browser: ${browser}"
 echo "use git version: ${do_gitversion}"
 echo "use table rules: ${table_rules}"
+echo "make block quotes Informative Text: ${block_quotes_are_informative_text}"
 if test "${do_gitversion}" == "yes"; then
 	echo "Git Generated Document Version Information"
 	echo "    version: ${major_minor}"
@@ -254,6 +261,10 @@ EOF
 
 if [ "${table_rules}" == "yes" ]; then
 	extra_pandoc_options+=" --lua-filter=table-rules.lua"
+fi
+
+if [ "${block_quotes_are_informative_text}" == "yes" ]; then
+	extra_pandoc_options+=" --lua-filter=informative-quote-blocks.lua"
 fi
 
 mkdir -p "${build_dir}/$(dirname ${input_file})"
@@ -317,7 +328,8 @@ if [ -n "${pdf_output}" -o "${latex_output}" -o "${docx_output}" ]; then
 	# Try up to 5 times to run the Mermaid filter.
 	n=0
 	until [ "$n" -ge 5 ]; do
-		do_mermaid "pdf" "${build_dir}/${input_file}" "${build_dir}/${input_file}.pdfmermaid.md" && break
+		do_mermaid "pdf" "${build_dir}/${input_file}" "${build_dir}/${input_file}.pdfmermaid.md" && echo "Generated Mermaid diagrams" &&  break
+		echo "Assuming transient error. Retrying Mermaid diagrams..."
 		n=$((n+1)) 
 	done
 fi
