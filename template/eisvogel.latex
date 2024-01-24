@@ -62,6 +62,22 @@
 \setstretch{1.0}
 \usepackage[absolute,overlay]{textpos}
 \usepackage{ifxetex,ifluatex}
+\usepackage[space,spacefont="Arial"]{accsupp}
+\usepackage{transparent}
+
+% Use accessibility features to provide alt text for "informative" blocks that
+% also adds an invisible (but usable with screen readers) "end of informative"
+% block.
+\newcommand{\BeginDemarcated}[1]{
+  \BeginAccSupp{method=plain,ActualText=Start of #1}%
+  #1:
+  \EndAccSupp{}%
+}
+\newcommand{\EndDemarcated}[1]{
+  \BeginAccSupp{method=plain,ActualText=End of #1}%
+  {\transparent{0}{.}\vspace{-1em}}% Use a transparent period so it gets selected along with the block. Then retract the vertical space.
+  \EndAccSupp{}%
+}
 
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}

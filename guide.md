@@ -976,25 +976,6 @@ Use `extra-build-options: "--gitstatus"` to let Git number AND set the status of
           extra-build-options: "--gitstatus"
 ```
 
-## Regular Quote Support
-
-Use `extra-build-options: "--plain_quotes"` to disable the automatic conversion
-of block-quotes into TCG Informative Text blocks (see
-@sec:informative-text-alt-syntax). If you use this feature, block-quotes will
-look like the below:
-
-> I'm a block quote!
->
-> Look at me!
-
-Instead of like the below:
-
-::: Informative :::
-I'm a block quote!
-
-Look at me!
-:::::::::::::::::::
-
 See [Conventions](#conventions-for-release-naming). When `--gitstatus` is enabled, the leading character
 (which is expected to be one of: `v`, `r`, or `p`) is used to determine the document's status at
 revision 0. Commits on top of any type of version are always considered to be drafts.
@@ -1071,6 +1052,25 @@ jobs:
           overwrite: true
           body: "Part 1 (Word)"
 ```
+
+## Regular Quote Support
+
+Use `extra-build-options: "--plain_quotes"` to disable the automatic conversion
+of block-quotes into TCG Informative Text blocks (see
+@sec:informative-text-alt-syntax). If you use this feature, block-quotes will
+look like the below:
+
+> I'm a block quote!
+>
+> Look at me!
+
+Instead of like the below:
+
+::: Informative :::
+I'm a block quote!
+
+Look at me!
+:::::::::::::::::::
 
 \beginappendices
 
