@@ -902,6 +902,27 @@ To get an HTML table to word-wrap its contents, use `<colgroup>` to style the wi
 </colgroup>
 ```
 
+### Putting Very Large Tables in Landscape Mode
+
+```md
+TODO: Explain how to do this!
+```
+
+Sometimes, a table works better in landscape mode.
+
+Table: Wide Table {#tbl:wide .landscape}
+
+---------------------------------------------------------------------------
+Table           With            Many             Long               Columns
+--------------- --------------- ---------------- ------------------ -------
+This table is   Rather than     This is useful   For example,       See?
+not very tall,  swapping rows   for many types   requirements with
+but it sure is  and columns,    of information.  a lot of
+very wide.      this table just                  dimensions.
+                looks good in
+                landscape mode.
+---------------------------------------------------------------------------
+
 # Math {#sec:math}
 
 ## Equations

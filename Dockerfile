@@ -204,6 +204,7 @@ RUN tlmgr update --self && tlmgr install \
     needspace \
     newunicodechar \
     pagecolor \
+    pdflscape \
     ragged2e \
     tex-gyre \
     textpos \

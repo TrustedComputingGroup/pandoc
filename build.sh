@@ -346,6 +346,8 @@ if [ -n "${pdf_output}" ]; then
 		--standalone \
 		--template=eisvogel.latex \
 		--lua-filter=parse-html.lua \
+		--lua-filter=apply-classes-to-tables.lua \
+		--lua-filter=landscape-tables.lua \
 		--lua-filter=style-fenced-divs.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
@@ -387,6 +389,8 @@ if [ -n "${latex_output}" ]; then
 		--standalone \
 		--template=eisvogel.latex \
 		--lua-filter=parse-html.lua \
+		--lua-filter=apply-classes-to-tables.lua \
+		--lua-filter=landscape-tables.lua \
 		--lua-filter=style-fenced-divs.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
@@ -426,6 +430,8 @@ if [ -n "${docx_output}" ]; then
 		--standalone \
 		--filter=/resources/filters/info.py \
 		--lua-filter=parse-html.lua \
+		--lua-filter=apply-classes-to-tables.lua \
+		--lua-filter=landscape-tables.lua \
 		--lua-filter=style-fenced-divs.lua \
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
@@ -468,6 +474,8 @@ if [ -n "${html_output}" ]; then
 		--embed-resources \
 		--standalone \
 		--lua-filter=parse-html.lua \
+		--lua-filter=apply-classes-to-tables.lua \
+		--lua-filter=landscape-tables.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
 		--lua-filter=style-fenced-divs.lua \
