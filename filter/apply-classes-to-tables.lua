@@ -4,16 +4,22 @@
 
 function Table(el)
     if el.caption.long then
-        for key, inline in pairs(pandoc.utils.blocks_to_inlines(el.caption.long)) do
-            if inline then
-                print(string.format("%s: %s", key, inline))
-                -- local split = string.gmatch(inline.content, "%S+")
-                -- print("table long caption:")
-                -- for word in split do
-                --     print(string.format("table caption part: %s", word))
-                -- end
-            end
+        -- This thing has the entire line after "Table:"
+        local caption = pandoc.utils.stringify(el.caption.long)
+        local name = caption:match('(.*) {')
+        local braced = caption:match('{(.*)}')
+        print(string.format("name: '%s'", name))
+        print(string.format("braced: '%s'", braced))
+
+        if name then
+            el.caption.long = {pandoc.Plain(pandoc.Str(name))}
         end
+    end
+
+    -- Test
+
+    if el.caption.long then
+        print(string.format("table caption: %s", pandoc.utils.stringify(el.caption.long)))
     end
 
     if el.identifier then
