@@ -1,4 +1,6 @@
--- Pandoc Markdown has trouble with classes on tables.
+-- Pandoc Markdown has trouble parsing classes on tables: https://github.com/jgm/pandoc/issues/6317
+-- Implement our own extension that does the expected thing based on pandoc-crossref's solution
+-- (i.e., parse it out of the "caption")
 
 function Table(el)
     if el.caption.long then
