@@ -557,9 +557,7 @@ $endif$
 }
 
 \fancypagestyle{portrait-header-footer}{
-  \fancyhead{}
-  \fancyhead[C]{}
-  \fancyfoot{}
+  \fancyhf{}
   \fancyfoot[C]
   {
     \begin{textblock*}{8.5in}(0in,10.7in)

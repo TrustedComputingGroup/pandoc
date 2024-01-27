@@ -90,7 +90,7 @@ To understand the TCG specification, the user must read the specification.
 The purpose of this guide is to demonstrate the usage of Markdown-plus-GitHub
 document-authorship flows for TCG workgroup usage.
 
-This document contains a boilerplate section at the front called [Document Style](#document-style).
+This document contains a boilerplate section at the front called Document Style.
 This section is typically included in TCG Specifications and isn't as relevant for Guidance and
 Reference documents. It's included here, mainly to demonstrate the usage of Markdown for specifications.
 
@@ -463,7 +463,7 @@ int i = 42;
 
 ## Cross-References {#sec:cross-references}
 
-In general, sections, tables, figures, and equations can be referenced using the `@` symbol. These cross-references to not show up in the GitHub markdown, but will appear in the final document.
+In general, sections, tables, figures, and equations can be referenced using the `@` symbol. These cross-references do not show up in the GitHub markdown, but will appear in the final document.
 
 ### Sections
 
@@ -794,7 +794,7 @@ a tool that is handy for editing Markdown grid-style tables, please send a PR
 to github.com/trustedcomputinggroup/pandoc!
 
 ```md
-Table: Fruits (Pipe) {#tbl:fruits-grid}
+Table: Fruits (Grid) {#tbl:fruits-grid}
 
 +----------------------+----------------------------+
 | **Color and Fruit**  | **Mistaken for Vegetable** |
@@ -809,7 +809,7 @@ Table: Fruits (Pipe) {#tbl:fruits-grid}
 +-------------+--------+----------------------------+
 ```
 
-Table: Fruits (Pipe) {#tbl:fruits-grid}
+Table: Fruits (Grid) {#tbl:fruits-grid}
 
 +----------------------+----------------------------+
 | **Color and Fruit**  | **Mistaken for Vegetable** |
@@ -836,6 +836,11 @@ converts Word tables into HTML).
 ```md
 <table id="tbl:fruits-html">
     <caption>Fruits (HTML)</caption>
+    <colgroup>
+        <col style="width: 12%" />
+        <col style="width: 13%" />
+        <col style="width: 45%" />
+    </colgroup>
     <tr>
         <th colspan="2"><strong>Color and Fruit</strong></th>
         <th><strong>Mistaken for Vegetable</strong></th>
@@ -866,6 +871,11 @@ The above HTML table becomes the below:
 
 <table id="tbl:fruits-html">
     <caption>Fruits (HTML)</caption>
+    <colgroup>
+        <col style="width: 12%" />
+        <col style="width: 13%" />
+        <col style="width: 45%" />
+    </colgroup>
     <tr>
         <th colspan="2"><strong>Color and Fruit</strong></th>
         <th><strong>Mistaken for Vegetable</strong></th>
@@ -893,19 +903,48 @@ The above HTML table becomes the below:
 
 Note the table caption in the `<caption>` element, and the table cross-reference in the `id` attribute of the `<table>` element.
 
-To get an HTML table to word-wrap its contents, use `<colgroup>` to style the width of the columns.
+::: Caveat :::
+If you must use HTML tables, always use `<colgroup>` to style the width of the columns.
+If you don't, the table may run off the side of the page.
+::::::::::::::
+
+## Landscape Tables
+
+Sometimes, you may prefer for a table to be presented in landscape orientation.
+You can do this using the `.landscape` class, like in @tbl:wide:
 
 ```md
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 75%" />
-</colgroup>
-```
+Table: Wide Table {#tbl:wide .landscape}
 
-### Putting Very Large Tables in Landscape Mode
+---------------------------------------------------------------------------
+Lorem           Ipsum           Dolor            Sit          Amet
+--------------- --------------- ---------------- ------------ -------------
+consectetur     adipiscing      elit             sed          do
 
-```md
-TODO: Explain how to do this!
+eiusmod         tempor          incididunt       ut           labore
+
+et              dolore          magna            aliqua.      Ut
+
+enim            ad              minim            veniam,      quis
+
+nostrud         exercitation    ullamco          laboris      nisi
+
+ut              aliquip         ex               ea           commodo
+
+consequat.      Duis            aute             irure        dolor
+
+in              reprehenderit   in               voluptate    velit
+
+esse            cillum          dolore           eu           fugiat
+
+nulla           pariatur.       Excepteur        sint         occaecat
+
+cupidatat       non             proident,        sunt         in
+
+culpa           qui             officia          deserunt     mollit
+
+anim            id              est              laborum.
+---------------------------------------------------------------------------
 ```
 
 Sometimes, a table works better in landscape mode.
@@ -913,15 +952,78 @@ Sometimes, a table works better in landscape mode.
 Table: Wide Table {#tbl:wide .landscape}
 
 ---------------------------------------------------------------------------
-Table           With            Many             Long               Columns
---------------- --------------- ---------------- ------------------ -------
-This table is   Rather than     This is useful   For example,       See?
-not very tall,  swapping rows   for many types   requirements with
-but it sure is  and columns,    of information.  a lot of
-very wide.      this table just                  dimensions.
-                looks good in
-                landscape mode.
+Lorem           Ipsum           Dolor            Sit          Amet
+--------------- --------------- ---------------- ------------ -------------
+consectetur     adipiscing      elit             sed          do
+
+eiusmod         tempor          incididunt       ut           labore
+
+et              dolore          magna            aliqua.      Ut
+
+enim            ad              minim            veniam,      quis
+
+nostrud         exercitation    ullamco          laboris      nisi
+
+ut              aliquip         ex               ea           commodo
+
+consequat.      Duis            aute             irure        dolor
+
+in              reprehenderit   in               voluptate    velit
+
+esse            cillum          dolore           eu           fugiat
+
+nulla           pariatur.       Excepteur        sint         occaecat
+
+cupidatat       non             proident,        sunt         in
+
+culpa           qui             officia          deserunt     mollit
+
+anim            id              est              laborum.
 ---------------------------------------------------------------------------
+
+This also works for HTML tables, as in @tbl:wide-html by using the `class` attribute:
+
+```md
+<table id="tbl:wide-html" class="landscape">
+    <caption>Wide (HTML)</caption>
+    <colgroup>
+        <col style="width: 20%" />
+        <col style="width: 20%" />
+    </colgroup>
+    <tr>
+        <th><strong>Table Style</strong></th>
+        <th><strong>How to Provide Landscape Class</strong></th>
+    </tr>
+    <tr>
+        <td>Markdown</td>
+        <td><tt>{.landscape}</tt></td>
+    </tr>
+    <tr>
+        <td>HTML</td>
+        <td><tt>class="landscape"</tt></td>
+    </tr>
+</table>
+```
+
+<table id="tbl:wide-html" class="landscape">
+    <caption>Wide (HTML)</caption>
+    <colgroup>
+        <col style="width: 20%" />
+        <col style="width: 20%" />
+    </colgroup>
+    <tr>
+        <th><strong>Table Style</strong></th>
+        <th><strong>How to Provide Landscape Class</strong></th>
+    </tr>
+    <tr>
+        <td>Markdown</td>
+        <td><tt>{.landscape}</tt></td>
+    </tr>
+    <tr>
+        <td>HTML</td>
+        <td><tt>class="landscape"</tt></td>
+    </tr>
+</table>
 
 # Math {#sec:math}
 

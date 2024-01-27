@@ -300,12 +300,13 @@ echo "Date (English): ${DATE_ENGLISH}"
 
 # We use the following Markdown and pandoc plugins:
 # * Regular (Pandoc) markdown flavor
+# * With GitHub-flavored markdown auto identifiers
 # * Support fenced_divs (for informative block div syntax)
 # * Implicit_figures for figure numbering/table-of-figures support for images and diagrams
 # * Multiline_tables and grid_tables to support nontrivial table content
 # * Table_captions so that tables can be captioned
 # * DISABLING 'markdown_in_html_blocks' which breaks the ability to embed tables in HTML form.
-FROM="markdown+fenced_divs+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks"
+FROM="markdown+gfm_auto_identifiers+fenced_divs+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks"
 
 # First, we do a Markdown->Markdown Pandoc pass. This serves two purposes:
 # 1. Generate the diagrams before pandoc-crossref starts its work. https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
