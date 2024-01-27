@@ -179,38 +179,7 @@ COPY --from=build /usr/share/fonts/truetype/msttcorefonts/Arial* /usr/share/font
 COPY --from=build /usr/share/fonts/TTF/ARIAL* /usr/share/fonts/TTF/
 COPY --from=build /usr/share/fonts/truetype/noto/NotoSansMono* /usr/share/fonts/truetype/noto/
 RUN apt install -y fontconfig && \
-    fc-cache f
-
-# Packages that are needed despite not being used explicitly by the template:
-# catchfile, hardwrap, lineno, needspace, zref
-RUN tlmgr update --self && tlmgr install \
-    accsupp \
-    adjustbox \
-    anyfontsize \
-    appendix \
-    catchfile \
-    draftwatermark \
-    enumitem \
-    fontspec \
-    footnotebackref \
-    fvextra \
-    hardwrap \
-    koma-script \
-    lineno \
-    luacode \
-    mathtools \
-    mdframed \
-    multirow \
-    needspace \
-    newunicodechar \
-    pagecolor \
-    ragged2e \
-    tex-gyre \
-    textpos \
-    titling \
-    transparent \
-    unicode-math \
-    zref
+    fc-cache -f
 
 COPY ./img/* /resources/img/
 COPY ./template/* /resources/templates/

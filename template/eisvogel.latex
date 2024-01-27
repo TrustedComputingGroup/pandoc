@@ -64,6 +64,7 @@
 \usepackage{ifxetex,ifluatex}
 \usepackage[space,spacefont="Arial"]{accsupp}
 \usepackage{transparent}
+\usepackage{pdflscape}
 
 % Use accessibility features to provide alt text for "informative" blocks that
 % also adds an invisible (but usable with screen readers) "end of informative"
@@ -519,58 +520,55 @@ $endif$
 % header and footer
 %
 \usepackage{fancyhdr}
+\definecolor{footcolor}{RGB}{77,77,77}
 
-\fancypagestyle{eisvogel-header-footer}{
-  \fancyhead{}
-  \fancyhead[C]{}
-  \fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\newcommand{\tcgfoot}{%
+  {
+    \footnotesize
+    \color{white}
+    $title$
+    $if(version)$
+    \hskip 0.25em | \hskip 0.25em 
+    Version $version$
+    $endif$
+    $if(revision)$
+    \hskip 0.25em | \hskip 0.25em 
+    Revision $revision$
+    $endif$
+    $if(date)$
+    \hskip 0.25em | \hskip 0.25em 
+    $date$
+    $endif$
+    $if(status)$
+    \hskip 0.25em | \hskip 0.25em 
+    $status$
+    $endif$
+    \hfill
+    Page \thepage
+    \hfill
+    $if(status)$
+    © TCG $year$
+    $else$
+    © TCG
+    $endif$
+  }
+}
+
+\fancypagestyle{portrait-header-footer}{
+  \fancyhf{}
   \fancyfoot[C]
   {
     \begin{textblock*}{8.5in}(0in,10.7in)
-    \tikz \fill [color={rgb,255:red,77; green,77; blue,77}] (0in,0in) rectangle (8.5in,0.3in);
+    \tikz \fill [color=footcolor] (0in,0in) rectangle (8.5in,0.3in);
     \end{textblock*}
     \begin{textblock*}{8.00in}(0.25in,10.8in)
-    \footnotesize
-    {
-      {
-        \color{white}
-        $title$
-        $if(version)$
-        \hskip 0.25em | \hskip 0.25em 
-        Version $version$
-        $endif$
-        $if(revision)$
-        \hskip 0.25em | \hskip 0.25em 
-        Revision $revision$
-        $endif$
-        $if(date)$
-        \hskip 0.25em | \hskip 0.25em 
-        $date$
-        $endif$
-        $if(status)$
-        \hskip 0.25em | \hskip 0.25em 
-        $status$
-        $endif$
-        \hfill
-        Page \thepage
-        \hfill
-        $if(status)$
-        © TCG $year$
-        $else$
-        © TCG
-        $endif$
-      }
-    }
+    \tcgfoot
     \end{textblock*}
   }
-  \renewcommand{\headrulewidth}{0pt}
-  \renewcommand{\footrulewidth}{0pt}
 }
-\pagestyle{eisvogel-header-footer}
-
-%%
-%% end added
-%%
+\pagestyle{portrait-header-footer}
 
 %%
 %% https://tex.stackexchange.com/questions/637833/how-can-i-create-a-comma-separated-list-of-characters-from-a-text-string/637843#637843
