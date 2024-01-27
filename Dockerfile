@@ -1,9 +1,17 @@
-FROM debian:bookworm-20240110-slim as build
+ARG BASE=debian:bookworm-20240110-slim
+FROM ${BASE} as build
 
-# use --build-arg ARCH=aarch64-linux for arm64
-ARG ARCH=x86_64-linux
+# Support buildx builds.
+ARG TARGETPLATFORM
 
-RUN echo "Building for ${ARCH}"
+RUN if [ "${TARGETPLATFORM}" = "linux/arm64" ]; \
+    then echo "aarch64-linux" > /ARCH; \
+    elif [ "${TARGETPLATFORM}" = "linux/amd64" ]; \
+    then echo "x86_64-linux" > /ARCH; \
+    else echo "Unsupported architecture '${TARGETPLATFORM}'"; exit 1; \
+    fi
+
+RUN export ARCH=$(cat /ARCH) && echo "Building for ${ARCH}"
 
 # fun fact: if curl is not present, install-tl will fail even though it claims to fall back to wget.
 # TODO: Remove as many packages as possible from here and add them to a later package upgrade step.
@@ -11,15 +19,10 @@ RUN echo "Building for ${ARCH}"
 # modified are all up at the top.
 RUN apt update && apt install -y \
     bash \
-    chromium \
     coreutils \
     curl \
     git \
-    nodejs \
-    npm \
     perl \
-    python3 \
-    python3-pandocfilters \
     sed \
     wget \
     yarn
@@ -31,7 +34,8 @@ WORKDIR /texlive
 # install texlive ourselves instead of relying on the pandoc docker images,
 # so that we can control the cross-platform support (e.g., arm64 linux)
 # This layer takes several minutes to build.
-RUN wget "$MIRROR/install-tl-unx.tar.gz" && \
+RUN export ARCH=$(cat /ARCH) && \
+    wget "$MIRROR/install-tl-unx.tar.gz" && \
     tar xzvf ./install-tl-unx.tar.gz && \
     ./install-tl-*/install-tl -v --force-platform "${ARCH}" -s basic --no-interaction && \
     cd / && \
@@ -54,7 +58,7 @@ RUN git clone --branch=${PANDOC_REF} --depth=1 --quiet \
 # Replace the default project config from the Pandoc repo.
 COPY ./pandoc/cabal.project /usr/src/pandoc/cabal.project
 
-# This layer takes several minutes to build.
+# This layer also takes several minutes to build.
 RUN cabal v2-update \
   && cabal v2-build -j \
       --allow-newer 'lib:pandoc' \
@@ -74,7 +78,7 @@ WORKDIR /
 
 # Install arial via ttf-mscorefonts
 RUN wget http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.8.1_all.deb
-RUN apt install -y cabextract xfonts-utils
+RUN apt install -y cabextract xfonts-utils fontconfig
 RUN dpkg -i ttf-mscorefonts-installer_3.8.1_all.deb && \
     fc-cache -f
 
@@ -89,8 +93,7 @@ RUN apt install -y fonts-noto && \
 RUN mkdir -p /texlivebins && cp -r /usr/local/texlive/*/* /texlivebins
 
 # Build's done. Copy what we need into the actual container for running.
-FROM debian:bookworm-20240110-slim as run
-ARG ARCH
+FROM ${BASE} as run
 
 RUN apt update && apt install -y \
     bash \
@@ -111,7 +114,7 @@ RUN npm install --global --unsafe-perm puppeteer@21.7.0 imgur@2.3.0 mermaid-filt
 
 COPY --from=build /texlivebins /usr/local/texlive
 
-ENV PATH="${PATH}:/usr/local/texlive/bin/${ARCH}"
+ENV PATH="${PATH}:/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux"
 
 # Packages that are needed despite not being used explicitly by the template:
 # catchfile, fancyvrb, hardwrap, lineno, lualatex-math, luatexspace, needspace, pgf, zref
@@ -175,6 +178,8 @@ COPY --from=build /pandocbins /usr/local/bin
 COPY --from=build /usr/share/fonts/truetype/msttcorefonts/Arial* /usr/share/fonts/truetype/msttcorefonts/
 COPY --from=build /usr/share/fonts/TTF/ARIAL* /usr/share/fonts/TTF/
 COPY --from=build /usr/share/fonts/truetype/noto/NotoSansMono* /usr/share/fonts/truetype/noto/
+RUN apt install -y fontconfig && \
+    fc-cache f
 
 # Packages that are needed despite not being used explicitly by the template:
 # catchfile, hardwrap, lineno, needspace, zref
