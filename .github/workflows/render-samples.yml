@@ -1,0 +1,55 @@
+name: render samples
+
+on:
+  push:
+    branches: main
+  pull_request:
+
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  render-samples:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/trustedcomputinggroup/pandoc:latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Run the action on guide
+        uses: trustedcomputinggroup/markdown@latest
+        with:
+          extra-build-options: "--gitstatus --plain_quotes"
+          input-md: guide.md
+          output-pdf: guide.pdf
+          output-tex: guide.tex
+          output-docx: guide.docx
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@master
+        with:
+          name: PDF
+          path: guide.pdf
+
+      - name: Upload TeX
+        uses: actions/upload-artifact@master
+        with:
+          name: TeX
+          path: guide.tex
+
+      - name: Upload Docx
+        uses: actions/upload-artifact@master
+        with:
+          name: Word
+          path: guide.docx
+

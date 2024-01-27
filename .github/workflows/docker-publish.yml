@@ -3,9 +3,6 @@ name: build and publish
 on:
   release:
     types: [published]
-  push:
-    branches: main
-  pull_request:
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -56,22 +53,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build just the amd64 container to validate the build
-      # https://github.com/docker/build-push-action
-      # Upload it as "test" so we can use it to render samples
-      - name: Build Docker image
-        if: github.event_name != 'release'
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          platforms: linux/amd64
-          push: true
-          tags: ghcr.io/trustedcomputinggroup/pandoc_test
-
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
       - name: Build and publish Docker image
-        if: github.event_name == 'release'
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -81,8 +65,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  # Use the container we just built to build the guide and attach it to the release
   render-samples:
-    if: github.event_name != 'release'
     needs: build-container
     runs-on: ubuntu-latest
     container:
@@ -97,29 +81,28 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Run the action on guide
+      - name: Render for release
         uses: trustedcomputinggroup/markdown@latest
         with:
-          extra-build-options: "--gitversion --plain_quotes"
           input-md: guide.md
+          extra-build-options: "--gitstatus --plain_quotes"
           output-pdf: guide.pdf
-          output-tex: guide.tex
           output-docx: guide.docx
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@master
+      - name: Upload to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: samples
-          path: |
-            guide.pdf
-            guide.tex
-            guide.docx
-            mermaid-filter.err
-        if: always() # Even if the render failed, upload whatever we had for debugging.
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: guide.pdf
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Guide (PDF)"
 
-      - name: Check in latest render
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Upload to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          commit_message: Generate latest PDF
-          file_pattern: guide.pdf
-        if: github.event_name != 'pull_request'
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: guide.docx
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Guide (Word)"

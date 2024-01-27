@@ -143,8 +143,10 @@ fi
 
 # Get the default browser
 if ! browser=$(command -v "chromium-browser"); then
-	if ! browser=$(command -v "google-chrome"); then
-		browser="none"
+	if ! browser=$(command -v "chromium"); then
+		if ! browser=$(command -v "google-chrome"); then
+			browser="none"
+		fi
 	fi
 fi
 
