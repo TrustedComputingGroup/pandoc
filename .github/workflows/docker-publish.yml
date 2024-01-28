@@ -18,9 +18,6 @@ jobs:
       packages: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.1.1
-
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry
@@ -55,7 +52,6 @@ jobs:
       - name: Build and publish Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
           # Cache layers to and from the container repo.
           # This minimizes the amount of times we have to rebuild pandoc.
           cache-from: type=gha
