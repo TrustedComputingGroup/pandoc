@@ -1,6 +1,5 @@
 packages: .
           pandoc-lua-engine
-          pandoc-server
           pandoc-cli
 extra-packages: pandoc-crossref
 flags: +embed_data_files

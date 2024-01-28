@@ -12,10 +12,46 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  # Build a fresh container for the PR.
+  build-container:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+
+      # Login against a Docker registry
+      # https://github.com/docker/login-action
+      - name: Log into registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push Docker image as "pandoc_test"
+      # Only amd64, since we're just building a container
+      # to be used below in the GH action runner.
+      - name: Build and publish Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          # Cache layers from the container repo.
+          # This minimizes the amount of times we have to rebuild pandoc.
+          # Read-only: Avoid cluttering up the cache on pull requests.
+          cache-from: type=gha
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/trustedcomputinggroup/pandoc_test
+
   render-samples:
+    needs: build-container
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/trustedcomputinggroup/pandoc:latest
+      image: ghcr.io/trustedcomputinggroup/pandoc_test
     permissions:
       contents: write
 
