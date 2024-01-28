@@ -317,6 +317,7 @@ do_mermaid() {
 	md_file_out=$3
 	export MERMAID_FILTER_THEME="forest"
 	export MERMAID_FILTER_FORMAT="${format}"
+	export MERMAID_FILTER_BACKGROUND="transparent"
 	pandoc \
 		--filter=mermaid-filter \
 		--standalone \
@@ -348,7 +349,7 @@ if [ -n "${pdf_output}" ]; then
 		--template=eisvogel.latex \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
-		--lua-filter=landscape-tables.lua \
+		--lua-filter=landscape-pages.lua \
 		--lua-filter=style-fenced-divs.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
@@ -391,7 +392,7 @@ if [ -n "${latex_output}" ]; then
 		--template=eisvogel.latex \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
-		--lua-filter=landscape-tables.lua \
+		--lua-filter=landscape-pages.lua \
 		--lua-filter=style-fenced-divs.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
@@ -432,7 +433,7 @@ if [ -n "${docx_output}" ]; then
 		--filter=/resources/filters/info.py \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
-		--lua-filter=landscape-tables.lua \
+		--lua-filter=landscape-pages.lua \
 		--lua-filter=style-fenced-divs.lua \
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
@@ -476,7 +477,7 @@ if [ -n "${html_output}" ]; then
 		--standalone \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
-		--lua-filter=landscape-tables.lua \
+		--lua-filter=landscape-pages.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
 		--lua-filter=style-fenced-divs.lua \

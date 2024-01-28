@@ -908,123 +908,6 @@ If you must use HTML tables, always use `<colgroup>` to style the width of the c
 If you don't, the table may run off the side of the page.
 ::::::::::::::
 
-## Landscape Tables
-
-Sometimes, you may prefer for a table to be presented in landscape orientation.
-You can do this using the `.landscape` class, like in @tbl:wide:
-
-```md
-Table: Wide Table {#tbl:wide .landscape}
-
----------------------------------------------------------------------------
-Lorem           Ipsum           Dolor            Sit          Amet
---------------- --------------- ---------------- ------------ -------------
-consectetur     adipiscing      elit             sed          do
-
-eiusmod         tempor          incididunt       ut           labore
-
-et              dolore          magna            aliqua.      Ut
-
-enim            ad              minim            veniam,      quis
-
-nostrud         exercitation    ullamco          laboris      nisi
-
-ut              aliquip         ex               ea           commodo
-
-consequat.      Duis            aute             irure        dolor
-
-in              reprehenderit   in               voluptate    velit
-
-esse            cillum          dolore           eu           fugiat
-
-nulla           pariatur.       Excepteur        sint         occaecat
-
-cupidatat       non             proident,        sunt         in
-
-culpa           qui             officia          deserunt     mollit
-
-anim            id              est              laborum.
----------------------------------------------------------------------------
-```
-
-Sometimes, a table works better in landscape mode.
-
-Table: Wide Table {#tbl:wide .landscape}
-
----------------------------------------------------------------------------
-Lorem           Ipsum           Dolor            Sit          Amet
---------------- --------------- ---------------- ------------ -------------
-consectetur     adipiscing      elit             sed          do
-
-eiusmod         tempor          incididunt       ut           labore
-
-et              dolore          magna            aliqua.      Ut
-
-enim            ad              minim            veniam,      quis
-
-nostrud         exercitation    ullamco          laboris      nisi
-
-ut              aliquip         ex               ea           commodo
-
-consequat.      Duis            aute             irure        dolor
-
-in              reprehenderit   in               voluptate    velit
-
-esse            cillum          dolore           eu           fugiat
-
-nulla           pariatur.       Excepteur        sint         occaecat
-
-cupidatat       non             proident,        sunt         in
-
-culpa           qui             officia          deserunt     mollit
-
-anim            id              est              laborum.
----------------------------------------------------------------------------
-
-This also works for HTML tables, as in @tbl:wide-html by using the `class` attribute:
-
-```md
-<table id="tbl:wide-html" class="landscape">
-    <caption>Wide (HTML)</caption>
-    <colgroup>
-        <col style="width: 20%" />
-        <col style="width: 20%" />
-    </colgroup>
-    <tr>
-        <th><strong>Table Style</strong></th>
-        <th><strong>How to Provide Landscape Class</strong></th>
-    </tr>
-    <tr>
-        <td>Markdown</td>
-        <td><tt>{.landscape}</tt></td>
-    </tr>
-    <tr>
-        <td>HTML</td>
-        <td><tt>class="landscape"</tt></td>
-    </tr>
-</table>
-```
-
-<table id="tbl:wide-html" class="landscape">
-    <caption>Wide (HTML)</caption>
-    <colgroup>
-        <col style="width: 20%" />
-        <col style="width: 20%" />
-    </colgroup>
-    <tr>
-        <th><strong>Table Style</strong></th>
-        <th><strong>How to Provide Landscape Class</strong></th>
-    </tr>
-    <tr>
-        <td>Markdown</td>
-        <td><tt>{.landscape}</tt></td>
-    </tr>
-    <tr>
-        <td>HTML</td>
-        <td><tt>class="landscape"</tt></td>
-    </tr>
-</table>
-
 # Math {#sec:math}
 
 ## Equations
@@ -1194,6 +1077,122 @@ I'm a block quote!
 
 Look at me!
 :::::::::::::::::::
+
+## Landscape Tables
+
+Sometimes, you may prefer for a table to be presented in landscape orientation.
+You can do this using the `.landscape` class, like in @tbl:wide:
+
+```md
+Table: Wide Table {#tbl:wide .landscape}
+
+---------------------------------------------------------------------------
+Lorem           Ipsum           Dolor            Sit          Amet
+--------------- --------------- ---------------- ------------ -------------
+consectetur     adipiscing      elit             sed          do
+
+eiusmod         tempor          incididunt       ut           labore
+
+et              dolore          magna            aliqua.      Ut
+
+enim            ad              minim            veniam,      quis
+
+nostrud         exercitation    ullamco          laboris      nisi
+
+ut              aliquip         ex               ea           commodo
+
+consequat.      Duis            aute             irure        dolor
+
+in              reprehenderit   in               voluptate    velit
+
+esse            cillum          dolore           eu           fugiat
+
+nulla           pariatur.       Excepteur        sint         occaecat
+
+cupidatat       non             proident,        sunt         in
+
+culpa           qui             officia          deserunt     mollit
+
+anim            id              est              laborum.
+---------------------------------------------------------------------------
+```
+
+This also works for HTML tables, by using the `class` attribute:
+
+```md
+<table id="tbl:wide-html" class="landscape">
+...
+```
+
+Table: Wide Table {#tbl:wide .landscape}
+
+---------------------------------------------------------------------------
+Lorem           Ipsum           Dolor            Sit          Amet
+--------------- --------------- ---------------- ------------ -------------
+consectetur     adipiscing      elit             sed          do
+
+eiusmod         tempor          incididunt       ut           labore
+
+et              dolore          magna            aliqua.      Ut
+
+enim            ad              minim            veniam,      quis
+
+nostrud         exercitation    ullamco          laboris      nisi
+
+ut              aliquip         ex               ea           commodo
+
+consequat.      Duis            aute             irure        dolor
+
+in              reprehenderit   in               voluptate    velit
+
+esse            cillum          dolore           eu           fugiat
+
+nulla           pariatur.       Excepteur        sint         occaecat
+
+cupidatat       non             proident,        sunt         in
+
+culpa           qui             officia          deserunt     mollit
+
+anim            id              est              laborum.
+---------------------------------------------------------------------------
+
+## Landscape Figures
+
+Figures can be placed on landscape pages as in @fig:_landscape_swimlane by including the string `_landscape_` in the ID:
+
+````md
+```mermaid {caption="Complicated Swimlane" #fig:_landscape_swimlane width=3000}
+sequenceDiagram
+Alice->>Bob: Hello
+Bob->>Carl: Hello
+Carl->>Debbie: Hello
+Debbie->>Eve: Hello
+Eve->>Frank: Hello
+Frank->>Gertrude: Hello
+Gertrude->>Frank: Goodbye
+Frank->>Eve: Goodbye
+Eve->>Debbie: Goodbye
+Debbie->>Carl: Goodbye
+Carl->>Bob: Goodbye
+Bob->>Alice: Goodbye
+```
+````
+
+```mermaid {caption="Complicated Swimlane" #fig:_landscape_swimlane width=3000}
+sequenceDiagram
+Alice->>Bob: Hello
+Bob->>Carl: Hello
+Carl->>Debbie: Hello
+Debbie->>Eve: Hello
+Eve->>Frank: Hello
+Frank->>Gertrude: Hello
+Gertrude->>Frank: Goodbye
+Frank->>Eve: Goodbye
+Eve->>Debbie: Goodbye
+Debbie->>Carl: Goodbye
+Carl->>Bob: Goodbye
+Bob->>Alice: Goodbye
+```
 
 \beginappendices
 
