@@ -59,7 +59,7 @@ jobs:
           # Cache layers to and from the container repo.
           # This minimizes the amount of times we have to rebuild pandoc.
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

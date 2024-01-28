@@ -99,6 +99,12 @@ RUN apt install -y fonts-noto
 # Build's done. Copy what we need into the actual container for running.
 FROM ${BASE} as run
 
+# These binaries are by far the most costly part of the build. Grab them first to minimize invalidation.
+COPY --from=build-pandoc /pandocbins /usr/local/bin
+
+# These binaries are the second most costly part of the build.
+COPY --from=build-texlive /texlivebins /usr/local/texlive
+
 RUN apt update && apt install -y \
     bash \
     chromium \
@@ -115,8 +121,6 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 RUN npm install --global --unsafe-perm puppeteer@21.7.0 imgur@2.3.0 mermaid-filter@1.4.7 typescript@5.3.3 pandiff@0.6.0
-
-COPY --from=build-texlive /texlivebins /usr/local/texlive
 
 # Lazy: Just put both possible texlive paths into the path. Only one will get populated.
 ENV PATH="${PATH}:/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux"
@@ -176,8 +180,6 @@ RUN tlmgr update --self && tlmgr install \
     upquote \
     xcolor \
     zref
-
-COPY --from=build-pandoc /pandocbins /usr/local/bin
 
 # Copy only the fonts we're using from the template.
 COPY --from=build-fonts /usr/share/fonts/truetype/msttcorefonts/Arial* /usr/share/fonts/truetype/msttcorefonts/
