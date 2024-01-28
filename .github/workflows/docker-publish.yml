@@ -32,7 +32,6 @@ jobs:
 
       # Set up QEMU for cross-platform builds below
       - name: Set up QEMU
-        if: github.event_name == 'release'
         uses: docker/setup-qemu-action@v1
         with:
           image: tonistiigi/binfmt:latest
@@ -44,7 +43,6 @@ jobs:
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
-        if: github.event_name == 'release'
         id: meta
         uses: docker/metadata-action@v4
         with:
