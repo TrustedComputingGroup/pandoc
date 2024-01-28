@@ -69,6 +69,9 @@ RUN apt update && apt install -y \
 
 ENV MIRROR=https://mirror.ctan.org/systems/texlive/tlnet/
 
+# Some of the texlive mirrors use newer CA roots and we need to fetch them.
+RUN update-ca-certificates
+
 # install texlive ourselves instead of relying on the pandoc docker images,
 # so that we can control the cross-platform support (e.g., arm64 linux)
 # This layer takes several minutes to build.
