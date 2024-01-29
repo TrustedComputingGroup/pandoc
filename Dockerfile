@@ -69,9 +69,6 @@ RUN apt update && apt install -y \
 
 ENV MIRROR=https://ctan.math.illinois.edu/systems/texlive/tlnet/
 
-# Some of the texlive mirrors use newer CA roots and we need to fetch them.
-RUN update-ca-certificates
-
 # install texlive ourselves instead of relying on the pandoc docker images,
 # so that we can control the cross-platform support (e.g., arm64 linux)
 # This layer takes several minutes to build.
@@ -109,23 +106,23 @@ COPY --from=build-pandoc /pandocbins /usr/local/bin
 COPY --from=build-texlive /texlivebins /usr/local/texlive
 
 # Copy only the fonts we're using from the template.
-COPY --from=build-fonts /usr/share/fonts/truetype/msttcorefonts/Arial* /usr/share/fonts/truetype/msttcorefonts/
-COPY --from=build-fonts /usr/share/fonts/TTF/ARIAL* /usr/share/fonts/TTF/
-COPY --from=build-fonts /usr/share/fonts/truetype/noto/NotoSansMono* /usr/share/fonts/truetype/noto/
+COPY --from=build-fonts \
+    /usr/share/fonts/truetype/msttcorefonts/Arial* \
+    /usr/share/fonts/TTF/ARIAL* \
+    /usr/share/fonts/truetype/noto/NotoSansMono* \
+    /usr/share/fonts/
+
 RUN apt update && apt install -y fontconfig && \
     fc-cache -f
 
 RUN apt install -y \
     bash \
     chromium \
-    coreutils \
     nodejs \
     npm \
-    perl \
     python3 \
     python3-pandocfilters \
-    sed \
-    yarn
+    sed
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
