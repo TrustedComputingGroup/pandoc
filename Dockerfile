@@ -67,7 +67,7 @@ RUN apt update && apt install -y \
     wget \
     yarn
 
-ENV MIRROR=https://mirror.ctan.org/systems/texlive/tlnet/
+ENV MIRROR=https://ctan.math.illinois.edu/systems/texlive/tlnet/
 
 # Some of the texlive mirrors use newer CA roots and we need to fetch them.
 RUN update-ca-certificates
@@ -78,7 +78,7 @@ RUN update-ca-certificates
 RUN export ARCH=$(cat /ARCH) && \
     wget "$MIRROR/install-tl-unx.tar.gz" && \
     tar xzvf ./install-tl-unx.tar.gz && \
-    ./install-tl-*/install-tl -v --force-platform "${ARCH}" -s basic --no-interaction
+    ./install-tl-*/install-tl -v --repository "${MIRROR}" --force-platform "${ARCH}" -s basic --no-interaction
 
 RUN mkdir -p /texlivebins && cp -r /usr/local/texlive/*/* /texlivebins
 
