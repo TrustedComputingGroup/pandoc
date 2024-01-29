@@ -5,9 +5,12 @@ function CodeBlock(block)
         pandoc.RawInline('latex', [[
             \vskip 0.5em
             \begin{customcodeblock}
+            \textbf{\textit{\textcolor{codeblock-header}{\small \BeginDemarcated{Code}}}}
+
         ]]),
         block,
         pandoc.RawInline('latex', [[
+            \textbf{\textit{\textcolor{codeblock-header}{\small \EndDemarcated{Code}}}}
             \end{customcodeblock}
         ]]),
     }
