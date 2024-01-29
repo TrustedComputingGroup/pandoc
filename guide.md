@@ -36,7 +36,7 @@ and brands contained herein are the property of their respective owners.
 
 # Change History
 
-: {.unnumbered .unlisted}
+: {.unlisted .unnumbered}
 
 | **Revision** | **Date**   | **Description** |
 | ------------ | ---------- | --------------- |
