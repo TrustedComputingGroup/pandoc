@@ -319,7 +319,11 @@ do_mermaid() {
 	export MERMAID_FILTER_FORMAT="${format}"
 	export MERMAID_FILTER_BACKGROUND="transparent"
 	pandoc \
+		--lua-filter=mermaid-code-class-pre.lua \
 		--filter=mermaid-filter \
+		--lua-filter=mermaid-code-class-post.lua \
+		--resource-path=.:/resources \
+		--data-dir=/resources \
 		--standalone \
 		--from=${FROM} \
 		"${md_file_in}" \

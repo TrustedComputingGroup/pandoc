@@ -3,7 +3,7 @@
 function Table(el)
     if el.classes:find('landscape') then
         return {
-            pandoc.RawBlock('latex', '\\begin{landscape}'),
+            pandoc.RawBlock('latex', '\\begin{landscape}%'),
             el,
             pandoc.RawBlock('latex', '\\end{landscape}')
         }
@@ -11,13 +11,24 @@ function Table(el)
     return el
   end
 
--- Support figures as well. Pandoc's Mermaid filter doesn't seem to support ingesting classes into the AST,
--- so as a small hack, we also let the user tag figures for landscape mode using the identifier.
+-- Support figures as well. Figures contain one or more Images, so we wrap the entire
+-- Figure with landscape if any of the enclosed Images have the landscape class.
 
 function Figure(el)
-    if el.identifier:find('_landscape_') or pandoc.utils.stringify(el.classes):find('landscape') then
+    local foundLandscape = false
+    -- Iterate the contents of the figure to see if *any* of the images inside have
+    -- the 'landscape' class.
+    el:walk {
+        Image = function (p)
+            if p.classes:find('landscape') then
+                foundLandscape = true
+            end
+        end,
+    }
+    -- Also, support the figure itself having the landscape class for some reason.
+    if foundLandscape or el.classes:find('landscape') then
         return {
-            pandoc.RawBlock('latex', '\\begin{landscape}'),
+            pandoc.RawBlock('latex', '\\begin{landscape}%'),
             el,
             pandoc.RawBlock('latex', '\\end{landscape}')
         }
