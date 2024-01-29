@@ -308,6 +308,7 @@ $endif$
 % code block style
 %
 \definecolor{codeblock-background}{RGB}{240,244,255}
+\definecolor{codeblock-header}{RGB}{133,139,173}
 \usepackage{mdframed}
 \newmdenv[
   linewidth=0pt,

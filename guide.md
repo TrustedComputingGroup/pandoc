@@ -996,11 +996,9 @@ example to have it generate a docx file to send to the Technical Committee for r
 publishing a final version of a document.
 
 Use the example below as a guide for how you can have Pandoc automatically render the doc
-(maybe basing its [status](#git-status-parsing) on the released tag).
+(maybe basing its [status](#git-status-parsing) on the released tag.
 
 ```yaml
-# Render the spec to PDF and Word on releases.
-
 name: Render (PDF and Word)
 
 on:
@@ -1011,7 +1009,7 @@ jobs:
   render-spec-pdf:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/trustedcomputinggroup/pandoc:0.7.1
+      image: ghcr.io/trustedcomputinggroup/pandoc:0.8.1
     name: Render (pdf)
     steps:
       - name: Checkout
@@ -1023,40 +1021,23 @@ jobs:
           input-md: spec.md
           extra-build-options: "--gitstatus"
           output-pdf: spec.pdf
+          output-docx: spec.docx
 
-      - name: Upload to release
+      - name: Upload pdf to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: spec.pdf
           tag: ${{ github.ref }}
           overwrite: true
-          body: "Part 1 (PDF)"
 
-  render-spec-docx:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/trustedcomputinggroup/pandoc:0.6.8
-    name: Render Part 1 (docx)
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Render
-        uses: trustedcomputinggroup/markdown@v0.4.2
-        with:
-          input-md: spec.md
-          extra-build-options: "--gitstatus"
-          output-docx: spec.docx
-
-      - name: Upload to release
+      - name: Upload docx to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: spec.docx
           tag: ${{ github.ref }}
           overwrite: true
-          body: "Part 1 (Word)"
 ```
 
 ## Regular Quote Support
