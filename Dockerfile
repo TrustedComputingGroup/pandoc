@@ -120,8 +120,6 @@ RUN apt install -y \
     chromium \
     nodejs \
     npm \
-    python3 \
-    python3-pandocfilters \
     sed
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \

@@ -430,7 +430,6 @@ if [ -n "${docx_output}" ]; then
 		--pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
-		--filter=/resources/filters/info.py \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
