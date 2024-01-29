@@ -59,14 +59,48 @@ jobs:
       - name: Build and publish Docker image
         uses: docker/build-push-action@v5
         with:
-          # Cache layers to and from the container repo.
+          # Cache layers from the container repo.
+          # Update the cache only on pushes to main.
           # This minimizes the amount of times we have to rebuild pandoc.
           cache-from: type=gha
-          cache-to: type=gha
+          cache-to: ${{ github.event_name == 'push' && 'type=gha' || '' }}
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+
+  # (In case of push only)
+  # Use the container we just built to build the guide and upload it to the actions artifacts.
+  render-samples:
+    needs: build-container
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/trustedcomputinggroup/pandoc:latest
+    permissions:
+      contents: write
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Run the action on guide
+        uses: trustedcomputinggroup/markdown@latest
+        with:
+          extra-build-options: "--gitstatus --plain_quotes"
+          input-md: guide.md
+          output-pdf: guide.pdf
+          output-tex: guide.tex
+          output-docx: guide.docx
+
+      - name: Upload PDF
+        uses: actions/upload-artifact@master
+        with:
+          name: PDF
+          path: guide.pdf
 
   # (In case of release only)
   # Use the container we just built to build the guide and attach it to the release
