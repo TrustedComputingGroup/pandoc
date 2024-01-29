@@ -45,6 +45,15 @@ Another reason to build locally is if you are running on an architecture that is
 and published to https://github.com/trustedcomputinggroup/pandoc/pkgs/container/pandoc
 (e.g., arm64).
 
+This project uses Docker [buildx](https://docs.docker.com/build/architecture#buildx)
+to support cross-platform builds. Install it, then enable it using:
+
+```sh
+docker buildx install
+```
+
+To build the container:
+
 ```sh
 docker build --tag WORKING .
 

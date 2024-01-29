@@ -1158,10 +1158,15 @@ anim            id              est              laborum.
 
 ## Landscape Figures
 
-Figures can be placed on landscape pages as in @fig:_landscape_swimlane by including the string `_landscape_` in the ID:
+Figures can be placed on landscape pages as in @fig:pdf-diagram or
+@fig:landscape-swimlane by including the class `.landscape`:
+
+```md
+![Wide Diagram](bigdiagram.pdf){#fig:pdf-diagram .landscape}
+```
 
 ````md
-```mermaid {caption="Complicated Swimlane" #fig:_landscape_swimlane width=3000}
+```mermaid {caption="Complicated Swimlane" #fig:landscape-swimlane width=3000 .landscape}
 sequenceDiagram
 Alice->>Bob: Hello
 Bob->>Carl: Hello
@@ -1178,7 +1183,10 @@ Bob->>Alice: Goodbye
 ```
 ````
 
-```mermaid {caption="Complicated Swimlane" #fig:_landscape_swimlane width=3000}
+![Wide Diagram](bigdiagram.pdf){#fig:pdf-diagram .landscape}
+
+
+```mermaid {caption="Complicated Swimlane" #fig:landscape-swimlane width=3000 .landscape .garbledina}
 sequenceDiagram
 Alice->>Bob: Hello
 Bob->>Carl: Hello
