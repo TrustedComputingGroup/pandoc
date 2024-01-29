@@ -1,6 +1,12 @@
 name: build and publish
 
 on:
+  # Populate the cache on pushes to main, because if you push to cache on builds for tags,
+  # the cache can't be read by builds for other tags:
+  # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#restrictions-for-accessing-a-cache
+  push:
+    branches:
+      - main
   release:
     types: [published]
 
@@ -45,6 +51,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
+            type=ref,event=branch
             type=semver,pattern={{version}}
 
       # Build and push Docker image with Buildx
@@ -61,6 +68,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  # (In case of release only)
   # Use the container we just built to build the guide and attach it to the release
   render-samples:
     needs: build-container
@@ -69,7 +77,7 @@ jobs:
       image: ghcr.io/trustedcomputinggroup/pandoc:latest
     permissions:
       contents: write
-
+    if: ${{ github.event_name == 'release' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.1.1
