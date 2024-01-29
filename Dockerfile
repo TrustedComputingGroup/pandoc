@@ -112,10 +112,10 @@ COPY --from=build-texlive /texlivebins /usr/local/texlive
 COPY --from=build-fonts /usr/share/fonts/truetype/msttcorefonts/Arial* /usr/share/fonts/truetype/msttcorefonts/
 COPY --from=build-fonts /usr/share/fonts/TTF/ARIAL* /usr/share/fonts/TTF/
 COPY --from=build-fonts /usr/share/fonts/truetype/noto/NotoSansMono* /usr/share/fonts/truetype/noto/
-RUN apt install -y fontconfig && \
+RUN apt update && apt install -y fontconfig && \
     fc-cache -f
 
-RUN apt update && apt install -y \
+RUN apt install -y \
     bash \
     chromium \
     coreutils \
