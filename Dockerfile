@@ -108,6 +108,13 @@ COPY --from=build-pandoc /pandocbins /usr/local/bin
 # These binaries are the second most costly part of the build.
 COPY --from=build-texlive /texlivebins /usr/local/texlive
 
+# Copy only the fonts we're using from the template.
+COPY --from=build-fonts /usr/share/fonts/truetype/msttcorefonts/Arial* /usr/share/fonts/truetype/msttcorefonts/
+COPY --from=build-fonts /usr/share/fonts/TTF/ARIAL* /usr/share/fonts/TTF/
+COPY --from=build-fonts /usr/share/fonts/truetype/noto/NotoSansMono* /usr/share/fonts/truetype/noto/
+RUN apt install -y fontconfig && \
+    fc-cache -f
+
 RUN apt update && apt install -y \
     bash \
     chromium \
@@ -183,13 +190,6 @@ RUN tlmgr update --self && tlmgr install \
     upquote \
     xcolor \
     zref
-
-# Copy only the fonts we're using from the template.
-COPY --from=build-fonts /usr/share/fonts/truetype/msttcorefonts/Arial* /usr/share/fonts/truetype/msttcorefonts/
-COPY --from=build-fonts /usr/share/fonts/TTF/ARIAL* /usr/share/fonts/TTF/
-COPY --from=build-fonts /usr/share/fonts/truetype/noto/NotoSansMono* /usr/share/fonts/truetype/noto/
-RUN apt install -y fontconfig && \
-    fc-cache -f
 
 COPY ./img/* /resources/img/
 COPY ./template/* /resources/templates/
