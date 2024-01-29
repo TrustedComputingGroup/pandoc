@@ -4,9 +4,7 @@ on:
   pull_request:
 
 env:
-  # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
@@ -39,7 +37,7 @@ jobs:
           # Cache layers from the container repo.
           # This minimizes the amount of times we have to rebuild pandoc.
           # Read-only: Avoid cluttering up the cache on pull requests.
-          cache-from: type=gha,url=ghcr.io/trustedcomputinggroup/pandoc
+          cache-from: type=gha
           platforms: linux/amd64
           push: true
           tags: ghcr.io/trustedcomputinggroup/pandoc_test
