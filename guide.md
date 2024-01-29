@@ -36,6 +36,8 @@ and brands contained herein are the property of their respective owners.
 
 # Change History
 
+: {.unnumbered .unlisted}
+
 | **Revision** | **Date**   | **Description** |
 | ------------ | ---------- | --------------- |
 | 0.1/1        | 2023/12/17 | Initial draft   |
