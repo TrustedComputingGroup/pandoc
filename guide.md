@@ -140,7 +140,7 @@ jobs:
   render:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/trustedcomputinggroup/pandoc:0.8.1
+      image: ghcr.io/trustedcomputinggroup/pandoc:0.8.2
     name: Render PDF
     steps:
       - name: Checkout
@@ -149,7 +149,6 @@ jobs:
       - name: Render
         uses: trustedcomputinggroup/markdown@v0.4.2
         with:
-          extra-build-options: "--gitstatus --plain_quotes"
           input-md: spec.md
           output-pdf: spec.pdf
           output-docx: spec.docx

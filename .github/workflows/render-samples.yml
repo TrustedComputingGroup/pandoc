@@ -60,7 +60,6 @@ jobs:
       - name: Run the action on guide
         uses: trustedcomputinggroup/markdown@latest
         with:
-          extra-build-options: "--gitstatus --plain_quotes"
           input-md: guide.md
           output-pdf: guide.pdf
           output-tex: guide.tex
