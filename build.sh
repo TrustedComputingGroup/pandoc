@@ -2,14 +2,14 @@
 
 is_tmp="yes"	  # default to no tmp directory
 resource_dir="/"  #default to root of pandoc container buildout
-do_gitversion="no"
-do_gitstatus="no"
+do_gitversion="yes"
+do_gitstatus="yes"
 pdf_output=""
 docx_output=""
 html_output=""
 latex_output=""
 table_rules="no"
-block_quotes_are_informative_text="yes"
+block_quotes_are_informative_text="no"
 
 # Setup an EXIT handler
 on_exit() {
@@ -38,14 +38,16 @@ print_usage() {
 	echo "Miscellaneous"
 	echo "  --resourcedir=dir: Set the resource directory, defaults to root for pandoc containers"
 	echo "  --notmp: Do not use a tempory directory for processing steps, instead create a directory called \"build\" in CWD"
-	echo "  --gitversion: Use git describe to generate document version and revision metadata."
-    echo "  --gitstatus: Use git describe to generate document version and revision metadata. Implies --gitversion"
+	echo "  --gitversion: legacy flag, no effect (default starting with 0.9.0)"
+    echo "  --gitstatus: legacy flag, no effect (default starting with 0.9.0)"
+	echo "  --nogitversion: Do not use git to describe the generate document version and revision metadata."
 	echo "  --table_rules: style tables with borders (does not work well for tables that use rowspan or colspan)"
-	echo "  --plain_quotes: Support quote blocks as quote blocks instead of repurposing them as Informative Text blocks."
+	echo "  --plain_quotes: legacy flag, no effect (default starting with 0.9.0)"
+	echo "  --noplain_quotes: use block-quote syntax as informative text"
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,table_rules,plain_quotes,pdf:,latex:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,pdf:,latex:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -54,17 +56,29 @@ fi
 eval set -- "${options}"
 while true; do
 	case "$1" in
-	--gitversion)
-		do_gitversion="yes"
-		shift
-		;;
-	--gitstatus)
-		do_gitstatus="yes"
-		do_gitversion="yes"
+	--nogitversion)
+		do_gitstatus="no"
+		do_gitversion="no"
 		shift
 		;;
 	--puppeteer)
 		# legacy option; just ignore this
+		shift
+		;;
+	--gitversion)
+		# legacy option; just ignore this
+		shift
+		;;
+	--gitstatus)
+		# legacy option; just ignore this
+		shift
+		;;
+	--plain_quotes)
+		# legacy option; just ignore this
+		shift
+		;;
+	--noplain_quotes)
+		block_quotes_are_informative_text="yes"
 		shift
 		;;
 	--notmp)
@@ -93,10 +107,6 @@ while true; do
 		;;
 	--table_rules)
 		table_rules="yes"
-		shift
-		;;
-	--plain_quotes)
-		block_quotes_are_informative_text="no"
 		shift
 		;;
 	--help)
