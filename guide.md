@@ -114,7 +114,7 @@ available for you!
 ::: Caveat :::
 Use `ghcr.io/trustedcomputinggroup/pandoc:latest` at your own risk. As the tools
 may change defaults from version to version, it is better to pin your doc to
-a particular version of the tools and periodicallly update the tools as needed.
+a particular version of the tools and periodically update the tools as needed.
 ::::::::::::::
 
 A typical Markdown-in-GitHub spec might want to automate the following:
