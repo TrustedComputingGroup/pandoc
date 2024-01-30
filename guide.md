@@ -107,69 +107,69 @@ to get started a little more quickly. There's a little green "Use this template"
 
 ## GitHub Actions {#sec:basic-gh-action}
 
-Even if you used the template repository, please double-check this. As the tools are being actively developed,
-there is probably a newer version of the tools available for you!
+Even if you used the template repository, please double-check this. As the tools
+are being actively developed, there is probably a newer version of the tools
+available for you!
 
-`.github/workflows/main.yml` might look a bit like this:
+::: Caveat :::
+Use `ghcr.io/trustedcomputinggroup/pandoc:latest` at your own risk. As the tools
+may change defaults from version to version, it is better to pin your doc to
+a particular version of the tools and periodically update the tools as needed.
+::::::::::::::
+
+A typical Markdown-in-GitHub spec might want to automate the following:
+
+* Render the spec to PDF on every pull request so that reviewers can check it.
+* Render the spec to PDF and Word on every release and attach to the release
+  page.
+
+`.github/workflows/actions.yml` might look a bit like this:
 
 ```yaml
-# Render the spec to PDF on pull requests, and check in the rendered PDF on commits
-# to main.
+# Render the spec to PDF and Word on pull requests and releases, attaching the
+# outputs to the pull request / release, as appropriate.
 
-name: Render
+name: Render spec
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-  workflow_dispatch:
+  release:
+    types: [published]
 
 jobs:
   render:
     runs-on: ubuntu-latest
-    # This Docker container contains all the Pandoc dependencies for rendering TCG
-    # Markdown docs.
     container:
-      # IMPORTANT: Check https://github.com/TrustedComputingGroup/pandoc/releases
-      # for the latest!
-      image: ghcr.io/trustedcomputinggroup/pandoc:0.6.2
+      image: ghcr.io/trustedcomputinggroup/pandoc:0.8.1
     name: Render PDF
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Render
-        # This GitHub action provides an easy way to use the Docker container above
-        # with your document.
-        # IMPORTANT: Check https://github.com/TrustedComputingGroup/markdown/releases
-        # for the latest!
-        uses: trustedcomputinggroup/markdown@v0.4.0
+        uses: trustedcomputinggroup/markdown@v0.4.2
         with:
-          input-md: main.md
+          extra-build-options: "--gitstatus --plain_quotes"
+          input-md: spec.md
           output-pdf: spec.pdf
           output-docx: spec.docx
 
-      - name: Upload samples
-        # This GitHub action uploads samples into the "Checks" tab (for pull requests),
-        # so that reviewers can easily see how a proposed change will look in the
-        # finished spec.
+      - name: Upload PDF to PR
         uses: actions/upload-artifact@master
+        if: ${{ github.event_name == 'pull_request' }}
         with:
-          name: preview
-          path: |
-            spec.pdf
-            spec.docx
+          name: spec
+          path: spec.pdf
 
-      - name: Check in latest render
-        # This GitHub action automatically renders and checks-in the PDF produced in
-        # the above step. This makes it easier for people to grab the latest rendered
-        # version of the document.
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Upload PDF and docx to release
+        uses: svenstaro/upload-release-action@v2
+        if: ${{ github.event_name == 'release' }}
         with:
-          commit_message: Generate latest PDF
-          file_pattern: spec.pdf
-        if: github.event_name != 'pull_request'
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: spec.*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
 ```
 
 ## Local Testing
@@ -212,17 +212,13 @@ It looks like this:
 ```md
 --- 
 title: "TCG Markdown User's Guide"
-version: 0.1
-revision: 1
-date: 12/17/2023
 type: GUIDANCE
-status: Draft
 ...
 ```
 
 This section provides metadata to the tools.
 
-### Front Matter Variables
+### Front Matter Variables {#sec:yaml-frontmatter}
 
 #### title
 
@@ -230,37 +226,11 @@ REQUIRED.
 
 `title` is the title of the document.
 
-#### version
-
-REQUIRED unless you're using [`--gitversion`](#git-version-parsing)
-
-`version` is the version of the document.
-
-#### revision
-
-OPTIONAL.
-
-`revision` is the revision of the document. If not provided, the revision is not printed.
-
-#### date
-
-REQUIRED unless you're using [`--gitversion`](#git-version-parsing).
-
-`date` is the full date of the document, in YYYY/MM/DD form.
-
 #### type
 
 REQUIRED.
 
 `type` should be one of: "SPECIFICATION", "GUIDANCE", or "REFERENCE". It appears on the title page on the left-hand side.
-
-#### status
-
-REQUIRED unless you're using [`--gitstatus`](#git-status-parsing).
-
-`status` should be one of: "Draft", "Review", or "Published".
-
-If it is not "Published", then a gray watermark "DRAFT" will appear on all pages after the title page.
 
 #### template
 
@@ -374,6 +344,20 @@ Here, you can provide summary comments and mark your review as one of:
 * Comment (Just providing feedback)
 * Approve (Approving the changes)
 * Request changes (Explicitly not approving the changes, with specific actionable feedback)
+
+## Releasing the Spec {#sec:running-on-release}
+
+If you have GitHub Actions for rendering the spec for releases (see
+@sec:basic-gh-action), here is how you can manage the release cycle of the spec:
+
+1.  Navigate to the "Releases" page for the repository ("Releases" on the right
+    hand side of the main page).
+2.  Click "Create a new release"
+3.  Click "Choose a tag", then "Create a new tag"
+4.  Tag the release according to the [naming conventions](#sec:release-conventions)
+    supported by the tools.
+5.  A few minutes later, the PDF and DOCX of the spec will appear on the page
+    for that release (you can monitor this on the "Actions" page).
 
 # Using Markdown
 
@@ -497,27 +481,24 @@ TCG uses a special visual style to demarcate informative non-binding remarks wit
 To create an informative note, use the following syntax:
 
 ```md
-> This is the only informative text block in this document.
->
-> These blocks can contain multiple paragraphs, tied together by lines containing just
-> ">".
->
-> These blocks can even contain tables! However, be wary of providing tables that are
-> too large in an Informative Text block.
->
-> | **Document Type** | **Informative Blocks** |
-> | ----------------- | ---------------------- |
-> | SPECIFICATION     | Usually                |
-> | GUIDANCE          | Rarely                 |
-> | REFERENCE         | Rarely                 |
+::: Informative :::
+This is the only informative text block in this document.
+
+These blocks can contain multiple paragraphs, tied together by lines containing just
+">".
+
+These blocks can even contain tables! However, be wary of providing tables that are
+too large in an Informative Text block.
+
+| **Document Type** | **Informative Blocks** |
+| ----------------- | ---------------------- |
+| SPECIFICATION     | Usually                |
+| GUIDANCE          | Rarely                 |
+| REFERENCE         | Rarely                 |
+:::::::::::::::::::
 ```
 
 The above Markdown code becomes:
-
-<!---
-N.B., because this guide renders with '--plain_quotes', this particular
-informative block actually uses the ::: syntax.
--->
 
 ::: Informative :::
 This is the only informative text block in this document.
@@ -534,22 +515,6 @@ too large in an Informative Text block.
 | GUIDANCE          | Rarely                 |
 | REFERENCE         | Rarely                 |
 :::::::::::::::::::
-
-#### Alternative Syntax for Informative Text {#sec:informative-text-alt-syntax}
-
-```md
-::: Informative :::
-Pandoc calls this a
-["fenced div"](https://pandoc.org/chunkedhtml-demo/8.18-divs-and-spans.html).
-:::::::::::::::::::
-```
-
-::: Informative :::
-Pandoc calls this a
-["fenced div"](https://pandoc.org/chunkedhtml-demo/8.18-divs-and-spans.html).
-:::::::::::::::::::
-
-In addition to "Informative", the following other types of notes are supported:
 
 ### Other Informative Blocks
 
@@ -734,7 +699,7 @@ Tables                      row or column       @tbl:fruits-grid
                             spans and need
                             full Markdown
                             support (e.g.,
-                            crossrefs or
+                            blocks or
                             equations).
 
 HTML            Yes         When you have       @sec:html-tables,
@@ -761,7 +726,14 @@ Tables                      word or so.
 Multiline       Yes         When you have       @sec:multiline-markdown-tables,
 Markdown                    content that's      @tbl:table-types
 Tables                      more than a few
-                            words.
+                            words. Supports
+                            inline Markdown
+                            elements (like
+                            cross-references)
+                            but not block
+                            elements (like
+                            informative
+                            blocks).
 
 Grid Markdown   No          When you have       @sec:grid-tables,
 Tables                      row or column       @tbl:fruits-grid
@@ -946,118 +918,64 @@ $$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IP
 
 # Advanced Features
 
-In the GitHub action YAML, you can enable some advanced features.
+## Git Versioning
 
-## Git Version Parsing
-
-Use `extra-build-options: "--gitversion"` to let Git number the document for you.
-
-```yaml
-      - name: Run the action
-        uses: trustedcomputinggroup/markdown@latest
-        with:
-          extra-build-options: "--gitversion"
-```
-
-When you do this, the tool will check for a recent [release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) in the repository. It will use the major.minor
+By default, the tool will check for a recent [release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) in the repository. It will use the major.minor
 version number from the tag as the document version, and the number of commits since that tag as the revision.
 This way, you don't have to manually update the version or revision numbers in your document!
 
-### Conventions for Release Naming
+It will give the document the status of "Draft", "Review", or "Published" for
+documents rendered as part of a [release](#sec:running-on-release) with a supported version.
+
+### Conventions for Release Naming {#sec:release-conventions}
 
 The tooling expects the following conventions for tagging your releases:
 
 * `vX.Y` indicates a regular draft of version X.Y.
+* `vX.Y.Z` indicates a regular draft of version X.Y.Z.
 * `rX.Y` indicates a review draft of version X.Y.
-* `pX.Y` indicates a published version.
+* `rX.Y` indicates a review draft of version X.Y.Z.
+* `pX.Y` indicates a published version X.Y.
+* `pX.Y.Z` indicates a published version X.Y.Z.
 
-## Git Status Parsing
+::: Note :::
+If the spec is not rendered as part of a release, it will always be
+a draft, of some revision on top of the latest released version number.
+::::::::::::
 
-Use `extra-build-options: "--gitstatus"` to let Git number AND set the status of the document for you.
+### Suppressing Git Version Parsing
+
+If you want to number it yourself, use
+
+Use `extra-build-options: "--nogitversion"` to number the document yourself.
 
 ```yaml
       - name: Run the action
         uses: trustedcomputinggroup/markdown@latest
         with:
-          extra-build-options: "--gitstatus"
+          extra-build-options: "--nogitversion"
 ```
 
-See [Conventions](#conventions-for-release-naming). When `--gitstatus` is enabled, the leading character
-(which is expected to be one of: `v`, `r`, or `p`) is used to determine the document's status at
-revision 0. Commits on top of any type of version are always considered to be drafts.
+You will probably want to provide the following extra metadata in the YAML front
+matter (see @sec:yaml-frontmatter):
 
-## Running Pandoc with Releases
+#### version
 
-@sec:basic-gh-action shows an example of a GitHub action that automatically runs Pandoc on every
-pull request and push to the repository.
+`version` is the version of the document.
 
-You may wish to run the workflow on releases, and attach the results to the release page, for
-example to have it generate a docx file to send to the Technical Committee for review, or when
-publishing a final version of a document.
+#### revision
 
-Use the example below as a guide for how you can have Pandoc automatically render the doc
-(maybe basing its [status](#git-status-parsing) on the released tag.
+`revision` is the revision of the document. If not provided, the revision is not printed.
 
-```yaml
-name: Render (PDF and Word)
+#### date
 
-on:
-  release:
-    types: [released]
+`date` is the full date of the document, in YYYY/MM/DD form.
 
-jobs:
-  render-spec-pdf:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/trustedcomputinggroup/pandoc:0.8.1
-    name: Render (pdf)
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+#### status
 
-      - name: Render
-        uses: trustedcomputinggroup/markdown@v0.4.2
-        with:
-          input-md: spec.md
-          extra-build-options: "--gitstatus"
-          output-pdf: spec.pdf
-          output-docx: spec.docx
+`status` should be one of: "Draft", "Review", or "Published".
 
-      - name: Upload pdf to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: spec.pdf
-          tag: ${{ github.ref }}
-          overwrite: true
-
-      - name: Upload docx to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: spec.docx
-          tag: ${{ github.ref }}
-          overwrite: true
-```
-
-## Regular Quote Support
-
-Use `extra-build-options: "--plain_quotes"` to disable the automatic conversion
-of block-quotes into TCG Informative Text blocks (see
-@sec:informative-text-alt-syntax). If you use this feature, block-quotes will
-look like the below:
-
-> I'm a block quote!
->
-> Look at me!
-
-Instead of like the below:
-
-::: Informative :::
-I'm a block quote!
-
-Look at me!
-:::::::::::::::::::
+If it is not "Published", then a gray watermark "DRAFT" will appear on all pages after the title page.
 
 ## Landscape Tables
 
