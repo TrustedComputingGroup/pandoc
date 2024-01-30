@@ -1,15 +1,11 @@
--- TODO: Convert this into a Lua filtuer and test it on some docx exports.
--- #!/usr/bin/env python3
+-- Convert all informative blocks to TCG Informative text style.
+-- Only needed for Word.
 
--- """
--- Pandoc filter to convert all block quotes to TCG Informative text.
--- """
-
--- from pandocfilters import toJSONFilter, Str, Div, attributes
-
--- def informative(key, value, format, meta):
---   if key == 'BlockQuote':
---     return Div(attributes({'custom-style': 'TCG Informative'}), value)
-
--- if __name__ == "__main__":
---   toJSONFilter(informative)
+function Div(el)
+    local class = el.classes[1]
+    if(class) then
+        el.attributes['custom-style'] = 'TCG Informative'
+        el.content:insert(1, pandoc.Para(pandoc.Emph(pandoc.Str(class .. ':'))))
+    end
+    return el
+end

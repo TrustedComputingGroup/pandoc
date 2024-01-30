@@ -359,6 +359,12 @@ If you have GitHub Actions for rendering the spec for releases (see
 5.  A few minutes later, the PDF and DOCX of the spec will appear on the page
     for that release (you can monitor this on the "Actions" page).
 
+::: Tip :::
+When balloting or sending a document to the TC for review, please create a docx
+diff from Microsoft Word, comparing the docx outputs attached between releases
+with Word's "Compare Versions" tool.
+:::::::::::
+
 # Using Markdown
 
 Markdown is intended to be a lightweight language for authoring documents. Most of the time, it looks
@@ -484,8 +490,7 @@ To create an informative note, use the following syntax:
 ::: Informative :::
 This is the only informative text block in this document.
 
-These blocks can contain multiple paragraphs, tied together by lines containing just
-">".
+These blocks can contain multiple paragraphs.
 
 These blocks can even contain tables! However, be wary of providing tables that are
 too large in an Informative Text block.
