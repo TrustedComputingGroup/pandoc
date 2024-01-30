@@ -450,6 +450,7 @@ if [ -n "${docx_output}" ]; then
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
 		--lua-filter=style-fenced-divs.lua \
+		--lua-filter=make-informative-text.lua \
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
