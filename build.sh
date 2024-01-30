@@ -355,6 +355,7 @@ if [ -n "${pdf_output}" ]; then
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
 		--lua-filter=style-fenced-divs.lua \
+		--lua-filter=unnumbered-tables.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
 		--resource-path=.:/resources \
@@ -398,6 +399,7 @@ if [ -n "${latex_output}" ]; then
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
 		--lua-filter=style-fenced-divs.lua \
+		--lua-filter=unnumbered-tables.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
 		--resource-path=.:/resources \
