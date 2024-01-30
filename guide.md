@@ -345,7 +345,7 @@ Here, you can provide summary comments and mark your review as one of:
 * Approve (Approving the changes)
 * Request changes (Explicitly not approving the changes, with specific actionable feedback)
 
-## Releasing the Spec
+## Releasing the Spec {#sec:running-on-release}
 
 If you have GitHub Actions for rendering the spec for releases (see
 @sec:basic-gh-action), here is how you can manage the release cycle of the spec:
