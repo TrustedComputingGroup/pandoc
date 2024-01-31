@@ -346,7 +346,7 @@ if [ -n "${pdf_output}" -o "${latex_output}" -o "${docx_output}" ]; then
 	# Try up to 5 times to run the Mermaid filter.
 	n=0
 	until [ "$n" -ge 5 ]; do
-		do_mermaid "pdf" "${build_dir}/${input_file}" "${build_dir}/${input_file}.pdfmermaid.md" && echo "Generated Mermaid diagrams" &&  break
+		do_mermaid "pdf" "${build_dir}/${input_file}" "${build_dir}/${input_file}.pdfmermaid" && echo "Generated Mermaid diagrams" &&  break
 		echo "Assuming transient error. Retrying Mermaid diagrams..."
 		n=$((n+1)) 
 	done
@@ -387,7 +387,7 @@ if [ -n "${pdf_output}" ]; then
 		${extra_pandoc_options} \
 		--to=pdf \
 		--output="${pdf_output}" \
-		"${build_dir}/${input_file}.pdfmermaid.md"
+		"${build_dir}/${input_file}.pdfmermaid"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "PDF output failed"
@@ -428,7 +428,7 @@ if [ -n "${latex_output}" ]; then
 		${extra_pandoc_options} \
 		--to=latex \
 		--output="${latex_output}" \
-		"${build_dir}/${input_file}.pdfmermaid.md"
+		"${build_dir}/${input_file}.pdfmermaid"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "LaTeX output failed"
@@ -439,6 +439,21 @@ fi
 
 # Generate the docx output
 if [ -n "${docx_output}" ]; then
+	# Prepare the title-page for the docx version.
+	SUBTITLE="Version ${major_minor:-${DATE}}, Revision ${revision:-0}"
+	# Prefix the document with a Word page-break, since Pandoc doesn't do docx
+	# title pages.
+	cat <<- 'EOF' > "${build_dir}/${input_file}.pdfmermaid.prefixed"
+	```{=openxml}
+	<w:p>
+		<w:r>
+			<w:br w:type="page"/>
+		</w:r>
+	</w:p>
+	```
+	EOF
+	cat ${build_dir}/${input_file}.pdfmermaid >> ${build_dir}/${input_file}.pdfmermaid.prefixed
+
 	mkdir -p "$(dirname ${docx_output})"
 	echo "Generating DOCX Output"
 	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
@@ -454,12 +469,13 @@ if [ -n "${docx_output}" ]; then
 		--filter=pandoc-crossref \
 		--resource-path=.:/resources \
 		--data-dir=/resources \
-		--from=${FROM} \
+		--from=${FROM}+raw_attribute \
+		--metadata=subtitle:"${SUBTITLE}" \
 		--reference-doc=/resources/templates/tcg_template.docx \
 		${extra_pandoc_options} \
 		--to=docx \
 		--output="${docx_output}" \
-		"${build_dir}/${input_file}.pdfmermaid.md"
+		"${build_dir}/${input_file}.pdfmermaid.prefixed"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "DOCX output failed"
@@ -473,7 +489,7 @@ if [ -n "${html_output}" ]; then
 	# Try up to 5 times to run the Mermaid filter.
 	n=0
 	until [ "$n" -ge 5 ]; do
-		do_mermaid "svg" "${build_dir}/${input_file}" "${build_dir}/${input_file}.svgmermaid.md" && break
+		do_mermaid "svg" "${build_dir}/${input_file}" "${build_dir}/${input_file}.svgmermaid" && break
 		n=$((n+1)) 
 	done
 fi
@@ -513,7 +529,7 @@ if [ -n "${html_output}" ]; then
 		${extra_pandoc_options} \
 		--to=html \
 		--output="${html_output}" \
-		"${build_dir}/${input_file}.svgmermaid.md"
+		"${build_dir}/${input_file}.svgmermaid"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "HTML output failed"
