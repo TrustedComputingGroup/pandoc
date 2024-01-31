@@ -160,6 +160,13 @@ jobs:
           name: spec
           path: spec.pdf
 
+      - name: Upload Word to PR
+        uses: actions/upload-artifact@master
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          name: spec
+          path: spec.docx
+
       - name: Upload PDF and docx to release
         uses: svenstaro/upload-release-action@v2
         if: ${{ github.event_name == 'release' }}
