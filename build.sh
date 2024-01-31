@@ -437,20 +437,23 @@ if [ -n "${latex_output}" ]; then
 	fi
 fi
 
-SUBTITLE="Version ${major_minor:-${DATE}}, Revision ${revision:-0}"
-cat << 'EOF' > "${build_dir}/${input_file}.pdfmermaid.prefixed"
-```{=openxml}
-<w:p>
-  <w:r>
-    <w:br w:type="page"/>
-  </w:r>
-</w:p>
-```
-EOF
-cat ${build_dir}/${input_file}.pdfmermaid >> ${build_dir}/${input_file}.pdfmermaid.prefixed
-
 # Generate the docx output
 if [ -n "${docx_output}" ]; then
+	# Prepare the title-page for the docx version.
+	SUBTITLE="Version ${major_minor:-${DATE}}, Revision ${revision:-0}"
+	# Prefix the document with a Word page-break, since Pandoc doesn't do docx
+	# title pages.
+	cat <<- 'EOF' > "${build_dir}/${input_file}.pdfmermaid.prefixed"
+	```{=openxml}
+	<w:p>
+		<w:r>
+			<w:br w:type="page"/>
+		</w:r>
+	</w:p>
+	```
+	EOF
+	cat ${build_dir}/${input_file}.pdfmermaid >> ${build_dir}/${input_file}.pdfmermaid.prefixed
+
 	mkdir -p "$(dirname ${docx_output})"
 	echo "Generating DOCX Output"
 	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
