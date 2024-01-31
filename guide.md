@@ -157,14 +157,14 @@ jobs:
         uses: actions/upload-artifact@master
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          name: spec
+          name: spec.pdf
           path: spec.pdf
 
       - name: Upload Word to PR
         uses: actions/upload-artifact@master
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          name: spec
+          name: spec.docx
           path: spec.docx
 
       - name: Upload PDF and docx to release
