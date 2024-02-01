@@ -36,7 +36,7 @@ and brands contained herein are the property of their respective owners.
 
 # Change History
 
-| **Revision** | **Date**   | **Description** |
+| Revision     | Date       | Description     |
 | ------------ | ---------- | --------------- |
 | 0.1/1        | 2023/12/17 | Initial draft   |
 
@@ -501,7 +501,7 @@ These blocks can contain multiple paragraphs.
 These blocks can even contain tables! However, be wary of providing tables that are
 too large in an Informative Text block.
 
-| **Document Type** | **Informative Blocks** |
+| Document Type     | Informative Blocks     |
 | ----------------- | ---------------------- |
 | SPECIFICATION     | Usually                |
 | GUIDANCE          | Rarely                 |
@@ -520,7 +520,7 @@ These blocks can contain multiple paragraphs, tied together by lines containing 
 These blocks can even contain tables! However, be wary of providing tables that are
 too large in an Informative Text block.
 
-| **Document Type** | **Informative Blocks** |
+| Document Type     | Informative Blocks     |
 | ----------------- | ---------------------- |
 | SPECIFICATION     | Usually                |
 | GUIDANCE          | Rarely                 |
@@ -694,7 +694,7 @@ and this content may need multiple lines in your editor.
 Table: Table Types {#tbl:table-types}
 
 -------------------------------------------------------------------------------
-**Table Kind**  **Easy?**   **Recommended?**    **References**
+Table Kind      Easy?       Recommended?        References
 --------------- ----------- ------------------- -------------------------------
 Simple          Yes         When each cell      @sec:simple-markdown-tables,
 Markdown                    is about one        @tbl:shapes
@@ -728,7 +728,7 @@ Tables                      row or column       @tbl:fruits-html
 Table: Table Types {#tbl:table-types}
 
 -------------------------------------------------------------------------------
-**Table Kind**  **Easy?**   **Recommended?**    **References**
+Table Kind      Easy?       Recommended?        References
 --------------- ----------- ------------------- -------------------------------
 Simple          Yes         When each cell      @sec:simple-markdown-tables,
 Markdown                    is about one        @tbl:shapes
@@ -780,7 +780,7 @@ to github.com/trustedcomputinggroup/pandoc!
 Table: Fruits (Grid) {#tbl:fruits-grid}
 
 +----------------------+----------------------------+
-| **Color and Fruit**  | **Mistaken for Vegetable** |
+| Fruit and Color      | Mistaken for Vegetable     |
 +=============+========+============================+
 |             | Red    | No                         |
 | Apple       +--------+----------------------------+
@@ -795,7 +795,7 @@ Table: Fruits (Grid) {#tbl:fruits-grid}
 Table: Fruits (Grid) {#tbl:fruits-grid}
 
 +----------------------+----------------------------+
-| **Color and Fruit**  | **Mistaken for Vegetable** |
+| Fruit and Color      | Mistaken for Vegetable     |
 +=============+========+============================+
 |             | Red    | No                         |
 | Apple       +--------+----------------------------+
@@ -825,8 +825,8 @@ converts Word tables into HTML).
         <col style="width: 45%" />
     </colgroup>
     <tr>
-        <th colspan="2"><strong>Color and Fruit</strong></th>
-        <th><strong>Mistaken for Vegetable</strong></th>
+        <th colspan="2">Color and Fruit</th>
+        <th>Mistaken for Vegetable</th>
     </tr>
     <tr>
         <td rowspan="2">Apple</td>
@@ -854,14 +854,9 @@ The above HTML table becomes the below:
 
 <table id="tbl:fruits-html">
     <caption>Fruits (HTML)</caption>
-    <colgroup>
-        <col style="width: 12%" />
-        <col style="width: 13%" />
-        <col style="width: 45%" />
-    </colgroup>
     <tr>
-        <th colspan="2"><strong>Color and Fruit</strong></th>
-        <th><strong>Mistaken for Vegetable</strong></th>
+        <th colspan="2">Color and Fruit</th>
+        <th>Mistaken for Vegetable</th>
     </tr>
     <tr>
         <td rowspan="2">Apple</td>
@@ -885,11 +880,6 @@ The above HTML table becomes the below:
 </table>
 
 Note the table caption in the `<caption>` element, and the table cross-reference in the `id` attribute of the `<table>` element.
-
-::: Caveat :::
-If you must use HTML tables, always use `<colgroup>` to style the width of the columns.
-If you don't, the table may run off the side of the page.
-::::::::::::::
 
 # Math {#sec:math}
 
@@ -1117,3 +1107,94 @@ Bob->>Alice: Goodbye
 # Reporting Issues with the Tools
 
 Please report issues with the tooling at [https://github.com/TrustedComputingGroup/pandoc/issues](https://github.com/TrustedComputingGroup/pandoc/issues).
+
+# Pathological Tables
+
+This section contains some really crazy tables, to test our special LaTeX
+[writer filter](filter/tabularray.lua) for tables.
+
+These don't work yet.
+
+```md
+Table: Bullets {#tbl:bullets-grid}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+| * Apple     | Red    | No                         |
+| * Pear      +--------+----------------------------+
+| * Kiwi      | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Table: Informative {#tbl:informative-grid}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+| ::: Note    | Red    | No                         |
+| Apple       +--------+----------------------------+
+| :::         | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Table: Equation {#tbl:equation-grid}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+|             | Red    | No                         |
+| $$ A^2 $$   +--------+----------------------------+
+|             | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Table: Footer {#tbl:footer-grid}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++=============+========+============================+
+| Fruit and Color      | Mistaken for Vegetable     |
++----------------------+----------------------------+
+
+Table: No Lines {#tbl:no-lines-grid .no_lines}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+|             | Red    | No                         |
+| Apple       +--------+----------------------------+
+|             | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Table: Not Listed {#tbl:no-entry-grid .unnumbered unlisted}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+|             | Red    | No                         |
+| Apple       +--------+----------------------------+
+|             | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+```

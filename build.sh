@@ -318,44 +318,71 @@ export MERMAID_FILTER_THEME="forest"
 export MERMAID_FILTER_FORMAT="pdf"
 export MERMAID_FILTER_BACKGROUND="transparent"
 
+# The Mermaid filter loses track of the web browser it uses to render diagrams
+# sometimes (maybe 5% of the time or so).
+# As a hack, we run our Pandoc commands in a loop, retrying if there is any failure.
+# First argument: number of times to try
+# Rest of the arguments: command to run
+# A better way to solve this would be to run just the Mermaid step in a
+# Markdown-to-Markdown pandoc flow. Unfortunately, this is lossy, specifically
+# with respect to rowspan/colspan tables: https://github.com/jgm/pandoc/issues/6344
+# When the Markdown Pandoc writer can preserve rowspan and colspan tables, we
+# should consider running Markdown in its own flow first.
+retry () {
+	local TIMES=$1
+	shift
+	local COMMAND="$@"
+	n=1
+	until [ "${n}" -gt "${TIMES}" ]; do
+		eval "${COMMAND[@]}" && return 0
+		if [ "${n}" -lt "${TIMES}" ]; then
+			echo "Assuming transient error. Retrying up to ${TIMES} times..."
+		fi
+		n=$((n+1))
+	done
+	echo "Command failed after ${TIMES}"
+	return 1
+}
+
 # Generate the pdf
 if [ -n "${pdf_output}" ]; then
 	mkdir -p "$(dirname ${pdf_output})"
 	echo "Generating PDF Output"
-	pandoc \
-		--pdf-engine=lualatex \
-		--embed-resources \
-		--standalone \
-		--template=eisvogel.latex \
-		--lua-filter=mermaid-code-class-pre.lua \
-		--filter=mermaid-filter \
-		--lua-filter=parse-html.lua \
-		--lua-filter=apply-classes-to-tables.lua \
-		--lua-filter=landscape-pages.lua \
-		--lua-filter=tabularray.lua \
-		--lua-filter=style-fenced-divs.lua \
-		--filter=pandoc-crossref \
-		--lua-filter=divide-code-blocks.lua \
-		--resource-path=.:/resources \
-		--data-dir=/resources \
-		--top-level-division=section \
-		--variable=block-headings \
-		--variable=numbersections \
-		--metadata=date:"${DATE}" \
-		--metadata=date-english:"${DATE_ENGLISH}" \
-		--metadata=year:"${YEAR}" \
-		--metadata=titlepage:true \
-		--metadata=titlepage-background:/resources/img/cover.png \
-		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
-		--metadata=logo:/resources/img/tcg.png \
-		--metadata=titlepage-rule-height:0 \
-		--metadata=colorlinks:true \
-		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=${FROM} \
-		${extra_pandoc_options} \
-		--to=pdf \
-		--output="${pdf_output}" \
-		"${build_dir}/${input_file}"
+	CMD=(pandoc
+		--pdf-engine=lualatex
+		--embed-resources
+		--standalone
+		--template=eisvogel.latex
+		--lua-filter=mermaid-code-class-pre.lua
+		--filter=mermaid-filter
+		--lua-filter=parse-html.lua
+		--lua-filter=apply-classes-to-tables.lua
+		--lua-filter=landscape-pages.lua
+		--lua-filter=style-fenced-divs.lua
+		--filter=pandoc-crossref
+		--lua-filter=tabularray.lua
+		--lua-filter=divide-code-blocks.lua
+		--resource-path=.:/resources
+		--data-dir=/resources
+		--top-level-division=section
+		--variable=block-headings
+		--variable=numbersections
+		--metadata=date:"'${DATE}'"
+		--metadata=date-english:"'${DATE_ENGLISH}'"
+		--metadata=year:"'${YEAR}'"
+		--metadata=titlepage:true
+		--metadata=titlepage-background:/resources/img/cover.png
+		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml
+		--metadata=logo:/resources/img/tcg.png
+		--metadata=titlepage-rule-height:0
+		--metadata=colorlinks:true
+		--metadata=contact:admin@trustedcomputinggroup.org
+		--from=${FROM}
+		${extra_pandoc_options}
+		--to=pdf
+		--output="'${pdf_output}'"
+		"'${build_dir}/${input_file}'")
+	retry 1 "${CMD[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "PDF output failed"
@@ -368,37 +395,38 @@ fi
 if [ -n "${latex_output}" ]; then
 	mkdir -p "$(dirname ${latex_output})"
 	echo "Generating LaTeX Output"
-	pandoc \
-		--pdf-engine=lualatex \
-		--embed-resources \
-		--standalone \
-		--template=eisvogel.latex \
-		--lua-filter=mermaid-code-class-pre.lua \
-		--filter=mermaid-filter \
-		--lua-filter=parse-html.lua \
-		--lua-filter=apply-classes-to-tables.lua \
-		--lua-filter=landscape-pages.lua \
-		--lua-filter=tabularray.lua \
-		--lua-filter=style-fenced-divs.lua \
-		--filter=pandoc-crossref \
-		--lua-filter=divide-code-blocks.lua \
-		--resource-path=.:/resources \
-		--data-dir=/resources \
-		--top-level-division=section \
-		--variable=block-headings \
-		--variable=numbersections \
-		--metadata=titlepage:true \
-		--metadata=titlepage-background:/resources/img/cover.png \
-		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
-		--metadata=logo:/resources/img/tcg.png \
-		--metadata=titlepage-rule-height:0 \
-		--metadata=colorlinks:true \
-		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=${FROM} \
-		${extra_pandoc_options} \
-		--to=latex \
-		--output="${latex_output}" \
-		"${build_dir}/${input_file}"
+	CMD=(pandoc
+		--pdf-engine=lualatex
+		--embed-resources
+		--standalone
+		--template=eisvogel.latex
+		--lua-filter=mermaid-code-class-pre.lua
+		--filter=mermaid-filter
+		--lua-filter=parse-html.lua
+		--lua-filter=apply-classes-to-tables.lua
+		--lua-filter=landscape-pages.lua
+		--lua-filter=style-fenced-divs.lua
+		--filter=pandoc-crossref
+		--lua-filter=tabularray.lua
+		--lua-filter=divide-code-blocks.lua
+		--resource-path=.:/resources
+		--data-dir=/resources
+		--top-level-division=section
+		--variable=block-headings
+		--variable=numbersections
+		--metadata=titlepage:true
+		--metadata=titlepage-background:/resources/img/cover.png
+		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml
+		--metadata=logo:/resources/img/tcg.png
+		--metadata=titlepage-rule-height:0
+		--metadata=colorlinks:true
+		--metadata=contact:admin@trustedcomputinggroup.org
+		--from='${FROM}'
+		${extra_pandoc_options}
+		--to=latex
+		--output="'${latex_output}'"
+		"'${build_dir}/${input_file}'")
+	retry 5 "${CMD[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "LaTeX output failed"
@@ -426,27 +454,27 @@ if [ -n "${docx_output}" ]; then
 
 	mkdir -p "$(dirname ${docx_output})"
 	echo "Generating DOCX Output"
-	# workaround to make mermaid and crossref play nice together: https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
-	pandoc \
-		--pdf-engine=lualatex \
-		--embed-resources \
-		--standalone \
-		--lua-filter=mermaid-code-class-pre.lua \
-		--filter=mermaid-filter \
-		--lua-filter=parse-html.lua \
-		--lua-filter=apply-classes-to-tables.lua \
-		--lua-filter=style-fenced-divs.lua \
-		--lua-filter=make-informative-text.lua \
-		--filter=pandoc-crossref \
-		--resource-path=.:/resources \
-		--data-dir=/resources \
-		--from=${FROM}+raw_attribute \
-		--metadata=subtitle:"${SUBTITLE}" \
-		--reference-doc=/resources/templates/tcg_template.docx \
-		${extra_pandoc_options} \
-		--to=docx \
-		--output="${docx_output}" \
-		"${build_dir}/${input_file}.prefixed"
+	CMD=(pandoc
+		--pdf-engine=lualatex
+		--embed-resources
+		--standalone
+		--lua-filter=mermaid-code-class-pre.lua
+		--filter=mermaid-filter
+		--lua-filter=parse-html.lua
+		--lua-filter=apply-classes-to-tables.lua
+		--lua-filter=style-fenced-divs.lua
+		--lua-filter=make-informative-text.lua
+		--filter=pandoc-crossref
+		--resource-path=.:/resources
+		--data-dir=/resources
+		--from='${FROM}+raw_attribute'
+		--metadata=subtitle:"'${SUBTITLE}'"
+		--reference-doc=/resources/templates/tcg_template.docx
+		${extra_pandoc_options}
+		--to=docx
+		--output="'${docx_output}'"
+		"'${build_dir}/${input_file}.prefixed'")
+	retry 5 "${CMD[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "DOCX output failed"
@@ -461,39 +489,40 @@ export MERMAID_FILTER_FORMAT="svg"
 if [ -n "${html_output}" ]; then
 	mkdir -p "$(dirname ${html_output})"
 	echo "Generating html Output"
-	pandoc \
-		--toc \
-		-V colorlinks=true \
-		-V linkcolor=blue \
-		-V urlcolor=blue \
-		-V toccolor=blue \
-		--embed-resources \
-		--standalone \
-		--lua-filter=mermaid-code-class-pre.lua \
-		--filter=mermaid-filter \
-		--lua-filter=parse-html.lua \
-		--lua-filter=apply-classes-to-tables.lua \
-		--lua-filter=landscape-pages.lua \
-		--filter=pandoc-crossref \
-		--lua-filter=divide-code-blocks.lua \
-		--lua-filter=style-fenced-divs.lua \
-		--resource-path=.:/resources \
-		--data-dir=/resources \
-		--top-level-division=section \
-		--variable=block-headings \
-		--variable=numbersections \
-		--metadata=titlepage:true \
-		--metadata=titlepage-background:/resources/img/cover.png \
-		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml \
-		--metadata=logo:/resources/img/tcg.png \
-		--metadata=titlepage-rule-height:0 \
-		--metadata=colorlinks:true \
-		--metadata=contact:admin@trustedcomputinggroup.org \
-		--from=${FROM} \
-		${extra_pandoc_options} \
-		--to=html \
-		--output="${html_output}" \
-		"${build_dir}/${input_file}"
+	CMD=(pandoc
+		--toc
+		-V colorlinks=true
+		-V linkcolor=blue
+		-V urlcolor=blue
+		-V toccolor=blue
+		--embed-resources
+		--standalone
+		--lua-filter=mermaid-code-class-pre.lua
+		--filter=mermaid-filter
+		--lua-filter=parse-html.lua
+		--lua-filter=apply-classes-to-tables.lua
+		--lua-filter=landscape-pages.lua
+		--filter=pandoc-crossref
+		--lua-filter=divide-code-blocks.lua
+		--lua-filter=style-fenced-divs.lua
+		--resource-path=.:/resources
+		--data-dir=/resources
+		--top-level-division=section
+		--variable=block-headings
+		--variable=numbersections
+		--metadata=titlepage:true
+		--metadata=titlepage-background:/resources/img/cover.png
+		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml
+		--metadata=logo:/resources/img/tcg.png
+		--metadata=titlepage-rule-height:0
+		--metadata=colorlinks:true
+		--metadata=contact:admin@trustedcomputinggroup.org
+		--from=${FROM}
+		${extra_pandoc_options}
+		--to=html
+		--output="'${html_output}'"
+		"'${build_dir}/${input_file}'")
+	retry 5 "${CMD[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "HTML output failed"
