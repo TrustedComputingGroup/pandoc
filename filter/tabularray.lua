@@ -21,7 +21,6 @@ function TabularrayRows(rows, width)
                 row_code[j] = ' '
             elseif row.cells[n] then
                 local cell = row.cells[n]
-                print(string.format("span = %d,%d", cell.row_span, cell.col_span))
                 n = n + 1
                 local cell_code = pandoc.write(pandoc.Pandoc(cell.contents),'latex')
                 if cell.row_span > 1 or cell.col_span > 1 then
@@ -74,8 +73,6 @@ function Table(tbl)
         latex_code = latex_code .. TabularrayRows(tbl.foot.rows, width)
 
         latex_code = latex_code .. '\\end{longtblr}\n'
-
-        print(string.format("Latex: %s", latex_code))
 
         return pandoc.RawBlock('tex', latex_code)
     end

@@ -314,41 +314,9 @@ echo "Date (English): ${DATE_ENGLISH}"
 # * DISABLING 'markdown_in_html_blocks' which breaks the ability to embed tables in HTML form.
 FROM="markdown+gfm_auto_identifiers+fenced_divs+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks"
 
-# First, we do a Markdown->Markdown Pandoc pass. This serves two purposes:
-# 1. Generate the diagrams before pandoc-crossref starts its work. https://github.com/raghur/mermaid-filter/issues/39#issuecomment-1703911386
-# 2. Mermaid-filter uses an actual browser to do its work, and sometimes that process times out. Retry if needed.
-do_mermaid() {
-	format=$1
-	md_file_in=$2
-	md_file_out=$3
-	export MERMAID_FILTER_THEME="forest"
-	export MERMAID_FILTER_FORMAT="${format}"
-	export MERMAID_FILTER_BACKGROUND="transparent"
-	pandoc \
-		--lua-filter=mermaid-code-class-pre.lua \
-		--filter=mermaid-filter \
-		--lua-filter=mermaid-code-class-post.lua \
-		--resource-path=.:/resources \
-		--data-dir=/resources \
-		--standalone \
-		--from=markdown \
-		"${md_file_in}" \
-		--to=markdown \
-		--output="${md_file_out}"
-
-	cat "${md_file_out}"
-}
-
-# For PDF, latex, and docx outputs, create PDF figures.
-if [ -n "${pdf_output}" -o "${latex_output}" -o "${docx_output}" ]; then
-	# Try up to 5 times to run the Mermaid filter.
-	n=0
-	until [ "$n" -ge 5 ]; do
-		do_mermaid "pdf" "${build_dir}/${input_file}" "${build_dir}/${input_file}.pdfmermaid" && echo "Generated Mermaid diagrams" &&  break
-		echo "Assuming transient error. Retrying Mermaid diagrams..."
-		n=$((n+1)) 
-	done
-fi
+export MERMAID_FILTER_THEME="forest"
+export MERMAID_FILTER_FORMAT="pdf"
+export MERMAID_FILTER_BACKGROUND="transparent"
 
 # Generate the pdf
 if [ -n "${pdf_output}" ]; then
@@ -359,6 +327,9 @@ if [ -n "${pdf_output}" ]; then
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
+		--lua-filter=mermaid-code-class-pre.lua \
+		--filter=mermaid-filter \
+		--lua-filter=mermaid-code-class-post.lua \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
@@ -385,7 +356,7 @@ if [ -n "${pdf_output}" ]; then
 		${extra_pandoc_options} \
 		--to=pdf \
 		--output="${pdf_output}" \
-		"${build_dir}/${input_file}.pdfmermaid"
+		"${build_dir}/${input_file}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "PDF output failed"
@@ -403,6 +374,9 @@ if [ -n "${latex_output}" ]; then
 		--embed-resources \
 		--standalone \
 		--template=eisvogel.latex \
+		--lua-filter=mermaid-code-class-pre.lua \
+		--filter=mermaid-filter \
+		--lua-filter=mermaid-code-class-post.lua \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
@@ -426,7 +400,7 @@ if [ -n "${latex_output}" ]; then
 		${extra_pandoc_options} \
 		--to=latex \
 		--output="${latex_output}" \
-		"${build_dir}/${input_file}.pdfmermaid"
+		"${build_dir}/${input_file}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "LaTeX output failed"
@@ -441,7 +415,7 @@ if [ -n "${docx_output}" ]; then
 	SUBTITLE="Version ${major_minor:-${DATE}}, Revision ${revision:-0}"
 	# Prefix the document with a Word page-break, since Pandoc doesn't do docx
 	# title pages.
-	cat <<- 'EOF' > "${build_dir}/${input_file}.pdfmermaid.prefixed"
+	cat <<- 'EOF' > "${build_dir}/${input_file}.prefixed"
 	```{=openxml}
 	<w:p>
 		<w:r>
@@ -450,7 +424,7 @@ if [ -n "${docx_output}" ]; then
 	</w:p>
 	```
 	EOF
-	cat ${build_dir}/${input_file}.pdfmermaid >> ${build_dir}/${input_file}.pdfmermaid.prefixed
+	cat ${build_dir}/${input_file} >> ${build_dir}/${input_file}.prefixed
 
 	mkdir -p "$(dirname ${docx_output})"
 	echo "Generating DOCX Output"
@@ -459,6 +433,9 @@ if [ -n "${docx_output}" ]; then
 		--pdf-engine=lualatex \
 		--embed-resources \
 		--standalone \
+		--lua-filter=mermaid-code-class-pre.lua \
+		--filter=mermaid-filter \
+		--lua-filter=mermaid-code-class-post.lua \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=style-fenced-divs.lua \
@@ -472,7 +449,7 @@ if [ -n "${docx_output}" ]; then
 		${extra_pandoc_options} \
 		--to=docx \
 		--output="${docx_output}" \
-		"${build_dir}/${input_file}.pdfmermaid.prefixed"
+		"${build_dir}/${input_file}.prefixed"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "DOCX output failed"
@@ -481,16 +458,7 @@ if [ -n "${docx_output}" ]; then
 	fi
 fi
 
-# For HTML outputs, create SVG figures.
-if [ -n "${html_output}" ]; then
-	# Try up to 5 times to run the Mermaid filter.
-	n=0
-	until [ "$n" -ge 5 ]; do
-		do_mermaid "svg" "${build_dir}/${input_file}" "${build_dir}/${input_file}.svgmermaid" && break
-		n=$((n+1)) 
-	done
-fi
-
+export MERMAID_FILTER_FORMAT="svg"
 
 # Generate the html output
 if [ -n "${html_output}" ]; then
@@ -504,6 +472,9 @@ if [ -n "${html_output}" ]; then
 		-V toccolor=blue \
 		--embed-resources \
 		--standalone \
+		--lua-filter=mermaid-code-class-pre.lua \
+		--filter=mermaid-filter \
+		--lua-filter=mermaid-code-class-post.lua \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
@@ -526,7 +497,7 @@ if [ -n "${html_output}" ]; then
 		${extra_pandoc_options} \
 		--to=html \
 		--output="${html_output}" \
-		"${build_dir}/${input_file}.svgmermaid"
+		"${build_dir}/${input_file}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "HTML output failed"

@@ -17,6 +17,7 @@ function CodeBlock(el)
     end
     if isMermaid then
         el.identifier = el.identifier .. classSuffix
+        return pandoc.Figure(el)
     end
     return el
 end

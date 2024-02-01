@@ -279,7 +279,7 @@ are expected to use this macro.
 
 Users familiar with Git and who prefer to use their own tools may choose to skip this section.
 
-```mermaid {caption="GitHub Collaboration Workflow" #fig:collaboration-workflow}
+```{.mermaid caption="GitHub Collaboration Workflow" #fig:collaboration-workflow}
     gitGraph
        commit id: "head"
        branch proposed-edits-1
@@ -607,7 +607,7 @@ See the Mermaid website for a more exhaustive list of types of diagrams.
 Mermaid supports swim-lane digrams like @fig:startup with the following notation:
 
 ````md
-```mermaid {caption="Startup Sequence" #fig:startup}
+```{.mermaid caption="Startup Sequence" #fig:startup}
 sequenceDiagram
 Host->>TPM: TPM2_Startup
 loop Measurements
@@ -618,7 +618,7 @@ TPM->>Host: <quoted PCRs>
 ```
 ````
 
-```mermaid {caption="Startup Sequence" #fig:startup}
+```{.mermaid caption="Startup Sequence" #fig:startup}
 sequenceDiagram
 Host->>TPM: TPM2_Startup
 loop Measurements
@@ -636,7 +636,7 @@ and `#fig:xxxxx` classes in curly braces.
 Mermaid supports flow-charts like @fig:flowchart with the following notation:
 
 ````md
-```mermaid {caption="Flowchart" #fig:flowchart}
+```{.mermaid caption="Flowchart" #fig:flowchart}
 graph TD;
     A-->B;
     A-->C;
@@ -645,7 +645,7 @@ graph TD;
 ```
 ````
 
-```mermaid {caption="Flowchart" #fig:flowchart}
+```{.mermaid caption="Flowchart" #fig:flowchart}
 graph TD;
     A-->B;
     A-->C;
@@ -1076,7 +1076,7 @@ Figures can be placed on landscape pages as in @fig:pdf-diagram or
 ```
 
 ````md
-```mermaid {caption="Complicated Swimlane" #fig:landscape-swimlane width=3000 .landscape}
+```{.mermaid caption="Complicated Swimlane" #fig:landscape-swimlane width=3000 .landscape}
 sequenceDiagram
 Alice->>Bob: Hello
 Bob->>Carl: Hello
@@ -1096,7 +1096,7 @@ Bob->>Alice: Goodbye
 ![Wide Diagram](bigdiagram.pdf){#fig:pdf-diagram .landscape}
 
 
-```mermaid {caption="Complicated Swimlane" #fig:landscape-swimlane width=3000 .landscape .garbledina}
+```{.mermaid caption="Complicated Swimlane" #fig:landscape-swimlane width=3000 .landscape .garbledina}
 sequenceDiagram
 Alice->>Bob: Hello
 Bob->>Carl: Hello

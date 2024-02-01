@@ -6,11 +6,9 @@
 -- Postprocess image blocks by decomposing the classes out of the identifier again.
 
 function Image(el)
-    if el.classes then
-    end
     if el.identifier then
         local id, classes = el.identifier:match('(.*)__CLASSES__(.*)')
-        -- If the ID had this weird suffix, strip the suffix and add the classes.
+        -- If the ID had this weird suffix, strip the suffix and add the classes, and wrap the whole thing in a figure.
         if id then
             el.identifier = id
             -- Split classes on _ characters
@@ -19,5 +17,6 @@ function Image(el)
             end
         end
     end
+
     return el
 end
