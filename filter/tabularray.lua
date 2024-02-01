@@ -21,6 +21,7 @@ function TabularrayRows(rows, width)
                 row_code[j] = ' '
             elseif row.cells[n] then
                 local cell = row.cells[n]
+                print(string.format("span = %d,%d", cell.row_span, cell.col_span))
                 n = n + 1
                 local cell_code = pandoc.write(pandoc.Pandoc(cell.contents),'latex')
                 if cell.row_span > 1 or cell.col_span > 1 then
@@ -42,18 +43,21 @@ end
 
 function Table(tbl)
     if FORMAT =='latex' then
-        local latex_code = '\\begin{tblr}{hlines,vlines,'
+        local latex_code = '\\begin{longtblr}['
+
         if tbl.identifier ~= '' then
-            latex_code = latex_code .. string.format('label=%s', tbl.identifier)
+            latex_code = latex_code .. string.format('label={%s},', tbl.identifier)
+        else
+            latex_code = latex_code .. 'label=none,'
         end
         local caption = pandoc.utils.stringify(tbl.caption.long)
         if caption ~= '' then
-            latex_code = latex_code .. string.format('caption=%s,entry=%s,', caption, caption)
+            latex_code = latex_code .. string.format('caption={%s},entry={%s},', caption, caption)
         else
-            latex_code = latex_code .. 'entry=,'
+            latex_code = latex_code .. 'entry=none,'
         end
         
-        latex_code = latex_code .. 'colspec={'
+        latex_code = latex_code .. ']{hlines,vlines,colspec={'
 
         width = 1
         for i, spec in ipairs(tbl.colspecs) do
@@ -69,7 +73,7 @@ function Table(tbl)
         end
         latex_code = latex_code .. TabularrayRows(tbl.foot.rows, width)
 
-        latex_code = latex_code .. '\\end{tblr}\n'
+        latex_code = latex_code .. '\\end{longtblr}\n'
 
         print(string.format("Latex: %s", latex_code))
 

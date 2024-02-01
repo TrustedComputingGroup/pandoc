@@ -8,6 +8,7 @@ pdf_output=""
 docx_output=""
 html_output=""
 latex_output=""
+table_rules="no"
 block_quotes_are_informative_text="no"
 
 # Setup an EXIT handler
@@ -40,7 +41,7 @@ print_usage() {
 	echo "  --gitversion: legacy flag, no effect (default starting with 0.9.0)"
     echo "  --gitstatus: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --nogitversion: Do not use git to describe the generate document version and revision metadata."
-	echo "  --table_rules: legacy flag, no effect (default starting with 0.9.0)"
+	echo "  --table_rules: style tables with borders (does not work well for tables that use rowspan or colspan)"
 	echo "  --plain_quotes: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --noplain_quotes: use block-quote syntax as informative text"
 }
@@ -105,6 +106,7 @@ while true; do
 		shift 2
 		;;
 	--table_rules)
+		table_rules="yes"
 		shift
 		;;
 	--help)
@@ -241,6 +243,7 @@ echo "resource dir: ${resource_dir}"
 echo "build dir: ${build_dir}"
 echo "browser: ${browser}"
 echo "use git version: ${do_gitversion}"
+echo "use table rules: ${table_rules}"
 echo "make block quotes Informative Text: ${block_quotes_are_informative_text}"
 if test "${do_gitversion}" == "yes"; then
 	echo "Git Generated Document Version Information"
@@ -328,23 +331,24 @@ do_mermaid() {
 		--resource-path=.:/resources \
 		--data-dir=/resources \
 		--standalone \
-		--from=${FROM} \
+		--from=markdown \
 		"${md_file_in}" \
 		--to=markdown \
 		--output="${md_file_out}"
+
+	cat "${md_file_out}"
 }
 
-# # For PDF, latex, and docx outputs, create PDF figures.
-# if [ -n "${pdf_output}" -o "${latex_output}" -o "${docx_output}" ]; then
-# 	# Try up to 5 times to run the Mermaid filter.
-# 	n=0
-# 	until [ "$n" -ge 5 ]; do
-# 		do_mermaid "pdf" "${build_dir}/${input_file}" "${build_dir}/${input_file}.pdfmermaid" && echo "Generated Mermaid diagrams" &&  break
-# 		echo "Assuming transient error. Retrying Mermaid diagrams..."
-# 		n=$((n+1)) 
-# 	done
-# fi
-cp "${build_dir}/${input_file}" "${build_dir}/${input_file}.pdfmermaid"
+# For PDF, latex, and docx outputs, create PDF figures.
+if [ -n "${pdf_output}" -o "${latex_output}" -o "${docx_output}" ]; then
+	# Try up to 5 times to run the Mermaid filter.
+	n=0
+	until [ "$n" -ge 5 ]; do
+		do_mermaid "pdf" "${build_dir}/${input_file}" "${build_dir}/${input_file}.pdfmermaid" && echo "Generated Mermaid diagrams" &&  break
+		echo "Assuming transient error. Retrying Mermaid diagrams..."
+		n=$((n+1)) 
+	done
+fi
 
 # Generate the pdf
 if [ -n "${pdf_output}" ]; then
@@ -358,8 +362,8 @@ if [ -n "${pdf_output}" ]; then
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
-		--lua-filter=style-fenced-divs.lua \
 		--lua-filter=tabularray.lua \
+		--lua-filter=style-fenced-divs.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
 		--resource-path=.:/resources \
@@ -402,8 +406,8 @@ if [ -n "${latex_output}" ]; then
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
-		--lua-filter=style-fenced-divs.lua \
 		--lua-filter=tabularray.lua \
+		--lua-filter=style-fenced-divs.lua \
 		--filter=pandoc-crossref \
 		--lua-filter=divide-code-blocks.lua \
 		--resource-path=.:/resources \
@@ -457,7 +461,6 @@ if [ -n "${docx_output}" ]; then
 		--standalone \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
-		--lua-filter=landscape-pages.lua \
 		--lua-filter=style-fenced-divs.lua \
 		--lua-filter=make-informative-text.lua \
 		--filter=pandoc-crossref \
