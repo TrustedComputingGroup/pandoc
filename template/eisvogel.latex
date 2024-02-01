@@ -165,6 +165,7 @@ $endif$
 \usepackage{longtable,booktabs,array}
 \usepackage{multirow}
 \usepackage{calc} % for calculating minipage widths
+\usepackage{tabularray}
 
 % % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
