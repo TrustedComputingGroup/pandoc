@@ -329,7 +329,6 @@ if [ -n "${pdf_output}" ]; then
 		--template=eisvogel.latex \
 		--lua-filter=mermaid-code-class-pre.lua \
 		--filter=mermaid-filter \
-		--lua-filter=mermaid-code-class-post.lua \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
@@ -376,7 +375,6 @@ if [ -n "${latex_output}" ]; then
 		--template=eisvogel.latex \
 		--lua-filter=mermaid-code-class-pre.lua \
 		--filter=mermaid-filter \
-		--lua-filter=mermaid-code-class-post.lua \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
@@ -435,7 +433,6 @@ if [ -n "${docx_output}" ]; then
 		--standalone \
 		--lua-filter=mermaid-code-class-pre.lua \
 		--filter=mermaid-filter \
-		--lua-filter=mermaid-code-class-post.lua \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=style-fenced-divs.lua \
@@ -474,7 +471,6 @@ if [ -n "${html_output}" ]; then
 		--standalone \
 		--lua-filter=mermaid-code-class-pre.lua \
 		--filter=mermaid-filter \
-		--lua-filter=mermaid-code-class-post.lua \
 		--lua-filter=parse-html.lua \
 		--lua-filter=apply-classes-to-tables.lua \
 		--lua-filter=landscape-pages.lua \
