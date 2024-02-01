@@ -185,6 +185,7 @@ RUN tlmgr update --self && tlmgr install \
     transparent \
     unicode-math \
     upquote \
+    varwidth \
     xcolor \
     zref
 

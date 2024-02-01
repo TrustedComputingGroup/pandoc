@@ -166,6 +166,7 @@ $endif$
 \usepackage{multirow}
 \usepackage{calc} % for calculating minipage widths
 \usepackage{tabularray}
+\UseTblrLibrary{varwidth}
 
 % % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}

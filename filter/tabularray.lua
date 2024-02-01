@@ -2,12 +2,18 @@
 
 function TabularrayColspec(colspec)
     local mapping = {
-        ['AlignLeft'] = 'Q[l]',
-        ['AlignCenter'] = 'Q[c]',
-        ['AlignDefault'] = 'Q[c]',
-        ['AlignRight'] = 'Q[r]',
+        ['AlignLeft'] = '%s[%sl]',
+        ['AlignCenter'] = '%s[%sc]',
+        ['AlignDefault'] = '%s[%sc]',
+        ['AlignRight'] = '%s[%sr]',
     }
-    return mapping[colspec[1]]
+    local type = 'Q'
+    local width = ''
+    if colspec[2] then
+        type = 'X'
+        width = string.format("%f,", colspec[2])
+    end
+    return string.format(mapping[colspec[1]], type, width)
 end
 
 function TabularrayRows(rows, width)
