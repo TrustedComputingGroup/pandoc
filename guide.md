@@ -668,20 +668,20 @@ Small, simple tables like @tbl:shapes are easier to read in raw Markdown form in
 ```md
 Table: Shapes {#tbl:shapes}
 
-| Shape    | Number of sides |
-| ------------ | ------------------- |
-| Square       | 4                   |
-| Triangle     | 3                   |
-| Möbius strip | 1                   |
+| Shape        | Number of sides |
+| ------------ | --------------- |
+| Square       | 4               |
+| Triangle     | 3               |
+| Möbius strip | 1               |
 ```
 
 Table: Shapes {#tbl:shapes}
 
-| Shape    | Number of sides |
-| ------------ | ------------------- |
-| Square       | 4                   |
-| Triangle     | 3                   |
-| Möbius strip | 1                   |
+| Shape        | Number of sides |
+| ------------ | --------------- |
+| Square       | 4               |
+| Triangle     | 3               |
+| Möbius strip | 1               |
 
 Note the table caption and cross-reference in curly braces above the table.
 
