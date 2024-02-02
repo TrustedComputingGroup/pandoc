@@ -157,29 +157,15 @@ $highlighting-macros$
 $endif$
 
 % Left-justify the document.
-\usepackage{lineno}
 \usepackage[document]{ragged2e}
 \RaggedRight{}
 \sloppy
 
-% Customizations to the behavior of tables
-\usepackage{longtable,booktabs,array}
-\usepackage{multirow}
-\usepackage{calc} % for calculating minipage widths
+% Required for the tabularray filter.
+\usepackage{calc}
 \usepackage{tabularray}
 \UseTblrLibrary{varwidth}
 
-% % Correct order of tables after \paragraph or \subparagraph
-\usepackage{etoolbox}
-\makeatletter
-\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
-\makeatother
-
-% % Allow footnotes in longtable head/foot
-\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
-\makesavenoteenv{longtable}
-\usepackage{footnotebackref}
-$if(graphics)$
 \usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -193,8 +179,6 @@ $if(graphics)$
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
-$endif$
-
 
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
@@ -269,12 +253,6 @@ $endif$
 % break urls
 %
 \PassOptionsToPackage{hyphens}{url}
-
-%
-% When using babel or polyglossia with biblatex, loading csquotes is recommended
-% to ensure that quoted texts are typeset according to the rules of your main language.
-%
-\usepackage{csquotes}
 
 %
 % captions
@@ -362,18 +340,8 @@ $endif$
 \definecolor{table-rule-color}{HTML}{4D4D4D}
 
 \arrayrulecolor{table-rule-color}     % color of \toprule, \midrule, \bottomrule
-\setlength\heavyrulewidth{1pt} % thickness of \toprule, \bottomrule
-\setlength\lightrulewidth{1pt} % thickness of \midrule
 \setlength\arrayrulewidth{1pt} % thickness of array rules
 \renewcommand{\arraystretch}{1.3}     % spacing (padding)
-
-$if(table-use-row-colors)$
-\usepackage{etoolbox}
-\AtBeginEnvironment{longtable}{\rowcolors{2}{table-row-color}{table-alt-color}}
-\preto{\toprule}{\hiderowcolors}{}{}
-\appto{\endhead}{\showrowcolors}{}{}
-\appto{\endfirsthead}{\showrowcolors}{}{}
-$endif$
 
 %
 % remove paragraph indentation

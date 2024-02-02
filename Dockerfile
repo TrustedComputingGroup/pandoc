@@ -145,7 +145,6 @@ RUN tlmgr update --self && tlmgr install \
     booktabs \
     caption \
     catchfile \
-    csquotes \
     draftwatermark \
     enumitem \
     etoolbox \

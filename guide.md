@@ -64,7 +64,7 @@ comment_, it can be considered a _normative statement_.
 EXAMPLE:
 
 ::: Informative :::
-Contact <admin@trustedcomputinggroup> for questions about this document.
+Reach out to <admin@trustedcomputinggroup> with any questions about this document.
 :::::::::::::::::::
 
 \tableofcontents
