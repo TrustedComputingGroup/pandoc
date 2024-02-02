@@ -157,6 +157,7 @@ $highlighting-macros$
 $endif$
 
 % Left-justify the document.
+\usepackage{lineno}
 \usepackage[document]{ragged2e}
 \RaggedRight{}
 \sloppy
