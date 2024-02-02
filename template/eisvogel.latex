@@ -166,6 +166,11 @@ $endif$
 \usepackage{tabularray}
 \UseTblrLibrary{varwidth}
 
+% Use colors from the TCG template for tables
+\definecolor{table-header-background}{HTML}{808080}
+\definecolor{table-odd-background}{HTML}{D9D9D9}
+\definecolor{table-even-background}{HTML}{BFBFBF}
+
 \usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}

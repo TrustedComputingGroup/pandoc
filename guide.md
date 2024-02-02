@@ -796,13 +796,15 @@ Table: Fruits (Grid) {#tbl:fruits-grid}
 #### Removing Lines
 
 Tables are drawn with lines around all the cells by default.
-Use the `.no_lines` class to avoid drawing any lines:
+Use the `.plain` class to avoid drawing any lines or background shading.
+This is useful when you want to present some tabular text without styling it
+like "an actual table".
 
-: {.no_lines}
+: {.plain}
 
-Example Table
 ------- -----
-Without Lines
+like     this
+------- -----
 
 #### Column Alignment
 
@@ -1177,7 +1179,7 @@ Table: Footer {#tbl:footer-grid}
 | Fruit and Color      | Mistaken for Vegetable     |
 +=============+========+============================+
 
-Table: No Lines {#tbl:no-lines-grid .no_lines}
+Table: No Lines {#tbl:no-lines-grid .plain}
 
 +----------------------+----------------------------+
 | Fruit and Color      | Mistaken for Vegetable     |
