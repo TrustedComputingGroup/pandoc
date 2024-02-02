@@ -519,10 +519,9 @@ too large in an Informative Text block.
 
 ### Other Informative Blocks
 
-Writers of a document may prefer more compact "informative" blocks with more
-obvious semantics, like the warning above. In this case, the text ist still
-contained within a "TCG Informative" gray box, but with a more meaningful
-header.
+Writers of a document may prefer "informative" blocks with more specific
+semantics. In this case, the text is still contained within a "TCG Informative"
+gray box, but with a more meaningful header.
 
 ::: Note :::
 This is a "Note" block.
