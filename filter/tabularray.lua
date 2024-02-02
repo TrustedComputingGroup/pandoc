@@ -93,19 +93,38 @@ function Table(tbl)
         -- in the list of tables.
         -- If there is no caption, it doesn't go into the list of tables.
         local caption = pandoc.utils.stringify(tbl.caption.long)
-        if caption ~= '' then
-            latex_code = latex_code .. string.format('caption={%s},entry={%s},', caption, caption)
+
+        if caption then
+            latex_code = latex_code .. string.format('caption={%s},', caption)
+        end
+
+        -- .unnumbered .unlisted is the traditional pair of classes Pandoc uses
+        -- to omit something from the TOC. Let's keep that tradition alive.
+        -- Also, omit tables with no caption or identifier as well.
+        if (tbl.classes:find('unnumbered') and tbl.classes:find('unlisted'))
+            or (caption == '' and tbl.identifier == '') then
+            latex_code = latex_code .. 'entry=none,label=none,'
         else
-            latex_code = latex_code .. 'entry=none,'
+            -- N.B.: caption might be the empty string, in the case of a table
+            -- that goes into the list of tables that has no caption.
+            latex_code = latex_code .. string.format('entry={%s},', caption)
         end
         
         -- That's it for the outer attributes. Now there are some inner attributes.
         latex_code = latex_code .. ']{'
 
-        -- Here, we get to enable borders for every cell in the table.
-        -- I.e., the main purpose of this filter.
-        latex_code = latex_code .. 'hlines,vlines,'
+        if not tbl.classes:find('no_lines') then
+            -- Here, we get to enable borders for every cell in the table.
+            -- I.e., the main purpose of this filter.
+            latex_code = latex_code .. 'hlines,vlines,'
+        end
 
+        -- tabularray uses hbox under the hood to measure the boxes.
+        -- This is broken if there are e.g., lists in the box.
+        -- This is fixed by telling tabularray to use vbox to measure the box.
+        -- see tabularray documentation, section "Library varwidth"
+        latex_code = latex_code .. 'measure=vbox,'
+        
         -- We have to translate Pandoc's internal ColSpec into the longtblr one.
         latex_code = latex_code .. 'colspec={'
 

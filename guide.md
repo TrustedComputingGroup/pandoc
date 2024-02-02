@@ -279,7 +279,7 @@ are expected to use this macro.
 
 Users familiar with Git and who prefer to use their own tools may choose to skip this section.
 
-```{.mermaid caption="GitHub Collaboration Workflow" #fig:collaboration-workflow}
+```mermaid {caption="GitHub Collaboration Workflow" #fig:collaboration-workflow}
     gitGraph
        commit id: "head"
        branch proposed-edits-1
@@ -607,7 +607,7 @@ See the Mermaid website for a more exhaustive list of types of diagrams.
 Mermaid supports swim-lane digrams like @fig:startup with the following notation:
 
 ````md
-```{.mermaid caption="Startup Sequence" #fig:startup}
+```mermaid {caption="Startup Sequence" #fig:startup}
 sequenceDiagram
 Host->>TPM: TPM2_Startup
 loop Measurements
@@ -618,7 +618,7 @@ TPM->>Host: <quoted PCRs>
 ```
 ````
 
-```{.mermaid caption="Startup Sequence" #fig:startup}
+```mermaid {caption="Startup Sequence" #fig:startup}
 sequenceDiagram
 Host->>TPM: TPM2_Startup
 loop Measurements
@@ -636,7 +636,7 @@ and `#fig:xxxxx` classes in curly braces.
 Mermaid supports flow-charts like @fig:flowchart with the following notation:
 
 ````md
-```{.mermaid caption="Flowchart" #fig:flowchart}
+```mermaid {caption="Flowchart" #fig:flowchart}
 graph TD;
     A-->B;
     A-->C;
@@ -645,7 +645,7 @@ graph TD;
 ```
 ````
 
-```{.mermaid caption="Flowchart" #fig:flowchart}
+```mermaid {caption="Flowchart" #fig:flowchart}
 graph TD;
     A-->B;
     A-->C;
@@ -661,14 +661,14 @@ We support several notation styles for tables.
 
 There are several ways to write a table in Markdown.
 
-### Simple Markdown Tables {#sec:simple-markdown-tables}
+### GitHub Markdown Tables {#sec:github-markdown-tables}
 
 Small, simple tables like @tbl:shapes are easier to read in raw Markdown form in the following style:
 
 ```md
 Table: Shapes {#tbl:shapes}
 
-| **Shape**    | **Number of sides** |
+| Shape    | Number of sides |
 | ------------ | ------------------- |
 | Square       | 4                   |
 | Triangle     | 3                   |
@@ -677,13 +677,36 @@ Table: Shapes {#tbl:shapes}
 
 Table: Shapes {#tbl:shapes}
 
-| **Shape**    | **Number of sides** |
+| Shape    | Number of sides |
 | ------------ | ------------------- |
 | Square       | 4                   |
 | Triangle     | 3                   |
 | Möbius strip | 1                   |
 
 Note the table caption and cross-reference in curly braces above the table.
+
+### Simple Markdown Tables {#sec:simple-markdown-tables}
+
+There is an even more minimal syntax for simple tables, as in
+@tbl:simple-shapes:
+
+```md
+Table: Shapes {#tbl:simple-shapes}
+
+Shape        Number of sides
+------------ ---------------
+Square       4
+Triangle     3
+Möbius strip 1
+```
+
+Table: Shapes {#tbl:simple-shapes}
+
+Shape        Number of sides
+------------ ---------------
+Square       4
+Triangle     3
+Möbius strip 1
 
 ### Multiline Markdown Tables {#sec:multiline-markdown-tables}
 
@@ -696,6 +719,10 @@ Table: Table Types {#tbl:table-types}
 -------------------------------------------------------------------------------
 Table Kind      Easy?       Recommended?        References
 --------------- ----------- ------------------- -------------------------------
+GitHub          Yes         When each cell      @sec:github-markdown-tables,
+Markdown                    is about one        @tbl:shapes
+Tables                      word or so.
+
 Simple          Yes         When each cell      @sec:simple-markdown-tables,
 Markdown                    is about one        @tbl:shapes
 Tables                      word or so.
@@ -806,6 +833,24 @@ Table: Fruits (Grid) {#tbl:fruits-grid}
 | Banana      | Yellow | No                         |
 +-------------+--------+----------------------------+
 
+### Styling Markdown Tables
+
+#### Removing Lines
+
+Tables are drawn with lines around all the cells by default.
+Use the `.no_lines` class to avoid drawing any lines:
+
+: {.no_lines}
+
+Example Table
+------- -----
+Without Lines
+
+#### Column Alignment
+
+Each type of Markdown table provides different support for alignment. See the
+[Pandoc table documentation](https://pandoc.org/chunkedhtml-demo/8.9-tables.html)
+for more details.
 
 ## HTML Tables {#sec:html-tables}
 
@@ -1066,7 +1111,7 @@ Figures can be placed on landscape pages as in @fig:pdf-diagram or
 ```
 
 ````md
-```{.mermaid caption="Complicated Swimlane" #fig:landscape-swimlane width=3000 .landscape}
+```mermaid {caption="Complicated Swimlane" #fig:landscape-swimlane width=3000 .landscape}
 sequenceDiagram
 Alice->>Bob: Hello
 Bob->>Carl: Hello
@@ -1086,7 +1131,7 @@ Bob->>Alice: Goodbye
 ![Wide Diagram](bigdiagram.pdf){#fig:pdf-diagram .landscape}
 
 
-```{.mermaid caption="Complicated Swimlane" #fig:landscape-swimlane width=3000 .landscape .garbledina}
+```mermaid {caption="Complicated Swimlane" #fig:landscape-swimlane width=3000 .landscape .garbledina}
 sequenceDiagram
 Alice->>Bob: Hello
 Bob->>Carl: Hello
@@ -1108,14 +1153,18 @@ Bob->>Alice: Goodbye
 
 Please report issues with the tooling at [https://github.com/TrustedComputingGroup/pandoc/issues](https://github.com/TrustedComputingGroup/pandoc/issues).
 
+When reporting an issue, please provide:
+
+1. The smallest possible Markdown document that reproduces your issue
+2. The specific version of the Pandoc toolset you are using
+3. What you expected to happen
+4. What actually happened
+
 # Pathological Tables
 
-This section contains some really crazy tables, to test our special LaTeX
+This section contains some really complicated tables, to test our special LaTeX
 [writer filter](filter/tabularray.lua) for tables.
 
-These don't work yet.
-
-```md
 Table: Bullets {#tbl:bullets-grid}
 
 +----------------------+----------------------------+
@@ -1168,7 +1217,7 @@ Table: Footer {#tbl:footer-grid}
 | Banana      | Yellow | No                         |
 +=============+========+============================+
 | Fruit and Color      | Mistaken for Vegetable     |
-+----------------------+----------------------------+
++=============+========+============================+
 
 Table: No Lines {#tbl:no-lines-grid .no_lines}
 
@@ -1184,7 +1233,7 @@ Table: No Lines {#tbl:no-lines-grid .no_lines}
 | Banana      | Yellow | No                         |
 +-------------+--------+----------------------------+
 
-Table: Not Listed {#tbl:no-entry-grid .unnumbered unlisted}
+Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
 
 +----------------------+----------------------------+
 | Fruit and Color      | Mistaken for Vegetable     |
@@ -1197,4 +1246,26 @@ Table: Not Listed {#tbl:no-entry-grid .unnumbered unlisted}
 +-------------+--------+----------------------------+
 | Banana      | Yellow | No                         |
 +-------------+--------+----------------------------+
-```
+
+: {#tbl:no-caption-but-label-grid}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+|             | Red    | No                         |
+| Apple       +--------+----------------------------+
+|             | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Verify that the table cross-references still work:
+
+* @tbl:bullets-grid
+* @tbl:informative-grid
+* @tbl:equation-grid
+* @tbl:footer-grid
+* @tbl:no-lines-grid
+* @tbl:no-caption-but-label-grid
