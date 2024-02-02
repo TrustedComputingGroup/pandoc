@@ -1221,6 +1221,33 @@ Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
 | Banana      | Yellow | No                         |
 +-------------+--------+----------------------------+
 
+<table id="tbl:underscores-html">
+    <caption>Underscores_(HTML)</caption>
+    <tr>
+        <th colspan="2">Color and Fruit</th>
+        <th>Mistaken_for_Vegetable</th>
+    </tr>
+    <tr>
+        <td rowspan="2">Apple</td>
+        <td>Red</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>Green</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>Tomato</td>
+        <td>Red</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>Ba_nana</td>
+        <td>Yellow</td>
+        <td>No</td>
+    </tr>
+</table>
+
 Verify that the table cross-references still work:
 
 * @tbl:bullets-grid

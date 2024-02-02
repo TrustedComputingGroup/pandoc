@@ -106,9 +106,15 @@ function Table(tbl)
         -- in the list of tables.
         -- If there is no caption, it doesn't go into the list of tables.
         local caption = pandoc.utils.stringify(tbl.caption.long)
+        local escaped_caption = ''
+        if caption ~= '' then
+            -- We have to LaTeX escape the caption in case it contains reserved
+            -- characters.
+            escaped_caption = '\\protect\\detokenize{' .. caption .. '}'
+        end
 
         if caption then
-            latex_code = latex_code .. string.format('caption={%s},', caption)
+            latex_code = latex_code .. string.format('caption={%s},', escaped_caption)
         end
 
         -- .unnumbered .unlisted is the traditional pair of classes Pandoc uses
@@ -120,7 +126,7 @@ function Table(tbl)
         else
             -- N.B.: caption might be the empty string, in the case of a table
             -- that goes into the list of tables that has no caption.
-            latex_code = latex_code .. string.format('entry={%s},', caption)
+            latex_code = latex_code .. string.format('entry={%s},', escaped_caption)
         end
         
         -- That's it for the outer attributes. Now there are some inner attributes.
