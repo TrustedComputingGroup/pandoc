@@ -64,15 +64,7 @@ comment_, it can be considered a _normative statement_.
 EXAMPLE:
 
 ::: Informative :::
-This is the first paragraph of 1–n paragraphs containing text of the kind
-informative comment ...
-
-This is the second paragraph of text of the kind informative comment ...
-
-This is the nth paragraph of text of the kind informative comment ...
-
-To understand the TCG specification, the user must read the specification.
-(This use of MUST does not require any action).
+Contact <admin@trustedcomputinggroup> for questions about this document.
 :::::::::::::::::::
 
 \tableofcontents
