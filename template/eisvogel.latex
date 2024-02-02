@@ -286,25 +286,10 @@ $endif$
 % Define some colors that we'll use from style-fenced-divs.lua and informative-quote-blocks.lua.
 %
 
-% Classic informative text color, for notes and examples.
-\definecolor{informative-background}{RGB}{224,224,224}
-\definecolor{informative-header}{RGB}{148,150,152}
-\definecolor{informative-foreground}{RGB}{10,10,10}
-
-% Happy color, for tips.
-\definecolor{green-background}{RGB}{220,250,224}
-\definecolor{green-header}{RGB}{133,173,138}
-\definecolor{green-foreground}{RGB}{6,45,12}
-
-% Slightly scarier color, for caveats.
-\definecolor{orange-background}{RGB}{250,236,220}
-\definecolor{orange-header}{RGB}{173,153,133}
-\definecolor{orange-foreground}{RGB}{46,27,5}
-
-% Very scary color, for warnings.
-\definecolor{red-background}{RGB}{250,220,220}
-\definecolor{red-header}{RGB}{173,133,133}
-\definecolor{red-foreground}{RGB}{46,5,5}
+% Informative text color, also used for notes and examples.
+\definecolor{informative-background}{RGB}{224, 224, 224}
+\definecolor{informative-header}{RGB}{75, 77, 78}
+\definecolor{informative-foreground}{RGB}{10, 10, 10}
 
 %
 % code block style
@@ -651,22 +636,26 @@ $endif$
   \addappheadtotoc
 }
 
-\newcommand{\coverbg}{/resources/img/greentop.png}
+\newcommand{\coverbg}{/resources/img/bluetop.png}
 
-$if(template)$
-  \ifthenelse{\equal{\detokenize{$template$}}{\detokenize{bluetop}}}
-  {
-    \renewcommand{\coverbg}{/resources/img/bluetop.png}
-  }
-  {}
-$endif$
+% Specifications and Errata get the greentop background.
+\ifthenelse{\equal{\detokenize{$type$}}{\detokenize{SPECIFICATION}}}
+{%
+    \renewcommand{\coverbg}{/resources/img/greentop.png}
+}
+{}
+\ifthenelse{\equal{\detokenize{$type$}}{\detokenize{ERRATA}}}
+{%
+    \renewcommand{\coverbg}{/resources/img/greentop.png}
+}
+{}
 
 \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{Published}}}
 {}
-{
-  \usepackage[angle=0]{draftwatermark}
-  % use an image for the watermark so it doesn't interfere with selection
-  \SetWatermarkText{\includegraphics[width=8.5in, height=11in]{/resources/img/draft.pdf}}
+{%
+    \usepackage[angle=0]{draftwatermark}
+    % use an image for the watermark so it doesn't interfere with selection
+    \SetWatermarkText{\includegraphics[width=8.5in, height=11in]{/resources/img/draft.pdf}}
 }
 
 \begin{document}
