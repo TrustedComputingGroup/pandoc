@@ -41,7 +41,7 @@ print_usage() {
 	echo "  --gitversion: legacy flag, no effect (default starting with 0.9.0)"
     echo "  --gitstatus: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --nogitversion: Do not use git to describe the generate document version and revision metadata."
-	echo "  --table_rules: style tables with borders (does not work well for tables that use rowspan or colspan)"
+	echo "  --table_rules: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --plain_quotes: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --noplain_quotes: use block-quote syntax as informative text"
 }
