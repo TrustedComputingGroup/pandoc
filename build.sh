@@ -382,7 +382,7 @@ if [ -n "${pdf_output}" ]; then
 		--to=pdf
 		--output="'${pdf_output}'"
 		"'${build_dir}/${input_file}'")
-	retry 1 "${CMD[@]}"
+	retry 5 "${CMD[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "PDF output failed"
