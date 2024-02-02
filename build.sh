@@ -348,6 +348,7 @@ retry () {
 if [ -n "${pdf_output}" ]; then
 	mkdir -p "$(dirname ${pdf_output})"
 	echo "Generating PDF Output"
+	start=$(date +%s)
 	CMD=(pandoc
 		--pdf-engine=lualatex
 		--embed-resources
@@ -389,6 +390,8 @@ if [ -n "${pdf_output}" ]; then
 	else
 		echo "PDF output generated to file: ${pdf_output}"
 	fi
+	end=$(date +%s)
+	echo "Elapsed Time: $(($end-$start)) seconds"
 fi
 
 # Generate the LaTeX output

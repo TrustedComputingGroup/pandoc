@@ -12,22 +12,32 @@ end
 -- This function converts a Pandoc ColSpec object into a colspec for the longtblr environment.
 -- https://pandoc.org/lua-filters.html#type-colspec
 function TabularrayColspec(colspec)
+    -- OK. 'X' type columns are pretty neat, because tabularray will expand the
+    -- columns based on the actual widths required by the contents, resulting
+    -- in what can only be described as the platonic ideal proportion for all
+    -- table widths.
+    -- In reality, a 500 page document with 100 tables in it will literally
+    -- take 40 minutes to render. So, we use 'Q' columns, and provide the width
+    -- proportions that pandoc already calculated internally when it parsed
+    -- the table (which seem to be pretty good).
     local mapping = {
-        ['AlignLeft'] = '%s[%sl]',
-        ['AlignCenter'] = '%s[%sc]',
-        ['AlignDefault'] = '%s[%sc]',
-        ['AlignRight'] = '%s[%sr]',
+        ['AlignLeft'] = 'Q[l%s]',
+        ['AlignCenter'] = 'Q[c%s]',
+        ['AlignDefault'] = 'Q[c%s]',
+        ['AlignRight'] = 'Q[r%s]',
     }
     -- If Pandoc has no preferred width for the column, spec it as Q[alignment]
-    local type = 'Q'
     local width = ''
     -- Pandoc may optionally tell us how wide the column should be. If so,
-    -- spec the column as X[width,alignment]
+    -- spec the column as a proportion of the line width (which is pretty much
+    -- what Pandoc means here).
+    -- N.B. we use linewidth instead of textwidth here, because of
+    -- landscape tables.
+    -- https://tex.stackexchange.com/questions/7680/how-to-make-a-landscape-table-fill-the-whole-width
     if colspec[2] then
-        type = 'X'
-        width = string.format("%f,", colspec[2])
+        width = string.format(",wd=%f\\linewidth-2\\tabcolsep-\\arrayrulewidth", colspec[2])
     end
-    return string.format(mapping[colspec[1]], type, width)
+    return string.format(mapping[colspec[1]], width)
 end
 
 -- This function iterates a List of Rows and creates the longtblr code each row.
@@ -161,6 +171,7 @@ function Table(tbl)
         latex_code = latex_code .. 'colspec={'
 
         width = Length(tbl.colspecs)
+
         for i, spec in ipairs(tbl.colspecs) do
             -- Just concatenate all the colspecs together.
             latex_code = latex_code .. TabularrayColspec(spec)
