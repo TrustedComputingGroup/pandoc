@@ -36,7 +36,7 @@ and brands contained herein are the property of their respective owners.
 
 # Change History
 
-| **Revision** | **Date**   | **Description** |
+| Revision     | Date       | Description     |
 | ------------ | ---------- | --------------- |
 | 0.1/1        | 2023/12/17 | Initial draft   |
 
@@ -501,7 +501,7 @@ These blocks can contain multiple paragraphs.
 These blocks can even contain tables! However, be wary of providing tables that are
 too large in an Informative Text block.
 
-| **Document Type** | **Informative Blocks** |
+| Document Type     | Informative Blocks     |
 | ----------------- | ---------------------- |
 | SPECIFICATION     | Usually                |
 | GUIDANCE          | Rarely                 |
@@ -520,7 +520,7 @@ These blocks can contain multiple paragraphs, tied together by lines containing 
 These blocks can even contain tables! However, be wary of providing tables that are
 too large in an Informative Text block.
 
-| **Document Type** | **Informative Blocks** |
+| Document Type     | Informative Blocks     |
 | ----------------- | ---------------------- |
 | SPECIFICATION     | Usually                |
 | GUIDANCE          | Rarely                 |
@@ -661,29 +661,52 @@ We support several notation styles for tables.
 
 There are several ways to write a table in Markdown.
 
-### Simple Markdown Tables {#sec:simple-markdown-tables}
+### GitHub Markdown Tables {#sec:github-markdown-tables}
 
 Small, simple tables like @tbl:shapes are easier to read in raw Markdown form in the following style:
 
 ```md
 Table: Shapes {#tbl:shapes}
 
-| **Shape**    | **Number of sides** |
-| ------------ | ------------------- |
-| Square       | 4                   |
-| Triangle     | 3                   |
-| Möbius strip | 1                   |
+| Shape        | Number of sides |
+| ------------ | --------------- |
+| Square       | 4               |
+| Triangle     | 3               |
+| Möbius strip | 1               |
 ```
 
 Table: Shapes {#tbl:shapes}
 
-| **Shape**    | **Number of sides** |
-| ------------ | ------------------- |
-| Square       | 4                   |
-| Triangle     | 3                   |
-| Möbius strip | 1                   |
+| Shape        | Number of sides |
+| ------------ | --------------- |
+| Square       | 4               |
+| Triangle     | 3               |
+| Möbius strip | 1               |
 
 Note the table caption and cross-reference in curly braces above the table.
+
+### Simple Markdown Tables {#sec:simple-markdown-tables}
+
+There is an even more minimal syntax for simple tables, as in
+@tbl:simple-shapes:
+
+```md
+Table: Shapes {#tbl:simple-shapes}
+
+Shape        Number of sides
+------------ ---------------
+Square       4
+Triangle     3
+Möbius strip 1
+```
+
+Table: Shapes {#tbl:simple-shapes}
+
+Shape        Number of sides
+------------ ---------------
+Square       4
+Triangle     3
+Möbius strip 1
 
 ### Multiline Markdown Tables {#sec:multiline-markdown-tables}
 
@@ -694,8 +717,12 @@ and this content may need multiple lines in your editor.
 Table: Table Types {#tbl:table-types}
 
 -------------------------------------------------------------------------------
-**Table Kind**  **Easy?**   **Recommended?**    **References**
+Table Kind      Easy?       Recommended?        References
 --------------- ----------- ------------------- -------------------------------
+GitHub          Yes         When each cell      @sec:github-markdown-tables,
+Markdown                    is about one        @tbl:shapes
+Tables                      word or so.
+
 Simple          Yes         When each cell      @sec:simple-markdown-tables,
 Markdown                    is about one        @tbl:shapes
 Tables                      word or so.
@@ -728,7 +755,7 @@ Tables                      row or column       @tbl:fruits-html
 Table: Table Types {#tbl:table-types}
 
 -------------------------------------------------------------------------------
-**Table Kind**  **Easy?**   **Recommended?**    **References**
+Table Kind      Easy?       Recommended?        References
 --------------- ----------- ------------------- -------------------------------
 Simple          Yes         When each cell      @sec:simple-markdown-tables,
 Markdown                    is about one        @tbl:shapes
@@ -780,7 +807,7 @@ to github.com/trustedcomputinggroup/pandoc!
 Table: Fruits (Grid) {#tbl:fruits-grid}
 
 +----------------------+----------------------------+
-| **Color and Fruit**  | **Mistaken for Vegetable** |
+| Fruit and Color      | Mistaken for Vegetable     |
 +=============+========+============================+
 |             | Red    | No                         |
 | Apple       +--------+----------------------------+
@@ -795,7 +822,7 @@ Table: Fruits (Grid) {#tbl:fruits-grid}
 Table: Fruits (Grid) {#tbl:fruits-grid}
 
 +----------------------+----------------------------+
-| **Color and Fruit**  | **Mistaken for Vegetable** |
+| Fruit and Color      | Mistaken for Vegetable     |
 +=============+========+============================+
 |             | Red    | No                         |
 | Apple       +--------+----------------------------+
@@ -806,6 +833,24 @@ Table: Fruits (Grid) {#tbl:fruits-grid}
 | Banana      | Yellow | No                         |
 +-------------+--------+----------------------------+
 
+### Styling Markdown Tables
+
+#### Removing Lines
+
+Tables are drawn with lines around all the cells by default.
+Use the `.no_lines` class to avoid drawing any lines:
+
+: {.no_lines}
+
+Example Table
+------- -----
+Without Lines
+
+#### Column Alignment
+
+Each type of Markdown table provides different support for alignment. See the
+[Pandoc table documentation](https://pandoc.org/chunkedhtml-demo/8.9-tables.html)
+for more details.
 
 ## HTML Tables {#sec:html-tables}
 
@@ -825,8 +870,8 @@ converts Word tables into HTML).
         <col style="width: 45%" />
     </colgroup>
     <tr>
-        <th colspan="2"><strong>Color and Fruit</strong></th>
-        <th><strong>Mistaken for Vegetable</strong></th>
+        <th colspan="2">Color and Fruit</th>
+        <th>Mistaken for Vegetable</th>
     </tr>
     <tr>
         <td rowspan="2">Apple</td>
@@ -854,14 +899,9 @@ The above HTML table becomes the below:
 
 <table id="tbl:fruits-html">
     <caption>Fruits (HTML)</caption>
-    <colgroup>
-        <col style="width: 12%" />
-        <col style="width: 13%" />
-        <col style="width: 45%" />
-    </colgroup>
     <tr>
-        <th colspan="2"><strong>Color and Fruit</strong></th>
-        <th><strong>Mistaken for Vegetable</strong></th>
+        <th colspan="2">Color and Fruit</th>
+        <th>Mistaken for Vegetable</th>
     </tr>
     <tr>
         <td rowspan="2">Apple</td>
@@ -885,11 +925,6 @@ The above HTML table becomes the below:
 </table>
 
 Note the table caption in the `<caption>` element, and the table cross-reference in the `id` attribute of the `<table>` element.
-
-::: Caveat :::
-If you must use HTML tables, always use `<colgroup>` to style the width of the columns.
-If you don't, the table may run off the side of the page.
-::::::::::::::
 
 # Math {#sec:math}
 
@@ -1117,3 +1152,120 @@ Bob->>Alice: Goodbye
 # Reporting Issues with the Tools
 
 Please report issues with the tooling at [https://github.com/TrustedComputingGroup/pandoc/issues](https://github.com/TrustedComputingGroup/pandoc/issues).
+
+When reporting an issue, please provide:
+
+1. The smallest possible Markdown document that reproduces your issue
+2. The specific version of the Pandoc toolset you are using
+3. What you expected to happen
+4. What actually happened
+
+# Pathological Tables
+
+This section contains some really complicated tables, to test our special LaTeX
+[writer filter](filter/tabularray.lua) for tables.
+
+Table: Bullets {#tbl:bullets-grid}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+| * Apple     | Red    | No                         |
+| * Pear      +--------+----------------------------+
+| * Kiwi      | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Table: Informative {#tbl:informative-grid}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+| ::: Note    | Red    | No                         |
+| Apple       +--------+----------------------------+
+| :::         | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Table: Equation {#tbl:equation-grid}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+|             | Red    | No                         |
+| $$ A^2 $$   +--------+----------------------------+
+|             | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Table: Footer {#tbl:footer-grid}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++=============+========+============================+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+
+Table: No Lines {#tbl:no-lines-grid .no_lines}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+|             | Red    | No                         |
+| Apple       +--------+----------------------------+
+|             | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+|             | Red    | No                         |
+| Apple       +--------+----------------------------+
+|             | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+: {#tbl:no-caption-but-label-grid}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+|             | Red    | No                         |
+| Apple       +--------+----------------------------+
+|             | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Verify that the table cross-references still work:
+
+* @tbl:bullets-grid
+* @tbl:informative-grid
+* @tbl:equation-grid
+* @tbl:footer-grid
+* @tbl:no-lines-grid
+* @tbl:no-caption-but-label-grid
