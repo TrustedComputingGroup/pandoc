@@ -1,6 +1,6 @@
 ---
 title: "TCG Markdown User's Guide"
-type: ERRATA
+type: GUIDANCE
 ...
 
 ---
