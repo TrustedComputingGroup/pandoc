@@ -21,24 +21,6 @@ div_classes =
     ["header"] = "informative-header",
     ["foreground"] = "informative-foreground",
   },
-  ["caveat"] = {
-    ["label"] = "Caveat",
-    ["background"] = "orange-background",
-    ["header"] = "orange-header",
-    ["foreground"] = "orange-foreground",
-  },
-  ["tip"] = {
-    ["label"] = "Tip",
-    ["background"] = "green-background",
-    ["header"] = "green-header",
-    ["foreground"] = "green-foreground",
-  },
-  ["warning"] = {
-    ["label"] = "Warning",
-    ["background"] = "red-background",
-    ["header"] = "red-header",
-    ["foreground"] = "red-foreground",
-  }
 }
 
 function Div(el)

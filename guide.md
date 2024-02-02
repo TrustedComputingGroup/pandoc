@@ -1,8 +1,6 @@
 ---
 title: "TCG Markdown User's Guide"
 type: GUIDANCE
-status: Draft
-template: bluetop
 ...
 
 ---
@@ -66,15 +64,7 @@ comment_, it can be considered a _normative statement_.
 EXAMPLE:
 
 ::: Informative :::
-This is the first paragraph of 1–n paragraphs containing text of the kind
-informative comment ...
-
-This is the second paragraph of text of the kind informative comment ...
-
-This is the nth paragraph of text of the kind informative comment ...
-
-To understand the TCG specification, the user must read the specification.
-(This use of MUST does not require any action).
+Reach out to <admin@trustedcomputinggroup> with any questions about this document.
 :::::::::::::::::::
 
 \tableofcontents
@@ -237,14 +227,6 @@ REQUIRED.
 REQUIRED.
 
 `type` should be one of: "SPECIFICATION", "GUIDANCE", or "REFERENCE". It appears on the title page on the left-hand side.
-
-#### template
-
-OPTIONAL.
-
-`template` should be one of: `greentop`, `bluetop`. It customizes the title page style. If not provided, `greentop` is the current default.
-
-Typically, specifications use the `greentop` template, and guidance or reference documents use the `bluetop` template.
 
 ### Backslash Macros
 
@@ -529,21 +511,9 @@ too large in an Informative Text block.
 
 ### Other Informative Blocks
 
-::: Warning :::
-These types of blocks are supported by the toolset, but not yet approved by TCG
-Marketing WG.
-:::::::::::::::
-
-Writers of a document may prefer more compact "informative" blocks with more
-obvious semantics, like the warning above. In this case, the text ist still
-contained within a "TCG Informative" gray box, but with a more meaningful
-header and no footer.
-
-* Note
-* Example
-* Caveat
-* Tip
-* Warning
+Writers of a document may prefer "informative" blocks with more specific
+semantics. In this case, the text is still contained within a "TCG Informative"
+gray box, but with a more meaningful header.
 
 ::: Note :::
 This is a "Note" block.
@@ -551,18 +521,6 @@ This is a "Note" block.
 
 ::: Example :::
 This is an "Example" block.
-:::::::::::::::
-
-::: Caveat :::
-This is a "Caveat" block.
-::::::::::::::
-
-::: Tip :::
-This is a "Tip" block.
-:::::::::::
-
-::: Warning :::
-This is a "Warning" block.
 :::::::::::::::
 
 The behavior of blocks with labels not specified above may change meaningfully in future versions of this toolkit, so use them at your own risk.
@@ -838,13 +796,15 @@ Table: Fruits (Grid) {#tbl:fruits-grid}
 #### Removing Lines
 
 Tables are drawn with lines around all the cells by default.
-Use the `.no_lines` class to avoid drawing any lines:
+Use the `.plain` class to avoid drawing any lines or background shading.
+This is useful when you want to present some tabular text without styling it
+like "an actual table".
 
-: {.no_lines}
+: {.plain}
 
-Example Table
 ------- -----
-Without Lines
+like     this
+------- -----
 
 #### Column Alignment
 
@@ -1219,7 +1179,7 @@ Table: Footer {#tbl:footer-grid}
 | Fruit and Color      | Mistaken for Vegetable     |
 +=============+========+============================+
 
-Table: No Lines {#tbl:no-lines-grid .no_lines}
+Table: No Lines {#tbl:no-lines-grid .plain}
 
 +----------------------+----------------------------+
 | Fruit and Color      | Mistaken for Vegetable     |

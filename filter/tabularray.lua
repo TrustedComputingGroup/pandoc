@@ -1,6 +1,14 @@
 -- Use tabularray's longtblr environment instead of longtable to write LaTeX tables.
 -- Run this filter after pandoc-crossref.
 
+function Length(element)
+    local n = 0
+    for key, value in pairs(element) do
+        n = n + 1
+    end
+    return n
+end
+
 -- This function converts a Pandoc ColSpec object into a colspec for the longtblr environment.
 -- https://pandoc.org/lua-filters.html#type-colspec
 function TabularrayColspec(colspec)
@@ -24,10 +32,11 @@ end
 
 -- This function iterates a List of Rows and creates the longtblr code each row.
 -- The 'width' parameter is a necessary hint due to potential column-spanning.
--- If 'bold' is true, we style every element in bold. This is for headers and footers.
+-- If 'header' is true, we style every element in bold white on dark gray.
+-- If 'plain' is true, we don't change the colors (but keep it bold).
 -- https://pandoc.org/lua-filters.html#type-list
 -- https://pandoc.org/lua-filters.html#type-row
-function TabularrayRows(rows, width, bold)
+function TabularrayRows(rows, width, header, plain)
     local latex_code = ''
     -- Keep a 2d array of bools for which cells we know we need to skip.
     local skips = {}
@@ -37,6 +46,7 @@ function TabularrayRows(rows, width, bold)
         local n = 1
         -- Prepare a list of latex snippets to be concatenated together below.
         local row_code = {}
+
         -- For each cell in the row,
         for j = 1,width do
             -- We may need to leave this cell empty due to a previous row/colspan.
@@ -47,7 +57,7 @@ function TabularrayRows(rows, width, bold)
                 local cell = row.cells[n]
                 n = n + 1
                 local cell_code = '{' .. pandoc.write(pandoc.Pandoc(cell.contents),'latex') .. '}'
-                if bold then
+                if header then
                     cell_code = '{\\bfseries ' .. cell_code .. '}'
                 end
 
@@ -67,6 +77,9 @@ function TabularrayRows(rows, width, bold)
                 -- Store this cell's code for concatenation below.
                 row_code[j] = cell_code
             end
+        end
+        if header and not plain then
+            latex_code = latex_code .. '\\SetRow{table-header-background,fg=white,ht=24pt} '
         end
         -- The entire row is all the cells joined by '&' with a '\\' at the end.
         latex_code = latex_code .. table.concat(row_code, ' & ') .. ' \\\\\n'
@@ -113,10 +126,18 @@ function Table(tbl)
         -- That's it for the outer attributes. Now there are some inner attributes.
         latex_code = latex_code .. ']{'
 
-        if not tbl.classes:find('no_lines') then
+        local plain = false
+        if tbl.classes:find('plain') then
+            plain = true
+        end
+
+        if not plain then
             -- Here, we get to enable borders for every cell in the table.
             -- I.e., the main purpose of this filter.
-            latex_code = latex_code .. 'hlines,vlines,'
+            latex_code = latex_code .. 'hlines={1pt,white},vlines={1pt,white},'
+            -- Color the headers and cells correctly according to the TCG style.
+            -- latex_code = latex_code .. 'rowhead={table-header-background},rowfoot={table-header-background},'
+            latex_code = latex_code .. 'row{odd}={table-odd-background},row{even}={table-even-background},'
         end
 
         -- tabularray uses hbox under the hood to measure the boxes.
@@ -125,32 +146,34 @@ function Table(tbl)
         -- see tabularray documentation, section "Library varwidth"
         latex_code = latex_code .. 'measure=vbox,'
         
+        -- Setting rowhead and rowfoot tells longtblr to replicate these rows
+        -- on every page containing the table (i.e., repeat them if the table
+        -- crosses the page boundary).
+        latex_code = latex_code .. string.format('rowhead=%d,rowfoot=%d,', Length(tbl.head.rows), Length(tbl.foot.rows))
+
         -- We have to translate Pandoc's internal ColSpec into the longtblr one.
         latex_code = latex_code .. 'colspec={'
 
-        width = 1
+        width = Length(tbl.colspecs)
         for i, spec in ipairs(tbl.colspecs) do
             -- Just concatenate all the colspecs together.
             latex_code = latex_code .. TabularrayColspec(spec)
-            -- There's probably a cleverer way to get the length of the table,
-            -- but this author isn't good enough at Lua to find it.
-            width = i
         end
 
         -- Finish the preamble to the longtblr environment.
         latex_code = latex_code .. '}}\n'
 
-        -- Write out all the header rows (in bold).
-        latex_code = latex_code .. TabularrayRows(tbl.head.rows, width, true)
+        -- Write out all the header rows (in header).
+        latex_code = latex_code .. TabularrayRows(tbl.head.rows, width, true, plain)
 
         -- Write out all the body rows.
         -- Typical tables have just one body.
         for i, body in ipairs(tbl.bodies) do
-            latex_code = latex_code .. TabularrayRows(body.body, width, false)
+            latex_code = latex_code .. TabularrayRows(body.body, width, false, plain)
         end
 
-        -- Write out all the footer rows (in bold).
-        latex_code = latex_code .. TabularrayRows(tbl.foot.rows, width, true)
+        -- Write out all the footer rows (in header).
+        latex_code = latex_code .. TabularrayRows(tbl.foot.rows, width, true, plain)
 
         -- Close up the environment.
         latex_code = latex_code .. '\\end{longtblr}\n'
