@@ -8,6 +8,7 @@ pdf_output=""
 docx_output=""
 html_output=""
 latex_output=""
+pdflog_output=""
 table_rules="no"
 block_quotes_are_informative_text="no"
 
@@ -30,10 +31,11 @@ print_usage() {
 	echo "Options:"
 	echo
 	echo "Output Control"
-	echo "  --docx=output: enable outputing of docx and specify the output file name."
-	echo "  --pdf=output: enable outputing of pdf and specify the output file name."
-	echo "  --latex=output: enable outputing of latex and specify the output file name."
-	echo "  --html=output: enable outputing of html and specify the output file name."
+	echo "  --docx=output: enable output of docx and specify the output file name."
+	echo "  --pdf=output: enable output of pdf and specify the output file name."
+	echo "  --latex=output: enable output of latex and specify the output file name."
+	echo "  --html=output: enable output of html and specify the output file name."
+	echo "  --pdflog=output: enable logging of pdf engine and specify the output file name."
 	echo
 	echo "Miscellaneous"
 	echo "  --resourcedir=dir: Set the resource directory, defaults to root for pandoc containers"
@@ -47,7 +49,7 @@ print_usage() {
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,pdf:,latex:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,pdf:,latex:,pdflog:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -91,6 +93,10 @@ while true; do
 		;;
 	--latex)
 		latex_output="${2}"
+		shift 2
+		;;
+	--pdflog)
+		pdflog_output="${2}"
 		shift 2
 		;;
 	--pdf)
@@ -344,14 +350,86 @@ retry () {
 	return 1
 }
 
-# Generate the pdf
-if [ -n "${pdf_output}" ]; then
+TEMP_FILE_PREFIX="${input_file}.temp"
+TEMP_TEX_FILE="${build_dir}/${TEMP_FILE_PREFIX}.tex"
+# LaTeX engines choose this filename based on TEMP_TEX_FILE's input name. It also emits a bunch of other files.
+TEMP_PDF_FILE="${build_dir}/${TEMP_FILE_PREFIX}.pdf"
+LATEXMK_LOG="${build_dir}/latexmk.log"
+
+# Get the time in Unix epoch milliseconds of the given line
+timestamp_of() {
+	local LINE="$1"
+	local TIMESTAMP=$(echo "${LINE}" | cut -d ' ' -f 1 | tr -d "[]")
+
+
+	local SECONDS=$(echo "${TIMESTAMP}" | cut -d '.' -f 1)
+	local MILLISECONDS=$(echo "${TIMESTAMP}" | cut -d '.' -f 2 | head -c 3)
+	echo $(( $SECONDS * 1000 + $MILLISECONDS ))
+}
+
+# Get the duration in human-readable time between two patterns in the logfile
+time_between() {
+	local LOGFILE="$1"
+	local FIRST_PATTERN="$2"
+	local SECOND_PATTERN="$3"
+
+	local FIRST_LINE=$(grep "${FIRST_PATTERN}" "${LOGFILE}" | head -n 1)
+	local SECOND_LINE=$(grep "${SECOND_PATTERN}" "${LOGFILE}" | head -n 1)
+
+	if [ -z "${FIRST_LINE}" -o -z "${SECOND_LINE}" ]; then
+		echo "n/a"
+	else
+		local FIRST_TIME=$(timestamp_of "${FIRST_LINE}")
+		local SECOND_TIME=$(timestamp_of "${SECOND_LINE}")
+
+		ELAPSED_MS=$(( ${SECOND_TIME} - ${FIRST_TIME} ))
+
+		ELAPSED_S=$(( $ELAPSED_MS / 1000 ))
+		ELAPSED_MS=$(( $ELAPSED_MS % 1000 ))
+
+		ELAPSED_M=$(( $ELAPSED_S / 60 ))
+		ELAPSED_S=$(( $ELAPSED_S % 60 ))
+
+		ELAPSED_MS="${ELAPSED_MS}ms"
+
+		if [ ${ELAPSED_M} -gt 0 ]; then
+			ELAPSED_M="${ELAPSED_M}m "
+			# Don't print the milliseconds if we got more than a minute.
+			ELAPSED_MS=""
+		else
+			ELAPSED_M=""
+		fi
+
+		if [ ${ELAPSED_S} -gt 0 ]; then
+			ELAPSED_S="${ELAPSED_S}s "
+		else
+			ELAPSED_S=""
+		fi
+
+		echo "${ELAPSED_M}${ELAPSED_S}${ELAPSED_MS}"
+	fi
+}
+
+analyze_latex_logs() {
+	local LOGFILE=$1
+
+	RUNCOUNT=1
+	grep "Run number" "${LOGFILE}" | while read RUN; do
+		RULE=$(echo ${RUN} | rev | cut -d ' ' -f 1 | rev | tr -d "'")
+		NEXTCOUNT=$(( ${RUNCOUNT} + 1 ))
+		echo "Run number ${RUNCOUNT} (${RULE}): $(time_between "${LOGFILE}" "Run number ${RUNCOUNT}" "Run number ${NEXTCOUNT}\| are up-to-date")"
+		LAST_PATTERN="Run number ${RUNCOUNT}"
+		RUNCOUNT=${NEXTCOUNT}
+	done
+}
+
+# For LaTeX and PDF output, we use Pandoc to compile to an intermediate .tex file
+# That way, LaTeX errors on PDF output point to lines that match the .tex.
+if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 	mkdir -p "$(dirname ${pdf_output})"
-	echo "Generating PDF Output"
+	echo "Generating LaTeX Output"
 	start=$(date +%s)
 	CMD=(pandoc
-		--pdf-engine=lualatex
-		--embed-resources
 		--standalone
 		--template=eisvogel.latex
 		--lua-filter=mermaid-code-class-pre.lua
@@ -380,62 +458,38 @@ if [ -n "${pdf_output}" ]; then
 		--metadata=contact:admin@trustedcomputinggroup.org
 		--from=${FROM}
 		${extra_pandoc_options}
-		--to=pdf
-		--output="'${pdf_output}'"
+		--to=latex
+		--output="'${TEMP_TEX_FILE}'"
 		"'${build_dir}/${input_file}'")
 	retry 5 "${CMD[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
-		echo "PDF output failed"
-	else
-		echo "PDF output generated to file: ${pdf_output}"
+		echo "LaTeX/PDF output failed"
 	fi
 	end=$(date +%s)
 	echo "Elapsed Time: $(($end-$start)) seconds"
-fi
 
-# Generate the LaTeX output
-if [ -n "${latex_output}" ]; then
-	mkdir -p "$(dirname ${latex_output})"
-	echo "Generating LaTeX Output"
-	CMD=(pandoc
-		--pdf-engine=lualatex
-		--embed-resources
-		--standalone
-		--template=eisvogel.latex
-		--lua-filter=mermaid-code-class-pre.lua
-		--filter=mermaid-filter
-		--lua-filter=parse-html.lua
-		--lua-filter=apply-classes-to-tables.lua
-		--lua-filter=landscape-pages.lua
-		--lua-filter=style-fenced-divs.lua
-		--filter=pandoc-crossref
-		--lua-filter=tabularray.lua
-		--lua-filter=divide-code-blocks.lua
-		--resource-path=.:/resources
-		--data-dir=/resources
-		--top-level-division=section
-		--variable=block-headings
-		--variable=numbersections
-		--metadata=titlepage:true
-		--metadata=titlepage-background:/resources/img/cover.png
-		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml
-		--metadata=logo:/resources/img/tcg.png
-		--metadata=titlepage-rule-height:0
-		--metadata=colorlinks:true
-		--metadata=contact:admin@trustedcomputinggroup.org
-		--from='${FROM}'
-		${extra_pandoc_options}
-		--to=latex
-		--output="'${latex_output}'"
-		"'${build_dir}/${input_file}'")
-	retry 5 "${CMD[@]}"
-	if [ $? -ne 0 ]; then
-		FAILED=true
-		echo "LaTeX output failed"
-	else
-		echo "LaTeX output generated to file: ${latex_output}"
+	if [ -n "${latex_output}" ]; then
+		cp "${TEMP_TEX_FILE}" "${latex_output}"
 	fi
+
+	if [ -n "${pdf_output}" ]; then
+		echo "Generating PDF Output"
+		start=$(date +%s)
+		latexmk "${TEMP_TEX_FILE}" -pdflatex=lualatex -pdf -diagnostics | ts '[%.s]' > "${LATEXMK_LOG}"
+		end=$(date +%s)
+		# Oddly, LuaLaTeX likes to write a whole lot of files to the current directory
+		# (which needs to be the same directory all our assets are).
+		# Just move all the intermediate files to the build directory.
+		# TODO: Understand how to make --output-directory take effect.
+		mv -f -t "${build_dir}" "${TEMP_FILE_PREFIX}"*
+		cp "${TEMP_PDF_FILE}" "${pdf_output}"
+		if [ -n "${pdflog_output}" ]; then
+			cp "${build_dir}/latexmk.log" "${pdflog_output}"
+		fi
+		echo "Elapsed Time: $(($end-$start)) seconds"
+		analyze_latex_logs "${LATEXMK_LOG}"
+	fi	
 fi
 
 # Generate the docx output
