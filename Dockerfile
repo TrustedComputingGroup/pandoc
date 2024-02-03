@@ -187,6 +187,7 @@ RUN tlmgr update --self && tlmgr install \
     upquote \
     varwidth \
     xcolor \
+    xetex \
     zref
 
 COPY ./img/* /resources/img/
@@ -203,7 +204,7 @@ COPY build.sh /usr/bin/build.sh
 
 # Do a dry-run PDF render to warm up the TeX Live font cache.
 COPY latex/fontcache.md /
-RUN /usr/bin/build.sh --nogitversion --pdf=fontcache.pdf /fontcache.md && rm /fontcache.md /fontcache.pdf
+# RUN /usr/bin/build.sh --nogitversion --pdf=fontcache.pdf /fontcache.md && rm /fontcache.md /fontcache.pdf
 
 ENTRYPOINT ["/usr/bin/build.sh"]
 CMD ["--help"]
