@@ -151,11 +151,11 @@ fi
 
 # Set up the output directory, either tmp or build in pwd.
 if [ "${is_tmp}" == "yes" ]; then
-	build_dir="$(mktemp -d)"
+	build_dir="/tmp/tcg.pandoc"
 else
 	build_dir="$(pwd)/build"
-	mkdir -p "${build_dir}"
 fi
+mkdir -p "${build_dir}"
 
 # Get the default browser
 if ! browser=$(command -v "chromium-browser"); then
@@ -354,7 +354,7 @@ TEMP_FILE_PREFIX="${input_file}.temp"
 TEMP_TEX_FILE="${build_dir}/${TEMP_FILE_PREFIX}.tex"
 # LaTeX engines choose this filename based on TEMP_TEX_FILE's input name. It also emits a bunch of other files.
 TEMP_PDF_FILE="${build_dir}/${TEMP_FILE_PREFIX}.pdf"
-LATEXMK_LOG="${build_dir}/latexmk.log"
+LUALATEX_LOG="${build_dir}/lualatex.log"
 
 # Get the time in Unix epoch milliseconds of the given line
 timestamp_of() {
@@ -413,14 +413,9 @@ time_between() {
 analyze_latex_logs() {
 	local LOGFILE=$1
 
-	RUNCOUNT=1
-	grep "Run number" "${LOGFILE}" | while read RUN; do
-		RULE=$(echo ${RUN} | rev | cut -d ' ' -f 1 | rev | tr -d "'")
-		NEXTCOUNT=$(( ${RUNCOUNT} + 1 ))
-		echo "Run number ${RUNCOUNT} (${RULE}): $(time_between "${LOGFILE}" "Run number ${RUNCOUNT}" "Run number ${NEXTCOUNT}\| are up-to-date")"
-		LAST_PATTERN="Run number ${RUNCOUNT}"
-		RUNCOUNT=${NEXTCOUNT}
-	done
+	echo "Time to fancyhdr warning: $(time_between "${LOGFILE}" "TeX Live" "with a KOMA-Script class is not recommended.")"
+	echo "Time to done: $(time_between "${LOGFILE}" "with a KOMA-Script class is not recommended." "Output written on ")"
+
 }
 
 # For LaTeX and PDF output, we use Pandoc to compile to an intermediate .tex file
@@ -431,7 +426,7 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 	start=$(date +%s)
 	CMD=(pandoc
 		--standalone
-		--template=eisvogel.latex
+		--template=tcg.tex
 		--lua-filter=mermaid-code-class-pre.lua
 		--filter=mermaid-filter
 		--lua-filter=parse-html.lua
@@ -474,21 +469,37 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 	fi
 
 	if [ -n "${pdf_output}" ]; then
-		echo "Generating PDF Output"
+		echo "Generating cross-references for PDF output"
 		start=$(date +%s)
-		latexmk "${TEMP_TEX_FILE}" -pdflatex=lualatex -pdf -diagnostics | ts '[%.s]' > "${LATEXMK_LOG}"
+		# Run once to populate aux, lof, lot, toc
+		lualatex --draftmode "${TEMP_TEX_FILE}" > /dev/null
+		if [ $? -ne 0 ]; then
+			FAILED=true
+			echo "PDF output failed"
+		fi
 		end=$(date +%s)
-		# Oddly, LuaLaTeX likes to write a whole lot of files to the current directory
-		# (which needs to be the same directory all our assets are).
-		# Just move all the intermediate files to the build directory.
-		# TODO: Understand how to make --output-directory take effect.
-		mv -f -t "${build_dir}" "${TEMP_FILE_PREFIX}"*
+		echo "Elapsed Time: $(($end-$start)) seconds"
+
+		# Run a second time to render the actual PDF.
+		echo "Rendering PDF"
+		start=$(date +%s)
+		lualatex "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LUALATEX_LOG}"
+		if [ $? -ne 0 ]; then
+			FAILED=true
+			echo "PDF output failed"
+		fi
+		end=$(date +%s)
+
+		# Clean up after LuaLaTeX and copy out just the files we need.
+		mv "${TEMP_FILE_PREFIX}"* "${build_dir}"
 		cp "${TEMP_PDF_FILE}" "${pdf_output}"
 		if [ -n "${pdflog_output}" ]; then
-			cp "${build_dir}/latexmk.log" "${pdflog_output}"
+			cp "${LUALATEX_LOG}" "${pdflog_output}"
 		fi
 		echo "Elapsed Time: $(($end-$start)) seconds"
-		analyze_latex_logs "${LATEXMK_LOG}"
+		analyze_latex_logs "${LUALATEX_LOG}"
+		# Warn about broken references to stderr.
+		>&2 grep "LaTeX Warning: " "${LUALATEX_LOG}"
 	fi	
 fi
 
@@ -512,7 +523,6 @@ if [ -n "${docx_output}" ]; then
 	mkdir -p "$(dirname ${docx_output})"
 	echo "Generating DOCX Output"
 	CMD=(pandoc
-		--pdf-engine=lualatex
 		--embed-resources
 		--standalone
 		--lua-filter=mermaid-code-class-pre.lua
@@ -526,7 +536,7 @@ if [ -n "${docx_output}" ]; then
 		--data-dir=/resources
 		--from='${FROM}+raw_attribute'
 		--metadata=subtitle:"'${SUBTITLE}'"
-		--reference-doc=/resources/templates/tcg_template.docx
+		--reference-doc=/resources/templates/tcg.docx
 		${extra_pandoc_options}
 		--to=docx
 		--output="'${docx_output}'"
