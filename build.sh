@@ -354,7 +354,9 @@ TEMP_FILE_PREFIX="${input_file}.temp"
 TEMP_TEX_FILE="${build_dir}/${TEMP_FILE_PREFIX}.tex"
 # LaTeX engines choose this filename based on TEMP_TEX_FILE's input name. It also emits a bunch of other files.
 TEMP_PDF_FILE="${build_dir}/${TEMP_FILE_PREFIX}.pdf"
-LUALATEX_LOG="${build_dir}/lualatex.log"
+
+LATEX=xelatex
+LATEX_LOG="${build_dir}/latex.log"
 
 # Get the time in Unix epoch milliseconds of the given line
 timestamp_of() {
@@ -472,18 +474,20 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		echo "Generating cross-references for PDF output"
 		start=$(date +%s)
 		# Run once to populate aux, lof, lot, toc
-		lualatex --draftmode "${TEMP_TEX_FILE}" > /dev/null
+		${LATEX} --no-pdf "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LATEX_LOG}"
 		if [ $? -ne 0 ]; then
 			FAILED=true
 			echo "PDF output failed"
 		fi
 		end=$(date +%s)
 		echo "Elapsed Time: $(($end-$start)) seconds"
+		# Write any LaTeX errors to stderr.
+		>&2 grep -A 5 "] ! " "${LATEX_LOG}"
 
 		# Run a second time to render the actual PDF.
 		echo "Rendering PDF"
 		start=$(date +%s)
-		lualatex "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LUALATEX_LOG}"
+		${LATEX} "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LATEX_LOG}"
 		if [ $? -ne 0 ]; then
 			FAILED=true
 			echo "PDF output failed"
@@ -494,12 +498,14 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		mv "${TEMP_FILE_PREFIX}"* "${build_dir}"
 		cp "${TEMP_PDF_FILE}" "${pdf_output}"
 		if [ -n "${pdflog_output}" ]; then
-			cp "${LUALATEX_LOG}" "${pdflog_output}"
+			cp "${LATEX_LOG}" "${pdflog_output}"
 		fi
 		echo "Elapsed Time: $(($end-$start)) seconds"
-		analyze_latex_logs "${LUALATEX_LOG}"
+		analyze_latex_logs "${LATEX_LOG}"
 		# Warn about broken references to stderr.
-		>&2 grep "LaTeX Warning: " "${LUALATEX_LOG}"
+		>&2 grep "LaTeX Warning: " "${LATEX_LOG}"
+		# Write any LaTeX errors to stderr.
+		>&2 grep -A 5 "] ! " "${LATEX_LOG}"
 	fi	
 fi
 

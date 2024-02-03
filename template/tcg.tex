@@ -63,7 +63,7 @@
 \usepackage[absolute,overlay]{textpos}
 \usepackage{ifxetex,ifluatex}
 \usepackage[space,spacefont="Arial"]{accsupp}
-\usepackage{transparent}
+% \usepackage{transparent}
 \usepackage{pdflscape}
 
 % Use accessibility features to provide alt text for "informative" blocks that
@@ -76,7 +76,7 @@
 }
 \newcommand{\EndDemarcated}[1]{
   \BeginAccSupp{method=plain,ActualText=End of #1}%
-  {\transparent{0}{.}\vspace{-1em}}% Use a transparent period so it gets selected along with the block. Then retract the vertical space.
+  {\textcolor{white}{.}\vspace{-1em}}% Use a white period so it gets selected along with the block. Then retract the vertical space.
   \EndAccSupp{}%
 }
 
@@ -139,7 +139,6 @@ $if(logo)$
 \usepackage{graphicx}
 \usepackage{anyfontsize}
 \usepackage{rotating}
-\usepackage{transparent}
 $endif$
 
 $if(highlighting-macros)$
@@ -312,8 +311,8 @@ $endif$
 \newunicodechar{→}{\textfallback{→}}
 
 \usepackage{unicode-math}
-\setmathfont{TeX Gyre Schola} % For math mode in equations
-\setmathrm{TeX Gyre Schola} % For text mode in equations
+% \setmathfont{TeX Gyre Schola} % For math mode in equations
+% \setmathrm{TeX Gyre Schola} % For text mode in equations
 
 % Customize the spacing for math to relax it a bit.
 \thinmuskip=6mu
