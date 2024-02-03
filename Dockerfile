@@ -118,6 +118,7 @@ RUN apt update && apt install -y fontconfig && \
 RUN apt install -y \
     bash \
     chromium \
+    moreutils \
     nodejs \
     npm \
     sed
@@ -131,7 +132,7 @@ RUN npm install --global --unsafe-perm puppeteer@21.7.0 imgur@2.3.0 mermaid-filt
 ENV PATH="${PATH}:/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux"
 
 # Packages that are needed despite not being used explicitly by the template:
-# catchfile, fancyvrb, hardwrap, lineno, lualatex-math, luatexspace, needspace, ninecolors, pgf, zref
+# catchfile, fancyvrb, hardwrap, lineno, latexmk, lualatex-math, luatexspace, needspace, ninecolors, pgf, zref
 RUN tlmgr update --self && tlmgr install \
     accsupp \
     adjustbox \
@@ -159,6 +160,7 @@ RUN tlmgr update --self && tlmgr install \
     hardwrap \
     hyperref \
     koma-script \
+    latexmk \
     lineno \
     luacode \
     lualatex-math \
