@@ -37,10 +37,11 @@ function TabularColspec(colspec, plain, numcols)
     return result
 end
 
--- This function wraps content in a parbox if needed.
-function GetCellCode(cell, colspec, numcols)
+function GetCellCode(cell)
     local cell_code = pandoc.write(pandoc.Pandoc(cell.contents),'latex')
-    return string.format('%s', cell_code)
+    -- \\ is not supported inside a cell. Replace it with a double-newline.
+    cell_code = cell_code:gsub('\\\\', '\n\n')
+    return cell_code
 end
 
 -- This function iterates a List of Rows and creates the code for each row.
@@ -82,9 +83,9 @@ function TabularRows(rows, header, plain, colspecs)
             elseif row.cells[n] then
                 local cell = row.cells[n]
                 n = n + 1
-                local cell_code = '{' .. GetCellCode(cell, colspecs[j], width) .. '}'
+                local cell_code = '{' .. GetCellCode(cell) .. '}'
                 if header then
-                    cell_code = '{\\bfseries ' .. cell_code .. '}'
+                    cell_code = '{\\bfseries \\Centering ' .. cell_code .. '}'
                 end
 
                 -- If this sell spans columns, we have to use multicolumn.
@@ -206,6 +207,7 @@ function Table(tbl)
         -- Create the first header. This consists of the caption, a top line, and any header lines.
         --
 
+        latex_code = latex_code .. '\\hiderowcolors'
         latex_code = latex_code .. string.format('\\%s{%s}\n', caption_cmd, escaped_caption)
 
         --
@@ -247,6 +249,10 @@ function Table(tbl)
             latex_code = latex_code .. TabularRows(tbl.foot.rows, true, plain, tbl.colspecs)
             latex_code = latex_code .. '\\endfoot\n'
         end
+        latex_code = latex_code .. '\\showrowcolors'
+        if plain then
+            latex_code = latex_code .. '\\hiderowcolors'
+        end
 
         --
         -- Body
@@ -262,6 +268,9 @@ function Table(tbl)
         -- End the tabular environment
         --
 
+        if plain then
+            latex_code = latex_code .. '\\showrowcolors'
+        end
         latex_code = latex_code .. '\\end{xltabular}\n'
 
         -- Return a raw LaTeX blob with our encoded table.

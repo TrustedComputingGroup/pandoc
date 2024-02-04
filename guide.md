@@ -1140,8 +1140,9 @@ Table: Bullets {#tbl:bullets-grid}
 +-------------+--------+----------------------------+
 
 
-Currently, @tbl:bullets-grid2 looks kind of bad. A workaround is to not include
-block elements inside rowspans.
+Currently, @tbl:bullets-grid2 and @tbl:informative-grid look kind of bad.
+A workaround is to not include block elements inside rowspans.
+Block elements are supported in non-spanned rows (such as in @tbl:bullets-grid).
 
 Table: Bullets2 {#tbl:bullets-grid2}
 
@@ -1230,9 +1231,9 @@ Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
 +----------------------+----------------------------+
 | Fruit and Color      | Mistaken for Vegetable     |
 +=============+========+============================+
-|             | Red    | No                         |
-| Apple       +--------+----------------------------+
-|             | Green  | No                         |
+| Apple       | Red    | No                         |
+|             +--------+----------------------------+
+| Pear        | Green  | No                         |
 +-------------+--------+----------------------------+
 | Tomato      | Red    | Yes                        |
 +-------------+--------+----------------------------+
@@ -1426,6 +1427,29 @@ Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
         <td>Yellow</td>
         <td>No</td>
     </tr>
+</table>
+
+<table id="tbl:line-break">
+<caption>Table with a line-break</caption>
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 25%" />
+<col style="width: 68%" />
+</colgroup>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>Line<br />Break</td>
+</tr>
+</tbody>
 </table>
 
 Verify that the table cross-references still work:

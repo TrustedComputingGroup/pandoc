@@ -366,7 +366,8 @@ timestamp_of() {
 
 	local SECONDS=$(echo "${TIMESTAMP}" | cut -d '.' -f 1)
 	local MILLISECONDS=$(echo "${TIMESTAMP}" | cut -d '.' -f 2 | head -c 3)
-	echo $(( $SECONDS * 1000 + $MILLISECONDS ))
+	# MILLISECONDS might have some leading 0's. Trim them by converting it as a base-10 integer.
+	echo $(( $SECONDS * 1000 + 10#$MILLISECONDS ))
 }
 
 # Get the duration in human-readable time between two patterns in the logfile
@@ -464,7 +465,7 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		echo "LaTeX/PDF output failed"
 	fi
 	end=$(date +%s)
-	echo "Elapsed Time: $(($end-$start)) seconds"
+	echo "Elapsed time: $(($end-$start)) seconds"
 
 	if [ -n "${latex_output}" ]; then
 		cp "${TEMP_TEX_FILE}" "${latex_output}"
@@ -475,37 +476,41 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		start=$(date +%s)
 		# Run once to populate aux, lof, lot, toc
 		${LATEX} --no-pdf "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LATEX_LOG}"
-		if [ $? -ne 0 ]; then
+		if [ "${PIPESTATUS[0]}" -ne 0 ]; then
 			FAILED=true
 			echo "PDF output failed"
-		fi
-		end=$(date +%s)
-		echo "Elapsed Time: $(($end-$start)) seconds"
-		# Write any LaTeX errors to stderr.
-		>&2 grep -A 5 "] ! " "${LATEX_LOG}"
+		else
+			end=$(date +%s)
+			echo "Elapsed time: $(($end-$start)) seconds"
+			# Write any LaTeX errors to stderr.
+			>&2 grep -A 5 "] ! " "${LATEX_LOG}"
 
-		# Run a second time to render the actual PDF.
-		echo "Rendering PDF"
-		start=$(date +%s)
-		${LATEX} "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LATEX_LOG}"
-		if [ $? -ne 0 ]; then
-			FAILED=true
-			echo "PDF output failed"
+			# Run a second time to render the actual PDF.
+			echo "Rendering PDF"
+			start=$(date +%s)
+			${LATEX} "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LATEX_LOG}"
+			if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+				FAILED=true
+				echo "PDF output failed"
+			fi
 		fi
 		end=$(date +%s)
 
 		# Clean up after LuaLaTeX and copy out just the files we need.
 		mv "${TEMP_FILE_PREFIX}"* "${build_dir}"
-		cp "${TEMP_PDF_FILE}" "${pdf_output}"
 		if [ -n "${pdflog_output}" ]; then
 			cp "${LATEX_LOG}" "${pdflog_output}"
 		fi
-		echo "Elapsed Time: $(($end-$start)) seconds"
-		analyze_latex_logs "${LATEX_LOG}"
-		# Warn about broken references to stderr.
-		>&2 grep "LaTeX Warning: " "${LATEX_LOG}"
+		echo "Elapsed time: $(($end-$start)) seconds"
 		# Write any LaTeX errors to stderr.
 		>&2 grep -A 5 "] ! " "${LATEX_LOG}"
+		if [[ ! "${FAILED}" = "true" ]]; then
+			cp "${TEMP_PDF_FILE}" "${pdf_output}"
+			analyze_latex_logs "${LATEX_LOG}"
+			echo "LaTeX warnings (may be ignorable - check the output!)"
+			# Include any other warnings.
+			grep "LaTeX Warning: " "${LATEX_LOG}"
+		fi
 	fi	
 fi
 

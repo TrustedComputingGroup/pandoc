@@ -162,9 +162,7 @@ RUN tlmgr update --self && tlmgr install \
     koma-script \
     lineno \
     ltablex \
-    luacode \
-    lualatex-math \
-    luatexbase \
+    makecell \
     mathtools \
     mdframed \
     microtype \
