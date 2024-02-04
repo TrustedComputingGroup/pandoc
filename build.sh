@@ -436,7 +436,7 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		--lua-filter=landscape-pages.lua
 		--lua-filter=style-fenced-divs.lua
 		--filter=pandoc-crossref
-		--lua-filter=tabularray.lua
+		--lua-filter=tabularx.lua
 		--lua-filter=divide-code-blocks.lua
 		--resource-path=.:/resources
 		--data-dir=/resources

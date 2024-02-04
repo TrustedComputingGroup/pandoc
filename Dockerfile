@@ -178,7 +178,7 @@ RUN tlmgr update --self && tlmgr install \
     ragged2e \
     selnolig \
     setspace \
-    tabularray \
+    ltablex \
     tex-gyre \
     textpos \
     titling \

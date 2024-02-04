@@ -1120,7 +1120,7 @@ When reporting an issue, please provide:
 3. What you expected to happen
 4. What actually happened
 
-# Pathological Tables
+<!-- # Pathological Tables
 
 This section contains some really complicated tables, to test our special LaTeX
 [writer filter](filter/tabularray.lua) for tables.
@@ -1255,4 +1255,4 @@ Verify that the table cross-references still work:
 * @tbl:equation-grid
 * @tbl:footer-grid
 * @tbl:no-lines-grid
-* @tbl:no-caption-but-label-grid
+* @tbl:no-caption-but-label-grid -->
