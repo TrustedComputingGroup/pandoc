@@ -96,9 +96,14 @@ function TabularRows(rows, header, plain, colspecs)
                     if cell.row_span > 1 then
                         cell_code = string.format('\\multirow{%d}{=}{%s}', cell.row_span, cell_code)
                     end
-                    local line = ''
+                    local left_line = ''
+                    local right_line = ''
                     if not plain then
-                        line = '|'
+                        if j == 1 then
+                            -- We only have to put a | on the left side of the colspec if we're the leftmost column.
+                            left_line = '|'
+                        end
+                        right_line = '|'
                     end
                     if cell.col_span > 1 then
                         -- Get the total width of all the columns we're spanning.
@@ -108,7 +113,7 @@ function TabularRows(rows, header, plain, colspecs)
                             total_column_width = total_column_width .. '+' .. ColumnWidth(colspecs[z], Length(colspecs))
                         end
                         total_column_width = total_column_width .. ColumnAdjustmentValue
-                        cell_code = string.format('\\multicolumn{%d}{%sp{%s}%s}{%s}', cell.col_span, line, total_column_width, line, cell_code)
+                        cell_code = string.format('\\multicolumn{%d}{%sp{%s}%s}{%s}', cell.col_span, left_line, total_column_width, right_line, cell_code)
                     end
                     
                     for skipi=i,i+cell.row_span-1 do
@@ -119,9 +124,6 @@ function TabularRows(rows, header, plain, colspecs)
                 -- Store this cell's code for concatenation below.
                 row_code[j] = cell_code
             end
-        end
-        if header and not plain then
-            -- latex_code = latex_code .. '\\SetRow{table-header-background,fg=white,ht=24pt} '
         end
         -- The entire row is all the cells joined by '&' with a '\\' at the end.
         latex_code = latex_code .. clines_code .. table.concat(row_code, ' & ') .. ' \\\\\n'
@@ -207,7 +209,6 @@ function Table(tbl)
         -- Create the first header. This consists of the caption, a top line, and any header lines.
         --
 
-        latex_code = latex_code .. '\\hiderowcolors'
         latex_code = latex_code .. string.format('\\%s{%s}\n', caption_cmd, escaped_caption)
 
         --
@@ -219,7 +220,7 @@ function Table(tbl)
 
         latex_code = latex_code .. '\\\\\n'
 
-        if not plain then
+        if Length(tbl.head.rows) > 0 and not plain then
             latex_code = latex_code .. '\\hline\n'
         end
 
@@ -230,12 +231,11 @@ function Table(tbl)
         -- Create the not-first header. This is the same as the first header, except there's no caption.
         --
 
-        if not plain then
-            latex_code = latex_code .. '\\hline\n'
-        end
-
         -- Write out all the header rows.
         if Length(tbl.head.rows) > 0 then
+            if not plain then
+                latex_code = latex_code .. '\\hline\n'
+            end
             latex_code = latex_code .. TabularRows(tbl.head.rows, true, plain, tbl.colspecs)
             latex_code = latex_code .. '\\endhead\n'
         end
@@ -247,12 +247,10 @@ function Table(tbl)
         -- Write out all the footer rows.
         if Length(tbl.foot.rows) > 0 then
             latex_code = latex_code .. TabularRows(tbl.foot.rows, true, plain, tbl.colspecs)
-            latex_code = latex_code .. '\\endfoot\n'
         end
-        latex_code = latex_code .. '\\showrowcolors'
-        if plain then
-            latex_code = latex_code .. '\\hiderowcolors'
-        end
+        -- There's always a footer, even if there are no footer rows. This avoids
+        -- edge cases where the bottom row on the not-last page of a table loses track of its trailing hline.
+        latex_code = latex_code .. '\\endfoot\n'
 
         --
         -- Body
@@ -268,9 +266,6 @@ function Table(tbl)
         -- End the tabular environment
         --
 
-        if plain then
-            latex_code = latex_code .. '\\showrowcolors'
-        end
         latex_code = latex_code .. '\\end{xltabular}\n'
 
         -- Return a raw LaTeX blob with our encoded table.

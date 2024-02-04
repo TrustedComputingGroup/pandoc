@@ -1452,6 +1452,92 @@ Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
 </tbody>
 </table>
 
+<table>
+<colgroup>
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+</colgroup>
+<tbody>
+<tr>
+<td><p>3</p>
+<p>1</p></td>
+<td><p>3</p>
+<p>0</p></td>
+<td><p>2</p>
+<p>9</p></td>
+<td><p>2</p>
+<p>8</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>1</p>
+<p>6</p></td>
+<td><p>1</p>
+<p>5</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>0</p>
+<p>0</p></td>
+</tr>
+<tr>
+<td colspan="2">Res</td>
+<td>V</td>
+<td colspan="13">Reserved</td>
+<td colspan="16">Command Index</td>
+</tr>
+</tbody>
+</table>
+
 Verify that the table cross-references still work:
 
 * @tbl:bullets-grid
