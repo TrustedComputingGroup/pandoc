@@ -1,4 +1,4 @@
--- Use tabularx's tabularx environment instead of longtable to write LaTeX tables.
+-- Use xltabular's xltabular environment instead of longtable to write LaTeX tables.
 -- Run this filter after pandoc-crossref.
 
 function Length(element)
@@ -9,18 +9,28 @@ function Length(element)
     return n
 end
 
+-- The adjustment value for any column width to account for column separators.
+local ColumnAdjustmentValue = '-2\\tabcolsep-\\arrayrulewidth'
+
 function ColumnWidth(colspec, numcols)
     local width = 1.0/numcols
     if colspec[2] then
         width = colspec[2]
     end
-    return string.format('%f\\linewidth-2\\tabcolsep-\\arrayrulewidth', width)
+    return string.format('%f\\linewidth', width)
 end
 
--- This function converts a Pandoc ColSpec object into a colspec for the tabularx environment.
+-- This function converts a Pandoc ColSpec object into a colspec for the xltabular environment.
 -- https://pandoc.org/lua-filters.html#type-colspec
 function TabularColspec(colspec, plain, numcols)
-    local result = string.format('p{%s}', ColumnWidth(colspec, numcols))
+    local column_pre = {
+        ['AlignLeft'] = '>{\\RaggedRight}',
+        ['AlignCenter'] = '>{\\Centering}',
+        ['AlignDefault'] = '>{\\RaggedRight}',
+        ['AlignRight'] = '>{\\RaggedLeft}',
+    }
+
+    local result = string.format('%sp{%s%s}', column_pre[colspec[1]], ColumnWidth(colspec, numcols), ColumnAdjustmentValue)
     if not plain then
         result = '|' .. result
     end
@@ -28,27 +38,12 @@ function TabularColspec(colspec, plain, numcols)
 end
 
 -- This function wraps content in a parbox if needed.
-function GetCellCode(cell, colspec)
-    local blocks = false
-    -- for i, block in ipairs(cell.contents) do
-    --     print(string.format('Block type: %s', pandoc.utils.type(block)))
-    --     if pandoc.utils.type(block) ~= 'Plain' then
-    --         blocks = true
-    --     end
-    -- end
-
+function GetCellCode(cell, colspec, numcols)
     local cell_code = pandoc.write(pandoc.Pandoc(cell.contents),'latex')
-    if blocks then
-        local width = 0.5
-        if colspec[2] then
-            width = colspec[2]
-        end
-        cell_code = string.format('\\parbox{%f\\linewidth-2\\tabcolsep-\\arrayrulewidth}{%s}', width, cell_code)
-    end
-    return cell_code
+    return string.format('%s', cell_code)
 end
 
--- This function iterates a List of Rows and creates the tabularx code each row.
+-- This function iterates a List of Rows and creates the code for each row.
 -- The 'width' parameter is a necessary hint due to potential column-spanning.
 -- If 'header' is true, we style every element in bold white on dark gray.
 -- If 'plain' is true, we don't change the colors (but keep it bold).
@@ -67,14 +62,15 @@ function TabularRows(rows, header, plain, colspecs)
         -- Prepare a list of latex snippets to be concatenated together below.
         local row_code = {}
 
-        local skip_code = ''
-        if not plain then
+        -- Draw horizontal rules using cline, for each non-skipped cell (so we don't draw a line through a rowspan cell).
+        local clines_code = ''
+        if i > 1 and not plain then
             for j = 1,width do
                 if not skips[i*width + j] then
-                    skip_code = skip_code .. string.format("\\cline{%d-%d}", j, j)
+                    clines_code = clines_code .. string.format("\\cline{%d-%d}", j, j)
                 end
             end
-            skip_code = skip_code .. '\n'
+            clines_code = clines_code .. '\n'
         end
 
         -- For each cell in the row,
@@ -86,7 +82,7 @@ function TabularRows(rows, header, plain, colspecs)
             elseif row.cells[n] then
                 local cell = row.cells[n]
                 n = n + 1
-                local cell_code = '{' .. GetCellCode(cell, colspecs[j]) .. '}'
+                local cell_code = '{' .. GetCellCode(cell, colspecs[j], width) .. '}'
                 if header then
                     cell_code = '{\\bfseries ' .. cell_code .. '}'
                 end
@@ -104,12 +100,13 @@ function TabularRows(rows, header, plain, colspecs)
                         line = '|'
                     end
                     if cell.col_span > 1 then
-                        -- Get the total width of all the columns we're spanning...
+                        -- Get the total width of all the columns we're spanning.
                         -- This allows us to place block elements inside multicolumn cells.
                         local total_column_width = ColumnWidth(colspecs[j], Length(colspecs))
                         for z = j+1,j+cell.col_span-1 do
                             total_column_width = total_column_width .. '+' .. ColumnWidth(colspecs[z], Length(colspecs))
                         end
+                        total_column_width = total_column_width .. ColumnAdjustmentValue
                         cell_code = string.format('\\multicolumn{%d}{%sp{%s}%s}{%s}', cell.col_span, line, total_column_width, line, cell_code)
                     end
                     
@@ -126,21 +123,39 @@ function TabularRows(rows, header, plain, colspecs)
             -- latex_code = latex_code .. '\\SetRow{table-header-background,fg=white,ht=24pt} '
         end
         -- The entire row is all the cells joined by '&' with a '\\' at the end.
-        latex_code = latex_code .. skip_code .. table.concat(row_code, ' & ') .. ' \\\\\n'
+        latex_code = latex_code .. clines_code .. table.concat(row_code, ' & ') .. ' \\\\\n'
+
     end
+    -- Add one last hline (if not plain).
+    if not plain then
+        latex_code = latex_code .. ' \\hline'
+    end
+    latex_code = latex_code .. '\n'
     return latex_code
 end
 
 -- When writing latex (i.e., output format is latex or pdf), don't rely on the
--- default Pandoc latex writer (which uses longtable). Instead, use tabularx,
+-- default Pandoc latex writer (which uses longtable). Instead, use xltabular,
 -- which gives us the option to draw the full grid of the table.
 function Table(tbl)
     if FORMAT =='latex' then
-        local numbered = true
+        local latex_code = ''
+
+        local plain = false
+        if tbl.classes:find('plain') then
+            plain = true
+        end
+
         -- We use the caption as both the actual table's caption, and the entry
         -- in the list of tables.
-        -- If there is no caption, it doesn't go into the list of tables.
+        -- Escape the caption if needed.
         local caption = pandoc.utils.stringify(tbl.caption.long)
+        local escaped_caption = ''
+        if caption ~= '' then
+            escaped_caption = '\\protect\\detokenize{' .. caption .. '}'
+        end
+
+        local numbered = true
 
         -- .unnumbered .unlisted is the traditional pair of classes Pandoc uses
         -- to omit something from the TOC. Let's keep that tradition alive.
@@ -150,26 +165,33 @@ function Table(tbl)
             numbered = false
         end
 
-        local latex_code = ''
-        -- latex_code = latex_code .. '\\begin{table}[H]\n'
-        latex_code = latex_code .. '\\centering%\n'
+        -- Choose the right command for the caption (caption if numbered; caption* if not)
+        local caption_cmd = 'caption'
+        if not numbered then
+            caption_cmd = 'caption*'
+        end
 
-        -- WORKAROUND: ltablex has a side effect of incrementing the table counter on all tabularx,
-        -- even ones with no caption (or with caption*).
+        -- WORKAROUND: All caption commands are currently incrementing the table counter.
         -- Undo this by decrementing the counter before starting the uncounted table.
         -- Decrementing the counter after the table can cause links in the list of tables to
         -- mistakenly point to the wrong table.
         if not numbered then
-            latex_code = latex_code .. '\\addtocounter{table}{-1}'
+            latex_code = latex_code .. '\\addtocounter{table}{-1}\n'
         end
+
+        --
+        -- Begin the xltabular environment
+        --
+
+        -- N.B., we use linewidth here instead of textwidth, because (experimentally) textwidth
+        -- doesn't get updated in the landscape environment.
+        -- This will cause problems with tables inside of tables, but we don't support that.
         latex_code = latex_code .. '\\begin{xltabular}{\\linewidth}{'
 
-        local plain = false
-        if tbl.classes:find('plain') then
-            plain = true
-        end
+        --
+        -- Specify the columns
+        --
 
-        -- We have to translate Pandoc's internal ColSpec into the tabularx one.
         local colspec = ''
         for i, spec in ipairs(tbl.colspecs) do
             -- Just concatenate all the colspecs together.
@@ -179,19 +201,56 @@ function Table(tbl)
             latex_code = latex_code .. colspec .. '|'
         end
         latex_code = latex_code .. '}\n'
-        -- Done with the colspec
+        
+        --
+        -- Create the first header. This consists of the caption, a top line, and any header lines.
+        --
 
-        -- Write out all the header rows (in header).
+        latex_code = latex_code .. string.format('\\%s{%s}\n', caption_cmd, escaped_caption)
+
+        --
+        -- Add the label, if we have an identifier for this table.
+        --
+        if tbl.identifier ~= '' then
+            latex_code = latex_code .. string.format('\\label{%s}\n', tbl.identifier)
+        end
+
+        latex_code = latex_code .. '\\\\\n'
+
+        if not plain then
+            latex_code = latex_code .. '\\hline\n'
+        end
+
+        latex_code = latex_code .. TabularRows(tbl.head.rows, true, plain, tbl.colspecs)
+        latex_code = latex_code .. '\\endfirsthead\n'
+
+        --
+        -- Create the not-first header. This is the same as the first header, except there's no caption.
+        --
+
+        if not plain then
+            latex_code = latex_code .. '\\hline\n'
+        end
+
+        -- Write out all the header rows.
         if Length(tbl.head.rows) > 0 then
             latex_code = latex_code .. TabularRows(tbl.head.rows, true, plain, tbl.colspecs)
             latex_code = latex_code .. '\\endhead\n'
         end
 
-        -- Write out all the footer rows (in header).
+        --
+        -- Create the footer.
+        --
+
+        -- Write out all the footer rows.
         if Length(tbl.foot.rows) > 0 then
             latex_code = latex_code .. TabularRows(tbl.foot.rows, true, plain, tbl.colspecs)
             latex_code = latex_code .. '\\endfoot\n'
         end
+
+        --
+        -- Body
+        --
 
         -- Write out all the body rows.
         -- Typical tables have just one body.
@@ -199,35 +258,13 @@ function Table(tbl)
             latex_code = latex_code .. TabularRows(body.body, false, plain, tbl.colspecs)
         end
 
-        -- One last line for the bottom.
-        if not plain then
-            latex_code = latex_code .. "\\hline\n"
-        end
+        --
+        -- End the tabular environment
+        --
 
-        local caption_cmd = 'caption'
-        if not numbered then
-            caption_cmd = 'caption*'
-        end
-        local escaped_caption = ''
-        if caption ~= '' then
-            escaped_caption = '\\protect\\detokenize{' .. caption .. '}'
-        end
-        -- We have to LaTeX escape the caption in case it contains reserved
-        -- characters.
-        latex_code = latex_code .. string.format('\\%s{%s}\n', caption_cmd, escaped_caption)
-
-        -- Typically, #tbl:some-table for crossreferencing/list-of-tables.
-        if tbl.identifier ~= '' then
-            latex_code = latex_code .. string.format('\\label{%s}\n', tbl.identifier)
-        end
-
-        -- Close up the environment.
         latex_code = latex_code .. '\\end{xltabular}\n'
-        -- latex_code = latex_code .. '\\end{table}\n'
-        latex_code = latex_code .. ''
 
         -- Return a raw LaTeX blob with our encoded table.
-        print(latex_code)
         return pandoc.RawBlock('tex', latex_code)
     end
 

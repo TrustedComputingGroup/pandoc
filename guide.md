@@ -509,14 +509,6 @@ too large in an Informative Text block.
 | REFERENCE         | Rarely                 |
 :::::::::::::::::::
 
-Table: Shapes3 {#tbl:shapes3}
-
-| Shape        | Number of sides |
-| ------------ | --------------- |
-| Square       | 4               |
-| Triangle     | 3               |
-| Möbius strip | 1               |
-
 ### Other Informative Blocks
 
 Writers of a document may prefer "informative" blocks with more specific
@@ -810,9 +802,9 @@ like "an actual table".
 
 : {.plain}
 
-------- -----
-like     this
-------- -----
+----- -----
+ like this
+----- -----
 
 #### Column Alignment
 
@@ -1263,113 +1255,151 @@ Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
 
 : Long Table {#tbl:long-table}
 
--------------------------------
-Lorem           Ipsum           
---------------- --------------- 
-consectetur     adipiscing      
-
-eiusmod         tempor          
-
-et              dolore          
-
-enim            ad              
-
-nostrud         exercitation    
-
-ut              aliquip         
-
-consequat.      Duis            
-
-in              reprehenderit   
-
-esse            cillum          
-
-nulla           pariatur.       
-
-cupidatat       non             
-
-culpa           qui             
-
-anim            id              
-
-elit             sed          
-
-incididunt       ut           
-
-magna            aliqua.      
-
-minim            veniam,      
-
-ullamco          laboris      
-
-ex               ea           
-
-aute             irure        
-
-in               voluptate    
-
-dolore           eu           
-
-Excepteur        sint         
-
-proident,        sunt         
-
-officia          deserunt     
-
-est              laborum
-
-elit             sed          
-
-incididunt       ut           
-
-magna            aliqua.      
-
-minim            veniam,      
-
-ullamco          laboris      
-
-ex               ea           
-
-aute             irure        
-
-in               voluptate    
-
-dolore           eu           
-
-Excepteur        sint         
-
-proident,        sunt         
-
-officia          deserunt     
-
-est              laborum
-
-elit             sed          
-
-incididunt       ut           
-
-magna            aliqua.      
-
-minim            veniam,      
-
-ullamco          laboris      
-
-ex               ea           
-
-aute             irure        
-
-in               voluptate    
-
-dolore           eu           
-
-Excepteur        sint         
-
-proident,        sunt         
-
-officia          deserunt     
-
-est              laborum
--------------------------------
++---------------+---------------+
+| Item          | Price         |
++===============+===============+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++===============+===============+
+| Total         | $70           |
++===============+===============+
 
 <table id="tbl:underscores-html">
     <caption>Underscores_(HTML)</caption>
@@ -1406,3 +1436,5 @@ Verify that the table cross-references still work:
 * @tbl:footer-grid
 * @tbl:no-lines-grid
 * @tbl:no-caption-but-label-grid
+* @tbl:long-table
+* @tbl:underscores-html
