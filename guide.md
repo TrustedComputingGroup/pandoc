@@ -802,9 +802,9 @@ like "an actual table".
 
 : {.plain}
 
-------- -----
-like     this
-------- -----
+----- -----
+ like this
+----- -----
 
 #### Column Alignment
 
@@ -1130,9 +1130,42 @@ Table: Bullets {#tbl:bullets-grid}
 +----------------------+----------------------------+
 | Fruit and Color      | Mistaken for Vegetable     |
 +=============+========+============================+
+| * Apple     | Green  | No                         |
+| * Pear      |        |                            |
+| * Kiwi      |        |                            |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+
+Currently, @tbl:bullets-grid2 and @tbl:informative-grid look kind of bad.
+A workaround is to not include block elements inside rowspans.
+Block elements are supported in non-spanned rows (such as in @tbl:bullets-grid).
+
+Table: Bullets2 {#tbl:bullets-grid2}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
 | * Apple     | Red    | No                         |
 | * Pear      +--------+----------------------------+
 | * Kiwi      | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Table: Bullets3 {#tbl:bullets-grid3}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+| * Apple              | No                         |
+| * Pear               |                            |
+| * Kiwi               |                            |
 +-------------+--------+----------------------------+
 | Tomato      | Red    | Yes                        |
 +-------------+--------+----------------------------+
@@ -1198,9 +1231,9 @@ Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
 +----------------------+----------------------------+
 | Fruit and Color      | Mistaken for Vegetable     |
 +=============+========+============================+
-|             | Red    | No                         |
-| Apple       +--------+----------------------------+
-|             | Green  | No                         |
+| Apple       | Red    | No                         |
+|             +--------+----------------------------+
+| Pear        | Green  | No                         |
 +-------------+--------+----------------------------+
 | Tomato      | Red    | Yes                        |
 +-------------+--------+----------------------------+
@@ -1220,6 +1253,154 @@ Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
 +-------------+--------+----------------------------+
 | Banana      | Yellow | No                         |
 +-------------+--------+----------------------------+
+
+: Long Table {#tbl:long-table}
+
++---------------+---------------+
+| Item          | Price         |
++===============+===============+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++===============+===============+
+| Total         | $70           |
++===============+===============+
 
 <table id="tbl:underscores-html">
     <caption>Underscores_(HTML)</caption>
@@ -1248,6 +1429,115 @@ Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
     </tr>
 </table>
 
+<table id="tbl:line-break">
+<caption>Table with a line-break</caption>
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 25%" />
+<col style="width: 68%" />
+</colgroup>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>Line<br />Break</td>
+</tr>
+</tbody>
+</table>
+
+<table>
+<colgroup>
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+<col style="width: 3%" />
+</colgroup>
+<tbody>
+<tr>
+<td><p>3</p>
+<p>1</p></td>
+<td><p>3</p>
+<p>0</p></td>
+<td><p>2</p>
+<p>9</p></td>
+<td><p>2</p>
+<p>8</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>1</p>
+<p>6</p></td>
+<td><p>1</p>
+<p>5</p></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><p>0</p>
+<p>0</p></td>
+</tr>
+<tr>
+<td colspan="2">Res</td>
+<td>V</td>
+<td colspan="13">Reserved</td>
+<td colspan="16">Command Index</td>
+</tr>
+</tbody>
+</table>
+
 Verify that the table cross-references still work:
 
 * @tbl:bullets-grid
@@ -1256,3 +1546,5 @@ Verify that the table cross-references still work:
 * @tbl:footer-grid
 * @tbl:no-lines-grid
 * @tbl:no-caption-but-label-grid
+* @tbl:long-table
+* @tbl:underscores-html
