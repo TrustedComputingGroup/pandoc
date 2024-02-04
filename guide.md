@@ -509,6 +509,14 @@ too large in an Informative Text block.
 | REFERENCE         | Rarely                 |
 :::::::::::::::::::
 
+Table: Shapes3 {#tbl:shapes3}
+
+| Shape        | Number of sides |
+| ------------ | --------------- |
+| Square       | 4               |
+| Triangle     | 3               |
+| Möbius strip | 1               |
+
 ### Other Informative Blocks
 
 Writers of a document may prefer "informative" blocks with more specific
@@ -1120,7 +1128,7 @@ When reporting an issue, please provide:
 3. What you expected to happen
 4. What actually happened
 
-<!-- # Pathological Tables
+# Pathological Tables
 
 This section contains some really complicated tables, to test our special LaTeX
 [writer filter](filter/tabularray.lua) for tables.
@@ -1130,9 +1138,41 @@ Table: Bullets {#tbl:bullets-grid}
 +----------------------+----------------------------+
 | Fruit and Color      | Mistaken for Vegetable     |
 +=============+========+============================+
+| * Apple     | Green  | No                         |
+| * Pear      |        |                            |
+| * Kiwi      |        |                            |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+
+Currently, @tbl:bullets-grid2 looks kind of bad. A workaround is to not include
+block elements inside rowspans.
+
+Table: Bullets2 {#tbl:bullets-grid2}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
 | * Apple     | Red    | No                         |
 | * Pear      +--------+----------------------------+
 | * Kiwi      | Green  | No                         |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Yes                        |
++-------------+--------+----------------------------+
+| Banana      | Yellow | No                         |
++-------------+--------+----------------------------+
+
+Table: Bullets3 {#tbl:bullets-grid3}
+
++----------------------+----------------------------+
+| Fruit and Color      | Mistaken for Vegetable     |
++=============+========+============================+
+| * Apple              | No                         |
+| * Pear               |                            |
+| * Kiwi               |                            |
 +-------------+--------+----------------------------+
 | Tomato      | Red    | Yes                        |
 +-------------+--------+----------------------------+
@@ -1221,6 +1261,116 @@ Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
 | Banana      | Yellow | No                         |
 +-------------+--------+----------------------------+
 
+: Long Table {#tbl:long-table}
+
+-------------------------------
+Lorem           Ipsum           
+--------------- --------------- 
+consectetur     adipiscing      
+
+eiusmod         tempor          
+
+et              dolore          
+
+enim            ad              
+
+nostrud         exercitation    
+
+ut              aliquip         
+
+consequat.      Duis            
+
+in              reprehenderit   
+
+esse            cillum          
+
+nulla           pariatur.       
+
+cupidatat       non             
+
+culpa           qui             
+
+anim            id              
+
+elit             sed          
+
+incididunt       ut           
+
+magna            aliqua.      
+
+minim            veniam,      
+
+ullamco          laboris      
+
+ex               ea           
+
+aute             irure        
+
+in               voluptate    
+
+dolore           eu           
+
+Excepteur        sint         
+
+proident,        sunt         
+
+officia          deserunt     
+
+est              laborum
+
+elit             sed          
+
+incididunt       ut           
+
+magna            aliqua.      
+
+minim            veniam,      
+
+ullamco          laboris      
+
+ex               ea           
+
+aute             irure        
+
+in               voluptate    
+
+dolore           eu           
+
+Excepteur        sint         
+
+proident,        sunt         
+
+officia          deserunt     
+
+est              laborum
+
+elit             sed          
+
+incididunt       ut           
+
+magna            aliqua.      
+
+minim            veniam,      
+
+ullamco          laboris      
+
+ex               ea           
+
+aute             irure        
+
+in               voluptate    
+
+dolore           eu           
+
+Excepteur        sint         
+
+proident,        sunt         
+
+officia          deserunt     
+
+est              laborum
+-------------------------------
+
 <table id="tbl:underscores-html">
     <caption>Underscores_(HTML)</caption>
     <tr>
@@ -1255,4 +1405,4 @@ Verify that the table cross-references still work:
 * @tbl:equation-grid
 * @tbl:footer-grid
 * @tbl:no-lines-grid
-* @tbl:no-caption-but-label-grid -->
+* @tbl:no-caption-but-label-grid
