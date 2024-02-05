@@ -503,7 +503,7 @@ $endif$
   }
 }
 
-\fancypagestyle{portrait-header-footer}{
+\fancypagestyle{normal-header-footer}{
   \fancyhf{}
   \fancyfoot[C]
   {
@@ -515,7 +515,24 @@ $endif$
     \end{textblock*}
   }
 }
-\pagestyle{portrait-header-footer}
+\fancypagestyle{informative-header-footer}{
+  \fancyhead[C]
+  {
+    \begin{textblock*}{8.5in}(0in,0.2in)
+    \Centering\textbf{\textit{\textcolor{informative-header}{\small{Informative Section}}}}
+    \end{textblock*}
+  }
+  \fancyfoot[C]
+  {
+    \begin{textblock*}{8.5in}(0in,10.7in)
+    \tikz \fill [color=footcolor] (0in,0in) rectangle (8.5in,0.3in);
+    \end{textblock*}
+    \begin{textblock*}{8.00in}(0.25in,10.8in)
+    \tcgfoot
+    \end{textblock*}
+  }
+}
+\pagestyle{normal-header-footer}
 
 %%
 %% https://tex.stackexchange.com/questions/637833/how-can-i-create-a-comma-separated-list-of-characters-from-a-text-string/637843#637843

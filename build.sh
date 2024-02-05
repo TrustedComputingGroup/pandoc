@@ -432,6 +432,7 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		--template=tcg.tex
 		--lua-filter=mermaid-code-class-pre.lua
 		--filter=mermaid-filter
+		--lua-filter=informative-sections.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua

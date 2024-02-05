@@ -1133,6 +1133,31 @@ When reporting an issue, please provide:
 3. What you expected to happen
 4. What actually happened
 
+# Informative Sections {.informative}
+
+This section demonstrates how an entire section of the document can be marked as
+"Informative." Authors may choose to organize their specifications into
+separate normative text and accompanying informative descriptions, rather than
+providing the informative comments inline with the spec language.
+
+## How to mark a section as Informative
+
+Use the `{.informative}` class on a top-level section heading, like in this one.
+
+```md
+# Informative Sections {.informative}
+```
+
+## Page breaks
+
+Page breaks work fine in Informative Sections.
+
+---
+
+In case you forgot, a page break is created by using `---` (which renders
+nicely as a horizontal line in HTML and GitHub previews).
+
+
 # Pathological Tables
 
 This section contains some really complicated tables, to test our special LaTeX
