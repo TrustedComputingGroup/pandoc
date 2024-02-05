@@ -231,14 +231,16 @@ function Table(tbl)
         -- Create the not-first header. This is the same as the first header, except there's no caption.
         --
 
+        if not plain then
+            latex_code = latex_code .. '\\hline\n'
+        end
         -- Write out all the header rows.
         if Length(tbl.head.rows) > 0 then
-            if not plain then
-                latex_code = latex_code .. '\\hline\n'
-            end
             latex_code = latex_code .. TabularRows(tbl.head.rows, true, plain, tbl.colspecs)
-            latex_code = latex_code .. '\\endhead\n'
         end
+        -- There's always a header, even if there are no header rows. This avoids
+        -- edge cases where a continued table loses its leading hline.
+        latex_code = latex_code .. '\\endhead\n'
 
         --
         -- Create the footer.
