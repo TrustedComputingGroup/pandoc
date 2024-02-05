@@ -971,13 +971,13 @@ documents in Markdown:
 1.  Upload an initial document with some placeholder version. Depending on how you have your
     GitHub actions set up, this may trigger a "TCG Review" render that you never use. That
     is OK.
-    1.  For a brand-new document, tag (GitHub Release) an early version as `0.0.1-alpha` or similar.
+    1.  For a brand-new document, tag (GitHub Release) an early version as `0.0.0` or similar.
     2.  For a migration of an existing document, tag an early version based on the original
-        document's current version (e.g., `1.23.4-migration` for the initial migration based
+        document's current version (e.g., `1.23.4-alpha` for the initial migration based
         on a Word document that was published as version 1.23.4).
 2.  Work on the document by sending pull requests. Each commit on main will increment the
-    revision number. So the first few PRs after `0.0.1-alpha` will be called "0.0.1 Revision 1",
-    "0.0.1 Revision 2", and so on.
+    revision number. So the first few PRs after `1.23.4-alpha` will be called "1.23.4 alpha Revision 1",
+    "0.0.1 alpha Revision 2", and so on.
 3.  Reach the point where you might like to ballot the document. Create a "release candidate",
     by creating a GitHub release called (target version)-rc.1. For example, if the next version
     of the doc you'd like to publish will be 1.23.5, release `1.23.5-rc.1`. This is the
@@ -997,7 +997,7 @@ documents in Markdown:
 
 ::: Note :::
 If the spec is not rendered as part of a release, it will always be
-a draft, of some revision on top of the latest released version number.
+a draft, of some revision on top of the latest released version.
 ::::::::::::
 
 ### Suppressing Git Version Parsing
