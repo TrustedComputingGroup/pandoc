@@ -977,7 +977,7 @@ documents in Markdown:
         on a Word document that was published as version 1.23.4).
 2.  Work on the document by sending pull requests. Each commit on main will increment the
     revision number. So the first few PRs after `1.23.4-alpha` will be called "1.23.4 alpha Revision 1",
-    "0.0.1 alpha Revision 2", and so on.
+    "1.23.4 alpha Revision 2", and so on.
 3.  Reach the point where you might like to ballot the document. Create a "release candidate",
     by creating a GitHub release called (target version)-rc.1. For example, if the next version
     of the doc you'd like to publish will be 1.23.5, release `1.23.5-rc.1`. This is the
