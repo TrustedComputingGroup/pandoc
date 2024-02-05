@@ -432,6 +432,7 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		--template=tcg.tex
 		--lua-filter=mermaid-code-class-pre.lua
 		--filter=mermaid-filter
+		--lua-filter=convert-images.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
 		--lua-filter=landscape-pages.lua
@@ -618,7 +619,8 @@ fi
 rm -f core
 rm -f mermaid-filter.err
 rm -f .puppeteer.json
-rm  "${build_dir}/${input_file}.bak"
+rm -f "${build_dir}/${input_file}.bak"
+rm -f *.temp.pdf
 
 echo "Overall workflow succeeded"
 exit 0
