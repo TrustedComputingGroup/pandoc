@@ -39,8 +39,8 @@ end
 
 function GetCellCode(cell)
     local cell_code = pandoc.write(pandoc.Pandoc(cell.contents),'latex')
-    -- \\ is not supported inside a cell. Replace it with a double-newline.
-    cell_code = cell_code:gsub('\\\\', '\n\n')
+    -- \\ is not supported inside a cell. Replace it with a double-newline and a small skip.
+    cell_code = cell_code:gsub('\\\\', '\n\n\\smallskip')
     return cell_code
 end
 
