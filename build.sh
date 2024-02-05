@@ -199,12 +199,12 @@ if test "${do_gitversion}" == "yes"; then
 	if grep -qv '\.' <<< "${major_minor}"; then
 		if test ${#major_minor} -ge 7; then
 
-			# its a commit
+			# it's a commit
 			major_minor="0.0"
 			revision="$(git rev-list --count HEAD)"
 		else
-			# its a major with no minor, append .0
-			major_minor="${major_minor}.0"
+			# it's a major with no minor
+			major_minor="${major_minor}"
 		fi
 	fi
 
