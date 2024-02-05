@@ -232,10 +232,7 @@ if test "${do_gitversion}" == "yes"; then
 
 	extra_pandoc_options+=" --metadata=version:${GIT_VERSION}"
 
-	# Tell the template that this is a prerelease only if there are
-	# no revisions.
-	# The review document 1.2.3-rc.1 with one commit on top is 1.2.3 revision 1.
-	if [ ! -z "${GIT_PRERELEASE}" ] && [ -z "${GIT_REVISION}" ]; then
+	if [ ! -z "${GIT_PRERELEASE}" ]; then
 		extra_pandoc_options+=" --metadata=prerelease:${GIT_PRERELEASE}"
 	fi
 
