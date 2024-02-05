@@ -948,18 +948,56 @@ documents rendered as part of a [release](#sec:running-on-release) with a suppor
 
 ### Conventions for Release Naming {#sec:release-conventions}
 
-The tooling expects the following conventions for tagging your releases:
+This tooling assumes a usage of [Semantic Versioning](https://semver.org) (aka semver)
+or similar in how you name your doc releases. It is recommended to use MAJOR.MINOR.PATCH,
+but certain legacy documents may prefer MAJOR.MINOR or even just MAJOR. It is not
+recommended to treat version numbers as decimal values (e.g., 0.01; 0.99 where the next
+version can only be 1.00).
 
-* `vX.Y` indicates a regular draft of version X.Y.
-* `vX.Y.Z` indicates a regular draft of version X.Y.Z.
-* `rX.Y` indicates a review draft of version X.Y.
-* `rX.Y` indicates a review draft of version X.Y.Z.
-* `pX.Y` indicates a published version X.Y.
-* `pX.Y.Z` indicates a published version X.Y.Z.
+The TCG Pandoc tools expects tags chosen for releases to look something like:
+
+* `X.Y` for the published version X.Y. This version is rendered as a "final" doc.
+* `X.Y-rc.1` for the first release candidate for version X.Y. Actual X.Y may come later
+  and supercedes X.Y-rc.1 in value. This release candidate is styled as a "TCG Review" doc.
+  * `rc.1` can be any "prerelease" string. The only real rule is that it doesn't have dashes
+    in it.
+
+If you wish, you can prefix the version with a letter (like `vX.Y`). These letters will
+be trimmed off the front of the tag during build.
+
+Here is a recommended basic workflow for workgroups using GitHub to manage their
+documents in Markdown:
+
+1.  Upload an initial document with some placeholder version. Depending on how you have your
+    GitHub actions set up, this may trigger a "TCG Review" render that you never use. That
+    is OK.
+    1.  For a brand-new document, tag (GitHub Release) an early version as `0.0.0` or similar.
+    2.  For a migration of an existing document, tag an early version based on the original
+        document's current version (e.g., `1.23.4-alpha` for the initial migration based
+        on a Word document that was published as version 1.23.4).
+2.  Work on the document by sending pull requests. Each commit on main will increment the
+    revision number. So the first few PRs after `1.23.4-alpha` will be called "1.23.4 alpha Revision 1",
+    "1.23.4 alpha Revision 2", and so on.
+3.  Reach the point where you might like to ballot the document. Create a "release candidate",
+    by creating a GitHub release called (target version)-rc.1. For example, if the next version
+    of the doc you'd like to publish will be 1.23.5, release `1.23.5-rc.1`. This is the
+    first release candidate. Hopefully it's the only one. This will result in the creation of
+    a "Review" document marked rc.1.
+4.  Ballot the release candidate using the normal TCG process. Send along the "Review" document
+    created by GitHub during the previous step.
+5.  If more iterations are needed,
+    1.  Work on them as in (2) above. So the next few drafts will be called "1.23.5 rc.1 Revision 1",
+    "1.23.5 rc.1 Revision 2", and so on.
+    2.  Release another release candidate marked rc.2, rc.3, etc.
+6.  When the document is approved for public review, send out the release candidate that got
+    approved.
+7.  When it comes time for final publication, release just 1.23.5. This will trigger a render
+    of a "Final" styled document. Note that according to the rules of semver, 1.23.5 is higher
+    than 1.23.5-rc.1.
 
 ::: Note :::
 If the spec is not rendered as part of a release, it will always be
-a draft, of some revision on top of the latest released version number.
+a draft, of some revision on top of the latest released version.
 ::::::::::::
 
 ### Suppressing Git Version Parsing

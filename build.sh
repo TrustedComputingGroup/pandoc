@@ -174,62 +174,84 @@ if test "${do_gitversion}" == "yes"; then
 	# TODO: Should we fail if dirty?
 	raw_version="$(git describe --always --tags)"
 	echo "Git version: ${raw_version}"
+	# Trim leading letters like v etc
+	raw_version=$(echo "${raw_version}" | sed -E 's/^[a-zA-Z]*(.*)/\1/')
 	IFS='-' read -r -a dash_hunks <<< "${raw_version}"
 
+	# Assume the tags are based on semantic versioning.
     # Could be one of:
-    # gabcd - commit no tag (len 1)
-   	# 4 --> tag major only (len 1)
-	# 4.0 --> tag major minor (len 1)
-	# 4-54-gabcd --> tag major with commits (len 3)
-	# 4.0-54-gabcd --> tag major-minor with commits (len 3)
+	#   Where $COMMIT is the first few digits of a commit hash
+    # g$COMMIT - commit no tag (len 1)
+	#   Where $VERSION is like v1.2.3
+   	# $VERSION --> at the version $VERSION (len 1)
+	#   Where $PRERELEASE is like rc.1
+	# $VERSION-$PRERELEASE --> at the version $VERSION-$PRERELEASE (len 2)
+	#   Where $REVISION is the number of commits since the last tag (e.g., 54)
+	# $VERSION-$REVISION-g$COMMIT --> version without prerelease tag at a particular commit (len 3)
+	# $VERSION-$PRERELEASE-$REVISION-g$COMMIT --> version with  (len 4)
 	len=${#dash_hunks[@]}
-	if ! test "${len}" -eq 1 -o "${len}" -eq 3; then
-	    >&2 echo "Malformed git version got: ${raw_version}"
-	    exit 1
-    fi
+	case $len in
+		1)
+			if [ "${dash_hunks[0]:0:1}" == "g" ]; then
+				GIT_VERSION="0"
+				GIT_COMMIT="${dash_hunks[0]:1}"
+			else
+				GIT_VERSION="${dash_hunks[0]}"
+			fi
+			;;
+		2)
+			GIT_VERSION="${dash_hunks[0]}"
+			GIT_PRERELEASE="${dash_hunks[1]}"
+			;;
+		3)
+			if [ "${dash_hunks[2]:0:1}" == "g" ]; then
+				GIT_VERSION="${dash_hunks[0]}"
+				GIT_REVISION="${dash_hunks[1]}"
+				GIT_COMMIT="${dash_hunks[2]:1}"
+			else
+				>&2 echo "Malformed Git version: ${raw_version}"
+				exit 1
+			fi
+			;;
+		4)
+			if [ "${dash_hunks[3]:0:1}" == "g" ]; then
+				GIT_VERSION="${dash_hunks[0]}"
+				GIT_PRERELEASE="${dash_hunks[1]}"
+				GIT_REVISION="${dash_hunks[2]}"
+				GIT_COMMIT="${dash_hunks[3]:1}"
+			else
+				>&2 echo "Malformed Git version: ${raw_version}"
+				exit 1
+			fi
+			;;
+		*)
+	    	>&2 echo "Malformed Git version: ${raw_version}"
+	    	exit 1
+			;;
+	esac
 
-	revision="0"
-	major_minor="${dash_hunks[0]}"
-	if test "${len}" -eq 3; then
-		revision="${dash_hunks[1]}"
+	extra_pandoc_options+=" --metadata=version:${GIT_VERSION}"
+
+	if [ ! -z "${GIT_PRERELEASE}" ]; then
+		extra_pandoc_options+=" --metadata=prerelease:${GIT_PRERELEASE}"
 	fi
 
-	# Does this even have a major minor, or is it just a commit (8d7046adcf1b) len of 12 no dot char?
-	# Note that in docker image this sha is shorter at 7 chars for some reason.
-	if grep -qv '\.' <<< "${major_minor}"; then
-		if test ${#major_minor} -ge 7; then
-
-			# it's a commit
-			major_minor="0.0"
-			revision="$(git rev-list --count HEAD)"
-		else
-			# it's a major with no minor
-			major_minor="${major_minor}"
-		fi
-	fi
-
-	# Before scrubbing, grab the first character from 'major_minor'
-	first_char=${major_minor:0:1}
-
-	# scrub any leading non-numerical arguments from major_minor, ie v4.0, scrub any other nonsense as well
-	major_minor="$(tr -d "[:alpha:]" <<< "${major_minor}")"
-
-	extra_pandoc_options+=" --metadata=version:${major_minor}"
-
-	# Revision 0 = no revision
-	if [ "${revision}" -ne "0" ]; then
-		extra_pandoc_options+=" --metadata=revision:${revision}"
+	# Omit the revision if there isn't one (i.e., we are at straight-up Version)
+	if [ ! -z "${GIT_REVISION}" ]; then
+		extra_pandoc_options+=" --metadata=revision:${GIT_REVISION}"
+	elif [ ! -z "${GIT_COMMIT}" ]; then
+		extra_pandoc_options+=" --metadata=revision:${GIT_COMMIT}"
 	fi
 
 	# Do we set document status based on git version?
 	if [ "${do_gitstatus}" == "yes" ]; then
-		# If revision is 0 and the first character of the tag is 'p' (for Published)
-		if [ "${revision}" == "0" ] && [ "${first_char}" == "p" ]; then
+		# If revision is 0 and this is not some kind of prerelease
+		if [ -z "${GIT_REVISION}" ] && [ -z "${GIT_PRERELEASE}" ]; then
 			status="Published"
-		# If revision is 0 and the first character of the tag is 'r' (for Review)
-		elif [ "${revision}" == "0" ] && [ "${first_char}" == "r" ]; then
+		# If revision is 0 and this is some kind of prerelease
+		elif [ -z "${GIT_REVISION}" ] && [ ! -z "${GIT_PRERELEASE}" ]; then
 			status="Review"
-		# Revision is not 0, or the tag doesn't begin with a p or an r.
+		# Everything else is a draft
 		else
 			status="Draft"
 		fi
@@ -253,8 +275,18 @@ echo "use table rules: ${table_rules}"
 echo "make block quotes Informative Text: ${block_quotes_are_informative_text}"
 if test "${do_gitversion}" == "yes"; then
 	echo "Git Generated Document Version Information"
-	echo "    version: ${major_minor}"
-	echo "    revision: ${revision}"
+	if [ ! -z "${GIT_VERSION}" ]; then
+		echo "    version: ${GIT_VERSION}"
+	fi
+	if [ ! -z "${GIT_PRERELEASE}" ]; then
+		echo "    prerelease: ${GIT_PRERELEASE}"
+	fi
+	if [ ! -z "${GIT_REVISION}" ]; then
+		echo "    revision: ${GIT_REVISION}"
+	fi
+	if [ ! -z "${GIT_COMMIT}" ]; then
+		echo "    commit: ${GIT_COMMIT}"
+	fi
 	if [ "${do_gitstatus}" == "yes" ]; then
 		echo "    status: ${status}"
 	fi
@@ -520,7 +552,7 @@ fi
 # Generate the docx output
 if [ -n "${docx_output}" ]; then
 	# Prepare the title-page for the docx version.
-	SUBTITLE="Version ${major_minor:-${DATE}}, Revision ${revision:-0}"
+	SUBTITLE="Version ${GIT_VERSION:-${DATE}}, Revision ${GIT_REVISION:-0}"
 	# Prefix the document with a Word page-break, since Pandoc doesn't do docx
 	# title pages.
 	cat <<- 'EOF' > "${build_dir}/${input_file}.prefixed"

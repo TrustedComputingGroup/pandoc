@@ -480,6 +480,10 @@ $endif$
     \hskip 0.25em | \hskip 0.25em 
     Version $version$
     $endif$
+    $if(prerelease)$
+    \hskip 0.25em | \hskip 0.25em 
+    $prerelease$
+    $endif$
     $if(revision)$
     \hskip 0.25em | \hskip 0.25em 
     Revision $revision$
@@ -685,18 +689,21 @@ $endif$
     \vskip 1.5em
     Contact: \hyperlink{mailto:admin@trustedcomputinggroup.org}{admin@trustedcomputinggroup.org}
     \vskip 1.5em
-    \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{Review}}}
+    \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{Published}}}
+    {}
     {
-      \textit{This document is an intermediate draft for comment only and is subject to change without notice. Readers should not design products based on this document.}
-      \vskip 1.5em
-
-      \LARGE \textbf{TCG Public Review}\\
+      \small \textit{This document is an intermediate draft for comment only and is subject to change without notice. Readers should not design products based on this document.}\\
     }
-    {
+    \vskip 1.5em
+    $if(prerelease)$
+      $if(status)$
+      \LARGE \textbf{TCG $status$ ($prerelease$)}\\
+      $endif$
+    $else$
       $if(status)$
       \LARGE \textbf{TCG $status$}\\
       $endif$
-    }
+    $endif$
   \end{textblock*}
   \begin{textblock*}{2cm}(2cm,10.8cm)
   $if(type)$
