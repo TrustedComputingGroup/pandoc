@@ -184,7 +184,7 @@ if test "${do_gitversion}" == "yes"; then
 	# 4.0-54-gabcd --> tag major-minor with commits (len 3)
 	len=${#dash_hunks[@]}
 	if ! test "${len}" -eq 1 -o "${len}" -eq 3; then
-	    >&2 echo "Malformed git version got: ${raw_version}"
+	    >&2 echo "Malformed Git version got: ${raw_version}"
 	    exit 1
     fi
 
