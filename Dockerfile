@@ -178,6 +178,7 @@ RUN tlmgr update --self && tlmgr install \
     setspace \
     tex-gyre \
     textpos \
+    titlesec \
     titling \
     unicode-math \
     upquote \

@@ -220,11 +220,14 @@ function Table(tbl)
 
         latex_code = latex_code .. '\\\\\n'
 
-        if Length(tbl.head.rows) > 0 and not plain then
+        if not plain then
             latex_code = latex_code .. '\\hline\n'
         end
 
-        latex_code = latex_code .. TabularRows(tbl.head.rows, true, plain, tbl.colspecs)
+        if Length(tbl.head.rows) > 0 then
+            latex_code = latex_code .. TabularRows(tbl.head.rows, true, plain, tbl.colspecs)
+        end
+
         latex_code = latex_code .. '\\endfirsthead\n'
 
         --

@@ -476,8 +476,6 @@ To create an informative note, use the following syntax:
 
 ```md
 ::: Informative :::
-This is the only informative text block in this document.
-
 These blocks can contain multiple paragraphs.
 
 These blocks can even contain tables! However, be wary of providing tables that are
@@ -494,8 +492,6 @@ too large in an Informative Text block.
 The above Markdown code becomes:
 
 ::: Informative :::
-This is the only informative text block in this document.
-
 These blocks can contain multiple paragraphs, tied together by lines containing just
 ">".
 
@@ -1561,3 +1557,97 @@ Verify that the table cross-references still work:
 * @tbl:no-caption-but-label-grid
 * @tbl:long-table
 * @tbl:underscores-html
+
+::::::::::::::::::::::::::::::::::::::::: Informative :::::::::::::::::::::::::::::::::::::::::
+# Totally Informative Section
+
+This entire appendix is an example of a whole section of the document that is
+marked as "Informative." This is common in TCG documents, for when the authors
+prefer to describe the normative requirements without cluttering up the actual
+spec language with small asides, which can cause readers to have to context-
+switch more than necessary.
+
+## Subsection
+
+Information.
+
+* Bulleted
+* List
+
++---------------+---------------+
+| Item          | Price         |
++===============+===============+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+| Something     | $1            |
++---------------+---------------+
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

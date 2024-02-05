@@ -35,7 +35,7 @@ function Div(el)
 
       return{
         pandoc.RawBlock('latex', '\\vskip 0.5em'),
-        pandoc.RawBlock('latex', string.format('\\begin{mdframed}[linewidth=0pt,backgroundcolor=%s,skipabove=\\parskip,nobreak=true]', color_bg)),
+        pandoc.RawBlock('latex', string.format('\\begin{mdframed}[linewidth=0pt,backgroundcolor=%s,skipabove=\\parskip]', color_bg)),
         pandoc.RawBlock('latex', string.format('\\textbf{\\textit{\\textcolor{%s}{\\small\\BeginDemarcated{%s}}}}', color_hdr, label)),
         pandoc.RawBlock('latex', string.format('\\color{%s}', color_fg)),
         el,

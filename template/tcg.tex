@@ -56,6 +56,8 @@
   numbers=noenddot
 ]{scrartcl}
 
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
 \usepackage{amsmath,amssymb}
 \usepackage{mathtools}
 \usepackage{setspace}
@@ -323,7 +325,7 @@ $endif$
 % Set the heading color and ensure that every section begins on its own page.
 %
 \definecolor{heading-color}{RGB}{35,61,130}
-\addtokomafont{section}{\clearpage \color{heading-color}}
+\addtokomafont{section}{\color{heading-color}}
 
 %
 % variables for title, author and date
@@ -561,7 +563,10 @@ $endif$
   runin=false,
   afterindent=false,
   tocnumwidth=1.5em,
-  beforeskip=\baselineskip,
+  % Negative skip to position headings correctly inside mdframes (e.g., informative chapters)
+  % We put a page break before all sections so this skip doesn't really have an effect
+  % anywhere else.
+  beforeskip=0pt,
   afterskip=0em]{section}
 \RedeclareSectionCommand[
   runin=false,
