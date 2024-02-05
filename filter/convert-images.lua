@@ -6,10 +6,10 @@ end
 
 if FORMAT:match 'latex' then
     function Image (img)
-        -- Try to convert anything that is not a pdf.
+        -- Try to convert anything that is not a pdf, jpg, or png.
         -- This allows us to support file types that latex doesn't (e.g., SVG),
         -- as well as speed up the latex render iterations.
-        if not img.src or img.src:hassuffix('pdf') then
+        if not img.src or img.src:hassuffix('pdf') or img.src:hassuffix('jpg') or img.src:hassuffix('png') then
             return img
         end
         local new_filename = pandoc.sha1(img.src) .. '.temp.pdf'
