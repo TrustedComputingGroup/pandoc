@@ -475,8 +475,9 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 	if [ -n "${pdf_output}" ]; then
 		echo "Generating cross-references for PDF output"
 		start=$(date +%s)
-		# Run once to populate aux, lof, lot, toc
-		${LATEX} --no-pdf "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LATEX_LOG}"
+		# Run twice to populate aux, lof, lot, toc, then update the page numbers due
+		# to the impact of populating the lof, lot, toc.
+		${LATEX} --no-pdf "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LATEX_LOG}" && ${LATEX} --no-pdf "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LATEX_LOG}"
 		if [ "${PIPESTATUS[0]}" -ne 0 ]; then
 			FAILED=true
 			echo "PDF output failed"
