@@ -189,6 +189,12 @@ RUN tlmgr update --self && tlmgr install \
     xltabular \
     zref
 
+RUN apt install -y \
+    imagemagick
+
+# https://stackoverflow.com/questions/52998331/imagemagick-security-policy-pdf-blocking-conversion
+RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
+
 COPY ./img/* /resources/img/
 COPY ./template/* /resources/templates/
 COPY ./filter/* /resources/filters/

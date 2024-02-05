@@ -555,6 +555,19 @@ The `{#fig:add-plus-button}` attribute (note there are no spaces between the `)`
 
 Including `width=60%` here specifies that the image should take up 60% of the page's width.
 
+![An SVG Image](stack.svg){#fig:sample-svg width=50%}
+
+Even formats that are not natively supported by Pandoc are now supported, like the SVG in @fig:sample-svg.
+
+Tip: SVG can include text in any font that you choose. If you want to make sure the final PDF looks good,
+make sure to use one of the fonts in the list that can be seen from inside the docker containers:
+
+```sh
+$ docker run -it --entrypoint /bin/bash ghcr.io/trustedcomputinggroup/pandoc:latest
+
+root@25a780af4a2d:/# convert -list font | grep Font:
+```
+
 ## Mermaid Charts
 
 [Mermaid](http://mermaid.js.org) is a language for text-based diagrams for inclusion in Markdown documents.
