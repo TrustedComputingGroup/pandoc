@@ -12,7 +12,7 @@ if FORMAT:match 'latex' then
         if not img.src or img.src:hassuffix('pdf') then
             return img
         end
-        local new_filename = img.src .. '.temp.pdf'
+        local new_filename = pandoc.sha1(img.src) .. '.temp.pdf'
         if not os.execute(string.format("convert -density 300 %s %s", img.src, new_filename)) then
             print(string.format('failed to convert %s to %s, falling back to letting latex try to pick it up', img.src, new_filename))
             return img
