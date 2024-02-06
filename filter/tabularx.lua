@@ -50,9 +50,9 @@ end
 -- If 'plain' is true, we don't change the colors (but keep it bold).
 -- https://pandoc.org/lua-filters.html#type-list
 -- https://pandoc.org/lua-filters.html#type-row
+-- TODO: This code's a real spaghetti factory. Refactor it in the future.
 function TabularRows(rows, header, plain, colspecs)
     local width = Length(colspecs)
-
     local latex_code = ''
     -- Keep a 2d array of bools for which cells we know we need to skip.
     local skips = {}
@@ -67,7 +67,7 @@ function TabularRows(rows, header, plain, colspecs)
         local clines_code = ''
         if i > 1 and not plain then
             for j = 1,width do
-                if not skips[i*width + j] then
+                if not skips[(i-1)*width + j] then
                     clines_code = clines_code .. string.format("\\cline{%d-%d}", j, j)
                 end
             end
@@ -75,14 +75,35 @@ function TabularRows(rows, header, plain, colspecs)
         end
 
         -- For each cell in the row,
-        for j = 1,width do
+        local j = 1
+        while j <= width do
             -- We may need to leave this cell empty due to a previous row/colspan.
-            if skips[i*width + j] then
-                row_code[j] = ' '
+            if skips[(i-1)*width + j] then
+                -- Even more complicated: We may need to put a multicolumn here (in the event that there are multiple
+                -- skipped cells in a row).
+                local skipstart = j
+                local skipend = j
+                while skips[(i-1)*width + skipend+1] do
+                    skipend = skipend + 1
+                end
+                if skipstart == skipend then
+                    table.insert(row_code, ' ')
+                else
+                    local left_line = ''
+                    local right_line = ''
+                    if not plain then
+                        if skipstart == 1 then
+                            -- We only have to put a | on the left side of the colspec if we're the leftmost column.
+                            left_line = '|'
+                        end
+                        right_line = '|'
+                    end
+                    table.insert(row_code, string.format('\\multicolumn{%d}{%sl%s}{ }', (skipend-skipstart) + 1, left_line, right_line))
+                end
+                j = j + (skipend-skipstart) + 1
             -- Otherwise, let's write some content into the cell.
             elseif row.cells[n] then
                 local cell = row.cells[n]
-                n = n + 1
                 local cell_code = '{' .. GetCellCode(cell) .. '}'
                 if header then
                     cell_code = '{\\bfseries \\Centering ' .. cell_code .. '}'
@@ -116,19 +137,30 @@ function TabularRows(rows, header, plain, colspecs)
                         cell_code = string.format('\\multicolumn{%d}{%sp{%s}%s}{%s}', cell.col_span, left_line, total_column_width, right_line, cell_code)
                     end
                     
-                    for skipi=i,i+cell.row_span-1 do
-                        skips[skipi*width + j] = true
+                    -- Mark skips for the next rows but not the current one.
+                    -- tabularx/multirow/multicolumn want us to NOT provide empty "& &" cells after a multicolumn.
+                    -- Multirow cells DO need empty "& &" cells populated.
+                    for skipi=i+1,i+cell.row_span-1 do
+                        for skipj=j,j+cell.col_span-1 do
+                            skips[(skipi-1)*width + skipj] = true
+                        end
                     end
                 end
 
                 -- Store this cell's code for concatenation below.
-                row_code[j] = cell_code
+                table.insert(row_code, cell_code)
+                -- Increment j by the colspan of the current cell.
+                j = j + cell.col_span
+                n = n + 1
+            else
+                -- Not skipping this cell, but we have no more data. That means we're done with this row.
+                break
             end
         end
         -- The entire row is all the cells joined by '&' with a '\\' at the end.
         latex_code = latex_code .. clines_code .. table.concat(row_code, ' & ') .. ' \\\\\n'
-
     end
+
     -- Add one last hline (if not plain).
     if not plain then
         latex_code = latex_code .. ' \\hline'

@@ -1614,6 +1614,65 @@ Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
 </tbody>
 </table>
 
+
+<table id="tbl:colspan-rowspan">
+<caption>Header with Colspans and Rowspans
+</caption>
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 6%" />
+<col style="width: 6%" />
+<col style="width: 82%" />
+</colgroup>
+<thead>
+<tr>
+<th colspan="3">Bit</th>
+<th rowspan="2">Definition</th>
+</tr>
+<tr>
+<th>08</th>
+<th>07</th>
+<th>06</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>x</td>
+<td>Something</td>
+</tr>
+</tbody>
+</table>
+
+<table id="tbl:colrowspan">
+<caption>Header with Col-and-Row spans Cell
+</caption>
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 6%" />
+<col style="width: 6%" />
+<col style="width: 82%" />
+</colgroup>
+<thead>
+<tr>
+<th colspan="3" rowspan="2">Bit</th>
+<th>Definition</th>
+</tr>
+<tr>
+<th>The definition.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>x</td>
+<td>Something else</td>
+</tr>
+</tbody>
+</table>
+
 Verify that the table cross-references still work:
 
 * @tbl:bullets-grid
@@ -1624,3 +1683,5 @@ Verify that the table cross-references still work:
 * @tbl:no-caption-but-label-grid
 * @tbl:long-table
 * @tbl:underscores-html
+* @tbl:colspan-rowspan
+* @tbl:colrowspan
