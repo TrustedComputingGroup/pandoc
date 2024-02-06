@@ -148,7 +148,7 @@ jobs:
             *.lot
             *.toc
           key: latex-${{ github.run_id }}
-          restore-keys: latex-
+          restore-keys: latex
 
       - name: Render
         uses: trustedcomputinggroup/markdown@v0.4.2
