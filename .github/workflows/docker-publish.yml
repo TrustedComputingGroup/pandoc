@@ -115,6 +115,19 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
+      - name: Cache LaTeX files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-latex-files
+        with:
+          path: |
+            *.aux
+            *.fdb_latexmk
+            *.lof
+            *.lot
+            *.toc
+          key: latex
+
       - name: Render for release
         uses: trustedcomputinggroup/markdown@latest
         with:
