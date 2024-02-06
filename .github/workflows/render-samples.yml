@@ -68,7 +68,8 @@ jobs:
             *.lof
             *.lot
             *.toc
-          key: latex
+          key: latex-${{ github.run_id }}
+          restore-keys: latex
 
       - name: Run the action on guide
         uses: trustedcomputinggroup/markdown@latest
