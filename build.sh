@@ -382,12 +382,10 @@ retry () {
 	return 1
 }
 
-TEMP_FILE_PREFIX="${input_file}.temp"
-TEMP_TEX_FILE="${build_dir}/${TEMP_FILE_PREFIX}.tex"
-# LaTeX engines choose this filename based on TEMP_TEX_FILE's input name. It also emits a bunch of other files.
-TEMP_PDF_FILE="${build_dir}/${TEMP_FILE_PREFIX}.pdf"
+TEMP_TEX_FILE="${build_dir}/${input_file}.tex"
+# LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
+TEMP_PDF_FILE="${input_file}.pdf"
 
-LATEX=xelatex
 LATEX_LOG="${build_dir}/latex.log"
 
 # Get the time in Unix epoch milliseconds of the given line
@@ -448,9 +446,22 @@ time_between() {
 analyze_latex_logs() {
 	local LOGFILE=$1
 
-	echo "Time to fancyhdr warning: $(time_between "${LOGFILE}" "TeX Live" "with a KOMA-Script class is not recommended.")"
-	echo "Time to done: $(time_between "${LOGFILE}" "with a KOMA-Script class is not recommended." "Output written on ")"
+	local RUNCOUNT=$(grep "Run number " "${LOGFILE}" | tail -n 1 | cut -d ' ' -f 4)
+	local PASSES="passes"
+	if [ "${RUNCOUNT}" -eq "1" ]; then
+		PASSES="pass"
+	fi
+	echo "Completed PDF rendering after ${RUNCOUNT} ${PASSES}."
 
+	# Print any warnings from only the last run.
+	local WARNINGS=$(sed -n "/Run number ${RUNCOUNT}/,$ p" "${LOGFILE}" | grep "LaTeX Warning: ")
+	if [ ! -z "${WARNINGS}" ]; then
+		echo "LaTeX warnings (may be ignorable - check the output!):"
+		echo "${WARNINGS}" | while read LINE; do
+			local CUT_LINE=$(echo "${LINE}" | cut -d ' ' -f2-)
+			echo "  ${CUT_LINE}"
+		done
+	fi
 }
 
 # For LaTeX and PDF output, we use Pandoc to compile to an intermediate .tex file
@@ -506,33 +517,22 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 	fi
 
 	if [ -n "${pdf_output}" ]; then
-		echo "Generating cross-references for PDF output"
+		echo "Rendering PDF"
 		start=$(date +%s)
 		# Run twice to populate aux, lof, lot, toc, then update the page numbers due
 		# to the impact of populating the lof, lot, toc.
-		${LATEX} --no-pdf "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LATEX_LOG}" && ${LATEX} --no-pdf "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LATEX_LOG}"
-		if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+		latexmk "${TEMP_TEX_FILE}" -pdflatex=xelatex -pdf -diagnostics | ts '[%.s]' > "${LATEX_LOG}"
+		if [ $? -ne 0 ]; then
 			FAILED=true
 			echo "PDF output failed"
-		else
-			end=$(date +%s)
-			echo "Elapsed time: $(($end-$start)) seconds"
-			# Write any LaTeX errors to stderr.
-			>&2 grep -A 5 "] ! " "${LATEX_LOG}"
-
-			# Run a second time to render the actual PDF.
-			echo "Rendering PDF"
-			start=$(date +%s)
-			${LATEX} "${TEMP_TEX_FILE}" | ts '[%.s]' > "${LATEX_LOG}"
-			if [ "${PIPESTATUS[0]}" -ne 0 ]; then
-				FAILED=true
-				echo "PDF output failed"
-			fi
 		fi
 		end=$(date +%s)
+		# Write any LaTeX errors to stderr.
+		>&2 grep -A 5 "] ! " "${LATEX_LOG}"
 
-		# Clean up after LuaLaTeX and copy out just the files we need.
-		mv "${TEMP_FILE_PREFIX}"* "${build_dir}"
+		# Clean up after latexmk. Deliberately leave behind aux, lof, lot, and toc to speed up future runs.
+		rm -f *.fls
+		rm -f *.log
 		if [ -n "${pdflog_output}" ]; then
 			cp "${LATEX_LOG}" "${pdflog_output}"
 		fi
@@ -540,12 +540,10 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		# Write any LaTeX errors to stderr.
 		>&2 grep -A 5 "] ! " "${LATEX_LOG}"
 		if [[ ! "${FAILED}" = "true" ]]; then
-			cp "${TEMP_PDF_FILE}" "${pdf_output}"
+			mv "${TEMP_PDF_FILE}" "${pdf_output}"
 			analyze_latex_logs "${LATEX_LOG}"
-			echo "LaTeX warnings (may be ignorable - check the output!)"
-			# Include any other warnings.
-			grep "LaTeX Warning: " "${LATEX_LOG}"
 		fi
+		rm -f "${LATEX_LOG}"
 	fi	
 fi
 

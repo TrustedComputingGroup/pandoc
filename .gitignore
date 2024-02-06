@@ -1,3 +1,8 @@
-guide.pdf
-guide.tex
-guide.log
+*.pdf
+*.tex
+*.log
+*.aux
+*.lof
+*.lot
+*.toc
+*.fdb_latexmk
