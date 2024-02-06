@@ -120,7 +120,12 @@ jobs:
         env:
           cache-name: cache-latex-files
         with:
-          path: *.aux *.fdb_latexmk *.lof *.lot *.toc
+          path: |
+            *.aux
+            *.fdb_latexmk
+            *.lof
+            *.lot
+            *.toc
           key: latex
 
       - name: Render for release

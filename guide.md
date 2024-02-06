@@ -109,7 +109,7 @@ a particular version of the tools and periodically update the tools as needed.
 
 A typical GitHub Markdown repo will:
 
-* Render the spec to PDF and Word on pull requests and attach them to the PR.
+* Render the spec to PDF on pull requests and attach the PDF to the PR.
 * Render the spec to PDF and Word on releases and attach them to the release.
 * Cache the LaTex intermediate files to the GitHub actions cache. This allows
   small changes to the doc to render faster.
@@ -127,8 +127,8 @@ jobs:
   render:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/trustedcomputinggroup/pandoc:0.8.2
-    name: Render PDF
+      image: ghcr.io/trustedcomputinggroup/pandoc:0.9.10
+    name: Render PDF and Word
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -141,7 +141,12 @@ jobs:
         env:
           cache-name: cache-latex-files
         with:
-          path: *.aux *.fdb_latexmk *.lof *.lot *.toc
+          path: |
+            *.aux
+            *.fdb_latexmk
+            *.lof
+            *.lot
+            *.toc
           key: latex
 
       - name: Render
@@ -157,13 +162,6 @@ jobs:
         with:
           name: spec.pdf
           path: spec.pdf
-
-      - name: Upload Word to PR
-        uses: actions/upload-artifact@master
-        if: ${{ github.event_name == 'pull_request' }}
-        with:
-          name: spec.docx
-          path: spec.docx
 
       - name: Upload PDF and docx to release
         uses: svenstaro/upload-release-action@v2
