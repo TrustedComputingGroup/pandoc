@@ -17,9 +17,6 @@ function NormalizeColumns(colspecs)
     for i, colspec in ipairs(colspecs) do
         colspecs[i][2] = (colspec[2] or 1.0) / total_width
     end
-    for i , colspec in ipairs(colspecs) do
-        print(string.format("%d: %s (%f)", i, colspec[1], colspec[2]))
-    end
     return colspecs
 end
 
