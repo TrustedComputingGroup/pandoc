@@ -46,13 +46,15 @@ end
 
 -- This function iterates a List of Rows and creates the code for each row.
 -- The 'width' parameter is a necessary hint due to potential column-spanning.
--- If 'header' is true, we style every element in bold white on dark gray.
+-- If 'header' is true, we style every element in bold.
+-- If 'no_first_hline' is true, we omit the first hline (if applicable).
 -- If 'plain' is true, we don't change the colors (but keep it bold).
 -- https://pandoc.org/lua-filters.html#type-list
 -- https://pandoc.org/lua-filters.html#type-row
 -- TODO: This code's a real spaghetti factory. Refactor it in the future.
-function TabularRows(rows, header, plain, colspecs)
+function TabularRows(rows, header, no_first_hline, plain, colspecs)
     local width = Length(colspecs)
+    local height = Length(rows)
     local latex_code = ''
     -- Keep a 2d array of bools for which cells we know we need to skip.
     local skips = {}
@@ -65,13 +67,27 @@ function TabularRows(rows, header, plain, colspecs)
 
         -- Draw horizontal rules using cline, for each non-skipped cell (so we don't draw a line through a rowspan cell).
         local clines_code = ''
-        if i > 1 and not plain then
+        local any_skips = false
+        if not plain and (i > 1 or not no_first_hline) then
             for j = 1,width do
-                if not skips[(i-1)*width + j] then
+                if skips[(i-1)*width + j] then
+                    any_skips = true
+                else
                     clines_code = clines_code .. string.format("\\cline{%d-%d}", j, j)
                 end
             end
-            clines_code = clines_code .. '\n'
+            -- Simplify a whole row of clines as just an hline.
+            -- In addition to making the LaTeX code prettier, this serves an
+            -- important purpose. clines can be separated from their row
+            -- (in the case of a page break) while hlines are kept with with
+            -- their row.
+            -- Since xltabular avoids breaking rowspans across pages,
+            -- we completely avoid problems like 
+            -- https://github.com/TrustedComputingGroup/pandoc/issues/115
+            -- by doing this.
+            if not any_skips then
+                clines_code = "\\hline"
+            end
         end
 
         -- For each cell in the row,
@@ -106,7 +122,7 @@ function TabularRows(rows, header, plain, colspecs)
                 local cell = row.cells[n]
                 local cell_code = '{' .. GetCellCode(cell) .. '}'
                 if header then
-                    cell_code = '{\\bfseries \\Centering ' .. cell_code .. '}'
+                    cell_code = '{\\bfseries ' .. cell_code .. '}'
                 end
 
                 -- If this sell spans columns, we have to use multicolumn.
@@ -158,13 +174,9 @@ function TabularRows(rows, header, plain, colspecs)
             end
         end
         -- The entire row is all the cells joined by '&' with a '\\' at the end.
-        latex_code = latex_code .. clines_code .. table.concat(row_code, ' & ') .. ' \\\\\n'
+        latex_code = latex_code .. clines_code .. ' ' .. table.concat(row_code, ' & ') .. ' \\\\\n'
     end
 
-    -- Add one last hline (if not plain).
-    if not plain then
-        latex_code = latex_code .. ' \\hline'
-    end
     latex_code = latex_code .. '\n'
     return latex_code
 end
@@ -252,23 +264,18 @@ function Table(tbl)
 
         latex_code = latex_code .. '\\\\\n'
 
-        if Length(tbl.head.rows) > 0 and not plain then
-            latex_code = latex_code .. '\\hline\n'
+        if Length(tbl.head.rows) > 0 then
+            latex_code = latex_code .. TabularRows(tbl.head.rows, true, false, plain, tbl.colspecs)
         end
-
-        latex_code = latex_code .. TabularRows(tbl.head.rows, true, plain, tbl.colspecs)
         latex_code = latex_code .. '\\endfirsthead\n'
 
         --
         -- Create the not-first header. This is the same as the first header, except there's no caption.
         --
 
-        if not plain then
-            latex_code = latex_code .. '\\hline\n'
-        end
         -- Write out all the header rows.
         if Length(tbl.head.rows) > 0 then
-            latex_code = latex_code .. TabularRows(tbl.head.rows, true, plain, tbl.colspecs)
+            latex_code = latex_code .. TabularRows(tbl.head.rows, true, false, plain, tbl.colspecs)
         end
         -- There's always a header, even if there are no header rows. This avoids
         -- edge cases where a continued table loses its leading hline.
@@ -280,11 +287,26 @@ function Table(tbl)
 
         -- Write out all the footer rows.
         if Length(tbl.foot.rows) > 0 then
-            latex_code = latex_code .. TabularRows(tbl.foot.rows, true, plain, tbl.colspecs)
+            latex_code = latex_code .. TabularRows(tbl.foot.rows, true, true, plain, tbl.colspecs)
+            if not plain then
+                latex_code = latex_code .. '\\hline\n'
+            end
         end
+
         -- There's always a footer, even if there are no footer rows. This avoids
         -- edge cases where the bottom row on the not-last page of a table loses track of its trailing hline.
         latex_code = latex_code .. '\\endfoot\n'
+
+        -- Write out all the footer rows again for the last footer.
+        if Length(tbl.foot.rows) > 0 then
+            latex_code = latex_code .. TabularRows(tbl.foot.rows, true, false, plain, tbl.colspecs)
+        end
+        if not plain then
+            latex_code = latex_code .. '\\hline\n'
+        end
+        -- There's always a footer, even if there are no footer rows. This avoids
+        -- edge cases where the bottom row on the not-last page of a table loses track of its trailing hline.
+        latex_code = latex_code .. '\\endlastfoot\n'
 
         --
         -- Body
@@ -293,7 +315,7 @@ function Table(tbl)
         -- Write out all the body rows.
         -- Typical tables have just one body.
         for i, body in ipairs(tbl.bodies) do
-            latex_code = latex_code .. TabularRows(body.body, false, plain, tbl.colspecs)
+            latex_code = latex_code .. TabularRows(body.body, false, false, plain, tbl.colspecs)
         end
 
         --
