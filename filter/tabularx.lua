@@ -9,15 +9,25 @@ function Length(element)
     return n
 end
 
+function NormalizeColumns(colspecs)
+    local total_width = 0
+    for i, colspec in ipairs(colspecs) do
+        total_width = total_width + (colspec[2] or 1.0)
+    end
+    for i, colspec in ipairs(colspecs) do
+        colspecs[i][2] = (colspec[2] or 1.0) / total_width
+    end
+    for i , colspec in ipairs(colspecs) do
+        print(string.format("%d: %s (%f)", i, colspec[1], colspec[2]))
+    end
+    return colspecs
+end
+
 -- The adjustment value for any column width to account for column separators.
 local ColumnAdjustmentValue = '-2\\tabcolsep-\\arrayrulewidth'
 
-function ColumnWidth(colspec, numcols)
-    local width = 1.0/numcols
-    if colspec[2] then
-        width = colspec[2]
-    end
-    return string.format('%f\\linewidth', width)
+function ColumnWidth(colspec)
+    return string.format('%f\\linewidth', colspec[2])
 end
 
 -- This function converts a Pandoc ColSpec object into a colspec for the xltabular environment.
@@ -30,7 +40,7 @@ function TabularColspec(colspec, plain, numcols)
         ['AlignRight'] = '>{\\RaggedLeft}',
     }
 
-    local result = string.format('%sp{%s%s}', column_pre[colspec[1]], ColumnWidth(colspec, numcols), ColumnAdjustmentValue)
+    local result = string.format('%sp{%s%s}', column_pre[colspec[1]], ColumnWidth(colspec), ColumnAdjustmentValue)
     if not plain then
         result = '|' .. result
     end
@@ -145,9 +155,9 @@ function TabularRows(rows, header, no_first_hline, plain, colspecs)
                     if cell.col_span > 1 then
                         -- Get the total width of all the columns we're spanning.
                         -- This allows us to place block elements inside multicolumn cells.
-                        local total_column_width = ColumnWidth(colspecs[j], Length(colspecs))
+                        local total_column_width = ColumnWidth(colspecs[j])
                         for z = j+1,j+cell.col_span-1 do
-                            total_column_width = total_column_width .. '+' .. ColumnWidth(colspecs[z], Length(colspecs))
+                            total_column_width = total_column_width .. '+' .. ColumnWidth(colspecs[z])
                         end
                         total_column_width = total_column_width .. ColumnAdjustmentValue
                         cell_code = string.format('\\multicolumn{%d}{%sp{%s}%s}{%s}', cell.col_span, left_line, total_column_width, right_line, cell_code)
@@ -186,6 +196,7 @@ end
 -- which gives us the option to draw the full grid of the table.
 function Table(tbl)
     if FORMAT =='latex' then
+        tbl.colspecs = NormalizeColumns(tbl.colspecs)
         local latex_code = ''
 
         local plain = false
