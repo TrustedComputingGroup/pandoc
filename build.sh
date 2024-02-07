@@ -384,7 +384,7 @@ retry () {
 
 TEMP_TEX_FILE="${build_dir}/${input_file}.tex"
 # LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
-TEMP_PDF_FILE="${input_file}.pdf"
+TEMP_PDF_FILE="$(basename ${input_file}).pdf"
 
 LATEX_LOG="${build_dir}/latex.log"
 
