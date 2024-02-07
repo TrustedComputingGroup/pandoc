@@ -63,9 +63,9 @@ comment_, it can be considered a _normative statement_.
 
 EXAMPLE:
 
-::: Informative :::
+::: Informative ::::
 Reach out to <admin@trustedcomputinggroup> with any questions about this document.
-:::::::::::::::::::
+::::::::::::::::::::
 
 \tableofcontents
 
@@ -101,11 +101,11 @@ Even if you used the template repository, please double-check this. As the tools
 are being actively developed, there is probably a newer version of the tools
 available for you!
 
-:::::::::::::::::::::::::::::::::::: Note :::::::::::::::::::::::::::::::::::::
+::: Note :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 Use `ghcr.io/trustedcomputinggroup/pandoc:latest` at your own risk. As the tools
 may change defaults from version to version, it is better to pin your doc to
 a particular version of the tools and periodically update the tools as needed.
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 A typical GitHub Markdown repo will:
 
@@ -354,11 +354,11 @@ If you have GitHub Actions for rendering the spec for releases (see
 5.  A few minutes later, the PDF and DOCX of the spec will appear on the page
     for that release (you can monitor this on the "Actions" page).
 
-:::::::::::::::::::::::::::::::::::: Note :::::::::::::::::::::::::::::::::::::
+::: Note :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 When balloting or sending a document to the TC for review, please create a docx
 diff from Microsoft Word, comparing the docx outputs attached between releases
 with Word's "Compare Versions" tool.
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 # Using Markdown
 
@@ -482,7 +482,7 @@ TCG uses a special visual style to demarcate informative non-binding remarks wit
 To create an informative note, use the following syntax:
 
 ```md
-::::::::::::::::::::::::::::::::: Informative :::::::::::::::::::::::::::::::::
+::: Informative ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 This is the only informative text block in this document.
 
 These blocks can contain multiple paragraphs.
@@ -495,12 +495,12 @@ too large in an Informative Text block.
 | SPECIFICATION     | Usually                |
 | GUIDANCE          | Rarely                 |
 | REFERENCE         | Rarely                 |
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ```
 
 The above Markdown code becomes:
 
-::::::::::::::::::::::::::::::::: Informative :::::::::::::::::::::::::::::::::
+::: Informative ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 This is the only informative text block in this document.
 
 These blocks can contain multiple paragraphs, bulleted lists, etc.
@@ -512,11 +512,12 @@ These blocks can even contain tables!
 | SPECIFICATION     | Usually                |
 | GUIDANCE          | Rarely                 |
 | REFERENCE         | Rarely                 |
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-Strictly speaking, three colons (`:::`) are the minimum required for marking
-an informative text block. However, it may make the plaintext version of the
-doc easier to read.
+Strictly speaking, only the three colons and the type (e.g., `::: Informative `)
+are the minimum required for marking an informative text block. However, it may
+make the plaintext version of the doc easier to read to fill the line with
+colons.
 
 ### Other Informative Blocks
 
@@ -524,13 +525,13 @@ Writers of a document may prefer "informative" blocks with more specific
 semantics. In this case, the text is still contained within a "TCG Informative"
 gray box, but with a more meaningful header.
 
-:::::::::::::::::::::::::::::::::::: Note :::::::::::::::::::::::::::::::::::::
+::: Note :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 This is a "Note" block.
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-:::::::::::::::::::::::::::::::::: Example ::::::::::::::::::::::::::::::::::::
+::: Example ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 This is an "Example" block.
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 The behavior of blocks with labels not specified above may change meaningfully in future versions of this toolkit, so use them at your own risk.
 
@@ -1004,10 +1005,10 @@ documents in Markdown:
     of a "Final" styled document. Note that according to the rules of semver, 1.23.5 is higher
     than 1.23.5-rc.1.
 
-:::::::::::::::::::::::::::::::::::: Note :::::::::::::::::::::::::::::::::::::
+::: Note :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 If the spec is not rendered as part of a release, it will always be
 a draft, of some revision on top of the latest released version.
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ### Suppressing Git Version Parsing
 

@@ -291,22 +291,15 @@ function Table(tbl)
             if not plain then
                 latex_code = latex_code .. '\\hline\n'
             end
-        end
+            latex_code = latex_code .. '\\endfoot\n'
 
-        -- There's always a footer, even if there are no footer rows. This avoids
-        -- edge cases where the bottom row on the not-last page of a table loses track of its trailing hline.
-        latex_code = latex_code .. '\\endfoot\n'
-
-        -- Write out all the footer rows again for the last footer.
-        if Length(tbl.foot.rows) > 0 then
-            latex_code = latex_code .. TabularRows(tbl.foot.rows, true, false, plain, tbl.colspecs)
+            -- Write out all the footer rows again for the last footer.
+            latex_code = latex_code .. TabularRows(tbl.foot.rows, true, true, plain, tbl.colspecs)
+            if not plain then
+                latex_code = latex_code .. '\\hline\n'
+            end
+            latex_code = latex_code .. '\\endlastfoot\n'
         end
-        if not plain then
-            latex_code = latex_code .. '\\hline\n'
-        end
-        -- There's always a footer, even if there are no footer rows. This avoids
-        -- edge cases where the bottom row on the not-last page of a table loses track of its trailing hline.
-        latex_code = latex_code .. '\\endlastfoot\n'
 
         --
         -- Body
@@ -316,6 +309,10 @@ function Table(tbl)
         -- Typical tables have just one body.
         for i, body in ipairs(tbl.bodies) do
             latex_code = latex_code .. TabularRows(body.body, false, false, plain, tbl.colspecs)
+        end
+
+        if not plain then
+            latex_code = latex_code .. '\\hline\n'
         end
 
         --
