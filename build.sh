@@ -352,7 +352,7 @@ echo "Date (English): ${DATE_ENGLISH}"
 # * DISABLING 'markdown_in_html_blocks' which breaks the ability to embed tables in HTML form.
 FROM="markdown+gfm_auto_identifiers+fenced_divs+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks"
 
-export MERMAID_FILTER_THEME="forest"
+cp /resources/filters/mermaid-config.json .mermaid-config.json
 export MERMAID_FILTER_FORMAT="pdf"
 export MERMAID_FILTER_BACKGROUND="transparent"
 
@@ -649,7 +649,7 @@ fi
 
 # on success remove this output
 rm -f core
-rm -f mermaid-filter.err
+rm -f mermaid-filter.err .mermaid-config.json
 rm -f .puppeteer.json
 rm -f "${build_dir}/${input_file}.bak"
 rm -f *.temp.pdf
