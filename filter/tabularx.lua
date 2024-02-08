@@ -65,6 +65,7 @@ function TabularRows(rows, header, no_first_hline, plain, colspecs)
     local latex_code = ''
     -- Keep a 2d array of bools for which cells we know we need to skip.
     local skips = {}
+    local rows_with_rowspans = {}
 
     -- For each row in the list of rows,
     for i, row in ipairs(rows) do
@@ -138,6 +139,9 @@ function TabularRows(rows, header, no_first_hline, plain, colspecs)
                 -- the cells that get covered up empty.
                 if cell.row_span > 1 or cell.col_span > 1 then
                     if cell.row_span > 1 then
+                        for skipi=i,i+cell.row_span-1 do
+                            rows_with_rowspans[skipi] = true
+                        end
                         cell_code = string.format('\\multirow{%d}{=}{%s}', cell.row_span, cell_code)
                     end
                     local left_line = ''
@@ -180,8 +184,17 @@ function TabularRows(rows, header, no_first_hline, plain, colspecs)
                 break
             end
         end
+
+        local linebreak = '\\\\'
+        if header or i == height or rows_with_rowspans[i] then
+            -- Use the \\* break which keeps rows together even when there's a page break.
+            -- Use this on header/footer lines, the last row in the body, and on
+            -- any rows where there was a rowspan.
+            linebreak = linebreak .. '*'
+        end
+
         -- The entire row is all the cells joined by '&' with a '\\' at the end.
-        latex_code = latex_code .. clines_code .. ' ' .. table.concat(row_code, ' & ') .. ' \\\\\n'
+        latex_code = latex_code .. clines_code .. ' ' .. table.concat(row_code, ' & ') .. string.format(' %s\n', linebreak)
     end
 
     latex_code = latex_code .. '\n'
@@ -278,10 +291,12 @@ function Table(tbl)
         latex_code = latex_code .. '\\endfirsthead\n'
 
         --
-        -- Create the not-first header. This is the same as the first header, except there's no caption.
+        -- Create the not-first header. This is the same as the first header, except there's no caption
+        -- and there's a continuation note instead.
         --
 
         -- Write out all the header rows.
+        latex_code = latex_code .. string.format('\\multicolumn{%s}{c}\n{\\Centering\\textit{\\textcolor{gray}{\\Centering %s (continued from previous page)}}}\\\\\n', Length(tbl.colspecs), escaped_caption)
         if Length(tbl.head.rows) > 0 then
             latex_code = latex_code .. TabularRows(tbl.head.rows, true, false, plain, tbl.colspecs)
         end
@@ -299,8 +314,9 @@ function Table(tbl)
             if not plain then
                 latex_code = latex_code .. '\\hline\n'
             end
-            latex_code = latex_code .. '\\endfoot\n'
         end
+        latex_code = latex_code .. string.format('\\multicolumn{%s}{c}\n{\\Centering\\textit{\\textcolor{gray}{\\Centering(continued on next page)}}}\\\\\n', Length(tbl.colspecs))
+        latex_code = latex_code .. '\\endfoot\n'
 
         -- Write out all the footer rows again for the last footer.
         latex_code = latex_code .. TabularRows(tbl.foot.rows, true, false, plain, tbl.colspecs)
