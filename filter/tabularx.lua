@@ -51,16 +51,143 @@ function GetCellCode(cell)
     return cell_code
 end
 
+-- TODO: This code's a real spaghetti factory. Refactor it in the future.
+function TabularRow(height, colspecs, skips, rows_with_rowspans, row, i, plain, no_first_hline, header)
+    local width = Length(colspecs)
+    local n = 1
+    -- Prepare a list of latex snippets to be concatenated together below.
+    local row_code = {}
+
+    -- Draw horizontal rules using cline, for each non-skipped cell (so we don't draw a line through a rowspan cell).
+    local clines_code = ''
+    local any_skips = false
+    if not plain and (i > 1 or not no_first_hline) then
+        for j = 1,width do
+            if skips[(i-1)*width + j] then
+                any_skips = true
+            else
+                clines_code = clines_code .. string.format("\\cline{%d-%d}", j, j)
+            end
+        end
+        -- Simplify a whole row of clines as just an hline.
+        -- In addition to making the LaTeX code prettier, this serves an
+        -- important purpose. clines can be separated from their row
+        -- (in the case of a page break) while hlines are kept with with
+        -- their row.
+        -- Since xltabular avoids breaking rowspans across pages,
+        -- we completely avoid problems like 
+        -- https://github.com/TrustedComputingGroup/pandoc/issues/115
+        -- by doing this.
+        if not any_skips then
+            clines_code = "\\hline"
+        end
+    end
+
+    -- For each cell in the row,
+    local j = 1
+    while j <= width do
+        -- We may need to leave this cell empty due to a previous row/colspan.
+        if skips[(i-1)*width + j] then
+            -- Even more complicated: We may need to put a multicolumn here (in the event that there are multiple
+            -- skipped cells in a row).
+            local skipstart = j
+            local skipend = j
+            while skips[(i-1)*width + skipend+1] do
+                skipend = skipend + 1
+            end
+            if skipstart == skipend then
+                table.insert(row_code, ' ')
+            else
+                local left_line = ''
+                local right_line = ''
+                if not plain then
+                    if skipstart == 1 then
+                        -- We only have to put a | on the left side of the colspec if we're the leftmost column.
+                        left_line = '|'
+                    end
+                    right_line = '|'
+                end
+                table.insert(row_code, string.format('\\multicolumn{%d}{%sl%s}{ }', (skipend-skipstart) + 1, left_line, right_line))
+            end
+            j = j + (skipend-skipstart) + 1
+        -- Otherwise, let's write some content into the cell.
+        elseif row.cells[n] then
+            local cell = row.cells[n]
+            local cell_code = '{' .. GetCellCode(cell) .. '}'
+            if header then
+                cell_code = '{\\bfseries ' .. cell_code .. '}'
+            end
+
+            -- If this sell spans columns, we have to use multicolumn.
+            -- If this cell spans rows, we have to use multirow.
+            -- We also need to tell ourselves about it, because we have to write blanks for all
+            -- the cells that get covered up empty.
+            if cell.row_span > 1 or cell.col_span > 1 then
+                if cell.row_span > 1 then
+                    for skipi=i,i+cell.row_span-1 do
+                        rows_with_rowspans[skipi] = true
+                    end
+                    cell_code = string.format('\\multirow{%d}{=}{%s}', cell.row_span, cell_code)
+                end
+                local left_line = ''
+                local right_line = ''
+                if not plain then
+                    if j == 1 then
+                        -- We only have to put a | on the left side of the colspec if we're the leftmost column.
+                        left_line = '|'
+                    end
+                    right_line = '|'
+                end
+                if cell.col_span > 1 then
+                    -- Get the total width of all the columns we're spanning.
+                    -- This allows us to place block elements inside multicolumn cells.
+                    local total_column_width = ColumnWidth(colspecs[j])
+                    for z = j+1,j+cell.col_span-1 do
+                        total_column_width = total_column_width .. '+' .. ColumnWidth(colspecs[z])
+                    end
+                    total_column_width = total_column_width .. ColumnAdjustmentValue
+                    cell_code = string.format('\\multicolumn{%d}{%sp{%s}%s}{%s}', cell.col_span, left_line, total_column_width, right_line, cell_code)
+                end
+                
+                -- Mark skips for the next rows but not the current one.
+                -- tabularx/multirow/multicolumn want us to NOT provide empty "& &" cells after a multicolumn.
+                -- Multirow cells DO need empty "& &" cells populated.
+                for skipi=i+1,i+cell.row_span-1 do
+                    for skipj=j,j+cell.col_span-1 do
+                        skips[(skipi-1)*width + skipj] = true
+                    end
+                end
+            end
+
+            -- Store this cell's code for concatenation below.
+            table.insert(row_code, cell_code)
+            -- Increment j by the colspan of the current cell.
+            j = j + cell.col_span
+            n = n + 1
+        else
+            -- Not skipping this cell, but we have no more data. That means we're done with this row.
+            break
+        end
+    end
+
+    local linebreak = '\\\\'
+    if header or i == height or rows_with_rowspans[i] then
+        -- Use the \\* break which keeps rows together even when there's a page break.
+        -- Use this on header/footer lines, the last row in the body, and on
+        -- any rows where there was a rowspan.
+        linebreak = linebreak .. '*'
+    end
+
+    return clines_code .. ' ' .. table.concat(row_code, ' & ') .. string.format(' %s\n', linebreak)
+end
+
 -- This function iterates a List of Rows and creates the code for each row.
--- The 'width' parameter is a necessary hint due to potential column-spanning.
 -- If 'header' is true, we style every element in bold.
 -- If 'no_first_hline' is true, we omit the first hline (if applicable).
 -- If 'plain' is true, we don't change the colors (but keep it bold).
 -- https://pandoc.org/lua-filters.html#type-list
 -- https://pandoc.org/lua-filters.html#type-row
--- TODO: This code's a real spaghetti factory. Refactor it in the future.
 function TabularRows(rows, header, no_first_hline, plain, colspecs)
-    local width = Length(colspecs)
     local height = Length(rows)
     local latex_code = ''
     -- Keep a 2d array of bools for which cells we know we need to skip.
@@ -69,132 +196,10 @@ function TabularRows(rows, header, no_first_hline, plain, colspecs)
 
     -- For each row in the list of rows,
     for i, row in ipairs(rows) do
-        local n = 1
-        -- Prepare a list of latex snippets to be concatenated together below.
-        local row_code = {}
-
-        -- Draw horizontal rules using cline, for each non-skipped cell (so we don't draw a line through a rowspan cell).
-        local clines_code = ''
-        local any_skips = false
-        if not plain and (i > 1 or not no_first_hline) then
-            for j = 1,width do
-                if skips[(i-1)*width + j] then
-                    any_skips = true
-                else
-                    clines_code = clines_code .. string.format("\\cline{%d-%d}", j, j)
-                end
-            end
-            -- Simplify a whole row of clines as just an hline.
-            -- In addition to making the LaTeX code prettier, this serves an
-            -- important purpose. clines can be separated from their row
-            -- (in the case of a page break) while hlines are kept with with
-            -- their row.
-            -- Since xltabular avoids breaking rowspans across pages,
-            -- we completely avoid problems like 
-            -- https://github.com/TrustedComputingGroup/pandoc/issues/115
-            -- by doing this.
-            if not any_skips then
-                clines_code = "\\hline"
-            end
-        end
-
-        -- For each cell in the row,
-        local j = 1
-        while j <= width do
-            -- We may need to leave this cell empty due to a previous row/colspan.
-            if skips[(i-1)*width + j] then
-                -- Even more complicated: We may need to put a multicolumn here (in the event that there are multiple
-                -- skipped cells in a row).
-                local skipstart = j
-                local skipend = j
-                while skips[(i-1)*width + skipend+1] do
-                    skipend = skipend + 1
-                end
-                if skipstart == skipend then
-                    table.insert(row_code, ' ')
-                else
-                    local left_line = ''
-                    local right_line = ''
-                    if not plain then
-                        if skipstart == 1 then
-                            -- We only have to put a | on the left side of the colspec if we're the leftmost column.
-                            left_line = '|'
-                        end
-                        right_line = '|'
-                    end
-                    table.insert(row_code, string.format('\\multicolumn{%d}{%sl%s}{ }', (skipend-skipstart) + 1, left_line, right_line))
-                end
-                j = j + (skipend-skipstart) + 1
-            -- Otherwise, let's write some content into the cell.
-            elseif row.cells[n] then
-                local cell = row.cells[n]
-                local cell_code = '{' .. GetCellCode(cell) .. '}'
-                if header then
-                    cell_code = '{\\bfseries ' .. cell_code .. '}'
-                end
-
-                -- If this sell spans columns, we have to use multicolumn.
-                -- If this cell spans rows, we have to use multirow.
-                -- We also need to tell ourselves about it, because we have to write blanks for all
-                -- the cells that get covered up empty.
-                if cell.row_span > 1 or cell.col_span > 1 then
-                    if cell.row_span > 1 then
-                        for skipi=i,i+cell.row_span-1 do
-                            rows_with_rowspans[skipi] = true
-                        end
-                        cell_code = string.format('\\multirow{%d}{=}{%s}', cell.row_span, cell_code)
-                    end
-                    local left_line = ''
-                    local right_line = ''
-                    if not plain then
-                        if j == 1 then
-                            -- We only have to put a | on the left side of the colspec if we're the leftmost column.
-                            left_line = '|'
-                        end
-                        right_line = '|'
-                    end
-                    if cell.col_span > 1 then
-                        -- Get the total width of all the columns we're spanning.
-                        -- This allows us to place block elements inside multicolumn cells.
-                        local total_column_width = ColumnWidth(colspecs[j])
-                        for z = j+1,j+cell.col_span-1 do
-                            total_column_width = total_column_width .. '+' .. ColumnWidth(colspecs[z])
-                        end
-                        total_column_width = total_column_width .. ColumnAdjustmentValue
-                        cell_code = string.format('\\multicolumn{%d}{%sp{%s}%s}{%s}', cell.col_span, left_line, total_column_width, right_line, cell_code)
-                    end
-                    
-                    -- Mark skips for the next rows but not the current one.
-                    -- tabularx/multirow/multicolumn want us to NOT provide empty "& &" cells after a multicolumn.
-                    -- Multirow cells DO need empty "& &" cells populated.
-                    for skipi=i+1,i+cell.row_span-1 do
-                        for skipj=j,j+cell.col_span-1 do
-                            skips[(skipi-1)*width + skipj] = true
-                        end
-                    end
-                end
-
-                -- Store this cell's code for concatenation below.
-                table.insert(row_code, cell_code)
-                -- Increment j by the colspan of the current cell.
-                j = j + cell.col_span
-                n = n + 1
-            else
-                -- Not skipping this cell, but we have no more data. That means we're done with this row.
-                break
-            end
-        end
-
-        local linebreak = '\\\\'
-        if header or i == height or rows_with_rowspans[i] then
-            -- Use the \\* break which keeps rows together even when there's a page break.
-            -- Use this on header/footer lines, the last row in the body, and on
-            -- any rows where there was a rowspan.
-            linebreak = linebreak .. '*'
-        end
+        local row_code = TabularRow(height, colspecs, skips, rows_with_rowspans, row, i, plain, no_first_hline, header)
 
         -- The entire row is all the cells joined by '&' with a '\\' at the end.
-        latex_code = latex_code .. clines_code .. ' ' .. table.concat(row_code, ' & ') .. string.format(' %s\n', linebreak)
+        latex_code = latex_code .. row_code .. '\n'
     end
 
     latex_code = latex_code .. '\n'
