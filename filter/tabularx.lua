@@ -51,9 +51,33 @@ function GetCellCode(cell)
     return cell_code
 end
 
+-- For === Special Header === rows in rowspans.
+function SpecialSeparatorRow(width, contents, i, plain)
+    local code = ''
+    local colspec = 'c'
+    if not plain then
+        code = code .. '\\hline'
+        colspec = '|c|'
+    end
+
+    local inner_contents = string.format('\\textbf{\\textit{\\footnotesize %s}}', contents)
+    code = code .. string.format('\\multicolumn{%d}{%s}{\\cellcolor{table-section-background}\\textcolor{table-section-foreground}{%s}} \\\\*\n', width, colspec, inner_contents)
+
+    return code
+end
+
 -- TODO: This code's a real spaghetti factory. Refactor it in the future.
 function TabularRow(height, colspecs, skips, rows_with_rowspans, row, i, plain, no_first_hline, header)
     local width = Length(colspecs)
+
+    -- Special case: this row's first cell spans the entire table and begins and ends with ===.
+    if row.cells[1] and row.cells[1].col_span == width then
+        local contents = pandoc.utils.stringify(row.cells[1].contents):match('===+ ?(.*) ===+')
+        if contents then
+            return SpecialSeparatorRow(width, contents, i, plain)
+        end
+    end
+
     local n = 1
     -- Prepare a list of latex snippets to be concatenated together below.
     local row_code = {}

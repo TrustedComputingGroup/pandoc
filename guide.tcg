@@ -814,6 +814,60 @@ Table: Fruits (Grid) {#tbl:fruits-grid}
 | Banana      | Yellow | No                         |
 +-------------+--------+----------------------------+
 
+A grid table can be divided into sections using `===` in a full-span row,
+as in @tbl:some-command:
+
+```md
+Table: Some Command {#tbl:some-command}
+
++-------------+--------+----------------------------+
+| Type        | Name   | Description                |
++=============+========+============================+
+| ================= Header ======================== |
++-------------+--------+----------------------------+
+| UINT32      | Siz    | The size of the following  |
+|             |        | contents.                  |
++-------------+--------+----------------------------+
+| ================ Contents ======================= |
++-------------+--------+----------------------------+
+| BYTE\[Siz\] | Items  | `Size` many items.         |
++-------------+--------+----------------------------+
+```
+
+Table: Some Command {#tbl:some-command}
+
++-------------+--------+----------------------------+
+| Type        | Name   | Description                |
++=============+========+============================+
+| ================= Header ======================== |
++-------------+--------+----------------------------+
+| UINT32      | Siz    | The size of the following  |
+|             |        | contents.                  |
++-------------+--------+----------------------------+
+| ================ Contents ======================= |
++-------------+--------+----------------------------+
+| BYTE\[Siz\] | Items  | `Siz` many items.          |
++-------------+--------+----------------------------+
+
+* The row must span the entire table
+* The row must begin and end with at least three equals signs
+* The row must be separated from its equals signs by spaces
+
+Below is a table with full-span rows that do not use this feature:
+
++-------------+--------+----------------------------+
+| Type        | Name   | Description                |
++=============+========+============================+
+| Header                                            |
++-------------+--------+----------------------------+
+| UINT32      | Siz    | The size of the following  |
+|             |        | contents.                  |
++-------------+--------+----------------------------+
+| Contents                                          |
++-------------+--------+----------------------------+
+| BYTE\[Siz\] | Items  | `Siz` many items.          |
++-------------+--------+----------------------------+
+
 ### Styling Markdown Tables
 
 #### Removing Lines

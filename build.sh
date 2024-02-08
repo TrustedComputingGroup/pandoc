@@ -388,65 +388,10 @@ TEMP_PDF_FILE="$(basename ${input_file}).pdf"
 
 LATEX_LOG="${build_dir}/latex.log"
 
-# Get the time in Unix epoch milliseconds of the given line
-timestamp_of() {
-	local LINE="$1"
-	local TIMESTAMP=$(echo "${LINE}" | cut -d ' ' -f 1 | tr -d "[]")
-
-
-	local SECONDS=$(echo "${TIMESTAMP}" | cut -d '.' -f 1)
-	local MILLISECONDS=$(echo "${TIMESTAMP}" | cut -d '.' -f 2 | head -c 3)
-	# MILLISECONDS might have some leading 0's. Trim them by converting it as a base-10 integer.
-	echo $(( $SECONDS * 1000 + 10#$MILLISECONDS ))
-}
-
-# Get the duration in human-readable time between two patterns in the logfile
-time_between() {
-	local LOGFILE="$1"
-	local FIRST_PATTERN="$2"
-	local SECOND_PATTERN="$3"
-
-	local FIRST_LINE=$(grep "${FIRST_PATTERN}" "${LOGFILE}" | head -n 1)
-	local SECOND_LINE=$(grep "${SECOND_PATTERN}" "${LOGFILE}" | head -n 1)
-
-	if [ -z "${FIRST_LINE}" -o -z "${SECOND_LINE}" ]; then
-		echo "n/a"
-	else
-		local FIRST_TIME=$(timestamp_of "${FIRST_LINE}")
-		local SECOND_TIME=$(timestamp_of "${SECOND_LINE}")
-
-		ELAPSED_MS=$(( ${SECOND_TIME} - ${FIRST_TIME} ))
-
-		ELAPSED_S=$(( $ELAPSED_MS / 1000 ))
-		ELAPSED_MS=$(( $ELAPSED_MS % 1000 ))
-
-		ELAPSED_M=$(( $ELAPSED_S / 60 ))
-		ELAPSED_S=$(( $ELAPSED_S % 60 ))
-
-		ELAPSED_MS="${ELAPSED_MS}ms"
-
-		if [ ${ELAPSED_M} -gt 0 ]; then
-			ELAPSED_M="${ELAPSED_M}m "
-			# Don't print the milliseconds if we got more than a minute.
-			ELAPSED_MS=""
-		else
-			ELAPSED_M=""
-		fi
-
-		if [ ${ELAPSED_S} -gt 0 ]; then
-			ELAPSED_S="${ELAPSED_S}s "
-		else
-			ELAPSED_S=""
-		fi
-
-		echo "${ELAPSED_M}${ELAPSED_S}${ELAPSED_MS}"
-	fi
-}
-
 analyze_latex_logs() {
 	local LOGFILE=$1
 
-	local RUNCOUNT=$(grep "Run number " "${LOGFILE}" | tail -n 1 | cut -d ' ' -f 4)
+	local RUNCOUNT=$(grep "Run number " "${LOGFILE}" | tail -n 1 | cut -d ' ' -f 3)
 	local PASSES="passes"
 	if [ "${RUNCOUNT}" -eq "1" ]; then
 		PASSES="pass"
@@ -457,10 +402,7 @@ analyze_latex_logs() {
 	local WARNINGS=$(sed -n "/Run number ${RUNCOUNT}/,$ p" "${LOGFILE}" | grep "LaTeX Warning: ")
 	if [ ! -z "${WARNINGS}" ]; then
 		echo "LaTeX warnings (may be ignorable - check the output!):"
-		echo "${WARNINGS}" | while read LINE; do
-			local CUT_LINE=$(echo "${LINE}" | cut -d ' ' -f2-)
-			echo "  ${CUT_LINE}"
-		done
+		echo "${WARNINGS}"
 	fi
 }
 
@@ -521,7 +463,7 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		start=$(date +%s)
 		# Run twice to populate aux, lof, lot, toc, then update the page numbers due
 		# to the impact of populating the lof, lot, toc.
-		latexmk "${TEMP_TEX_FILE}" -pdflatex=xelatex -pdf -diagnostics | ts '[%.s]' > "${LATEX_LOG}"
+		latexmk "${TEMP_TEX_FILE}" -pdflatex=xelatex -pdf -diagnostics > "${LATEX_LOG}"
 		if [ $? -ne 0 ]; then
 			FAILED=true
 			echo "PDF output failed"
@@ -538,7 +480,7 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		fi
 		echo "Elapsed time: $(($end-$start)) seconds"
 		# Write any LaTeX errors to stderr.
-		>&2 grep -A 5 "] ! " "${LATEX_LOG}"
+		>&2 grep -A 5 "! " "${LATEX_LOG}"
 		if [[ ! "${FAILED}" = "true" ]]; then
 			mv "${TEMP_PDF_FILE}" "${pdf_output}"
 			analyze_latex_logs "${LATEX_LOG}"
