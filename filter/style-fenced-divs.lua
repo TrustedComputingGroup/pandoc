@@ -5,21 +5,12 @@ div_classes =
 {
   ["informative"] = {
     ["label"] = "Informative comment",
-    ["background"] = "informative-background",
-    ["header"] = "informative-header",
-    ["foreground"] = "informative-foreground",
   },
   ["note"] = {
     ["label"] = "Note",
-    ["background"] = "informative-background",
-    ["header"] = "informative-header",
-    ["foreground"] = "informative-foreground",
   },
   ["example"] = {
     ["label"] = "Example",
-    ["background"] = "informative-background",
-    ["header"] = "informative-header",
-    ["foreground"] = "informative-foreground",
   },
 }
 
@@ -28,19 +19,12 @@ function Div(el)
   if(class) then
     local class_spec = div_classes[string.lower(class)]
     if(class_spec) then
-      local color_bg = class_spec["background"]
-      local color_hdr = class_spec["header"]
-      local color_fg = class_spec["foreground"]
       local label = class_spec["label"]
 
       return{
-        pandoc.RawBlock('latex', '\\vskip 0.5em'),
-        pandoc.RawBlock('latex', string.format('\\begin{mdframed}[linewidth=0pt,backgroundcolor=%s,skipabove=\\parskip,nobreak=true]', color_bg)),
-        pandoc.RawBlock('latex', string.format('\\textbf{\\textit{\\textcolor{%s}{\\small\\BeginDemarcated{%s}}}}', color_hdr, label)),
-        pandoc.RawBlock('latex', string.format('\\color{%s}', color_fg)),
+        pandoc.RawBlock('latex', string.format('\\BeginInformative{%s}\n', label)),
         el,
-        pandoc.RawBlock('latex', string.format('\\EndDemarcated{%s}', label)),
-        pandoc.RawBlock('latex', '\\end{mdframed}')
+        pandoc.RawBlock('latex', string.format('\\EndInformative{%s}', label)),
       }
     end
   end

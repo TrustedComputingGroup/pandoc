@@ -271,6 +271,7 @@ $endif$
 \definecolor{informative-header}{RGB}{75, 77, 78}
 \definecolor{informative-foreground}{RGB}{10, 10, 10}
 
+
 %
 % code block style
 %
@@ -282,6 +283,26 @@ $endif$
   backgroundcolor=codeblock-background,
   skipabove=\parskip,
   nobreak=true]{customcodeblock}
+\newmdenv[
+  linewidth=0pt,
+  backgroundcolor=informative-background,
+  skipabove=\parskip,
+  nobreak=true]{informative}
+
+\newcommand{\hlineifmdframed}{}
+\newcommand{\BeginInformative}[1]{
+  % HACK: We need to add an extra hline to the ends of tables inside of notes, because
+  % (we don't know why) footers are dropped in tables inside of mdframeds.
+  \renewcommand{\hlineifmdframed}{\hline}
+  \begin{informative}
+  \textbf{\textit{\textcolor{informative-header}{\small \BeginDemarcated{#1}}}}
+  \color{informative-foreground}
+}
+\newcommand{\EndInformative}[1]{
+  \textbf{\textit{\textcolor{informative-header}{\small \EndDemarcated{#1}}}}
+  \end{informative}
+  \renewcommand{\hlineifmdframed}{}
+}
 
 \usepackage{fontspec}
 \setmainfont{Arial}

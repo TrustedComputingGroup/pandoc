@@ -300,14 +300,14 @@ function Table(tbl)
                 latex_code = latex_code .. '\\hline\n'
             end
             latex_code = latex_code .. '\\endfoot\n'
-
-            -- Write out all the footer rows again for the last footer.
-            latex_code = latex_code .. TabularRows(tbl.foot.rows, true, true, plain, tbl.colspecs)
-            if not plain then
-                latex_code = latex_code .. '\\hline\n'
-            end
-            latex_code = latex_code .. '\\endlastfoot\n'
         end
+
+        -- Write out all the footer rows again for the last footer.
+        latex_code = latex_code .. TabularRows(tbl.foot.rows, true, false, plain, tbl.colspecs)
+        if not plain then
+            latex_code = latex_code .. '\\hline\n'
+        end
+        latex_code = latex_code .. '\\endlastfoot\n'
 
         --
         -- Body
@@ -320,7 +320,7 @@ function Table(tbl)
         end
 
         if not plain then
-            latex_code = latex_code .. '\\hline\n'
+            latex_code = latex_code .. '\\hlineifmdframed\n'
         end
 
         --
