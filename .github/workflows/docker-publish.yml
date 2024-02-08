@@ -87,7 +87,7 @@ jobs:
       - name: Run the action on guide
         uses: trustedcomputinggroup/markdown@latest
         with:
-          input-md: guide.md
+          input-md: guide.tcg
           output-pdf: guide.pdf
           output-tex: guide.tex
           output-docx: guide.docx
@@ -132,7 +132,7 @@ jobs:
       - name: Render for release
         uses: trustedcomputinggroup/markdown@latest
         with:
-          input-md: guide.md
+          input-md: guide.tcg
           extra-build-options: "--gitstatus --plain_quotes"
           output-pdf: guide.pdf
           output-docx: guide.docx
