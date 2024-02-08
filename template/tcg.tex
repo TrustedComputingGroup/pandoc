@@ -501,7 +501,7 @@ $endif$
     $title$
     $if(version)$
     \hskip 0.25em | \hskip 0.25em 
-    Version $version$
+    v$version$
     $endif$
     $if(prerelease)$
     \hskip 0.25em | \hskip 0.25em 
@@ -509,7 +509,7 @@ $endif$
     $endif$
     $if(revision)$
     \hskip 0.25em | \hskip 0.25em 
-    Revision $revision$
+    r$revision$
     $endif$
     $if(date)$
     \hskip 0.25em | \hskip 0.25em 
@@ -517,12 +517,18 @@ $endif$
     $endif$
     $if(status)$
     \hskip 0.25em | \hskip 0.25em 
-    $status$
+    \ifthenelse{\equal{\detokenize{$status$}}{\detokenize{Draft}}}
+    {
+      TCG Confidential
+    }
+    {
+      $status$
+    }
     $endif$
     \hfill
     Page \thepage
     \hfill
-    $if(status)$
+    $if(year)$
     © TCG $year$
     $else$
     © TCG
