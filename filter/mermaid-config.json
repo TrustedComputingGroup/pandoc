@@ -3,8 +3,6 @@
     "themeVariables": {
         "fontFamily": "arial",
         "primaryColor": "#fff",
-        "secondaryColor": "#233c82",
-        "tertiaryColor": "#99C455",
         "primaryTextColor": "#000",
         "primaryBorderColor": "#000"
     }
