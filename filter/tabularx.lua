@@ -60,7 +60,7 @@ function SpecialSeparatorRow(width, contents, i, plain)
         colspec = '|c|'
     end
 
-    local inner_contents = string.format('\\textbf{\\textit{\\footnotesize %s}}', contents)
+    local inner_contents = string.format('\\textbf{\\textit{%s}}', contents)
     code = code .. string.format('\\multicolumn{%d}{%s}{\\cellcolor{table-section-background}\\textcolor{table-section-foreground}{%s}} \\\\*\n', width, colspec, inner_contents)
 
     return code
@@ -325,7 +325,7 @@ function Table(tbl)
         --
 
         -- Write out all the header rows.
-        latex_code = latex_code .. string.format('\\multicolumn{%s}{c}\n{\\Centering\\textit{\\textcolor{gray}{\\Centering %s (continued from previous page)}}}\\\\\n', Length(tbl.colspecs), escaped_caption)
+        latex_code = latex_code .. string.format('\\multicolumn{%s}{c}\n{\\Centering\\textit{\\Centering %s (continued from previous page)}}\\\\\n', Length(tbl.colspecs), escaped_caption)
         if Length(tbl.head.rows) > 0 then
             latex_code = latex_code .. TabularRows(tbl.head.rows, true, false, plain, tbl.colspecs)
         end
@@ -344,7 +344,7 @@ function Table(tbl)
                 latex_code = latex_code .. '\\hline\n'
             end
         end
-        latex_code = latex_code .. string.format('\\multicolumn{%s}{c}\n{\\Centering\\textit{\\textcolor{gray}{\\Centering(continued on next page)}}}\\\\\n', Length(tbl.colspecs))
+        latex_code = latex_code .. string.format('\\multicolumn{%s}{c}\n{\\Centering\\textit{\\Centering(continued on next page)}}\\\\\n', Length(tbl.colspecs))
         latex_code = latex_code .. '\\endfoot\n'
 
         -- Write out all the footer rows again for the last footer.
