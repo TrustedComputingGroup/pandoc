@@ -41,7 +41,7 @@ if FORMAT:match 'latex' then
             if converters[file_ext](img.src, new_filename) then
                 img.src = new_filename
             end
-        else
+        elseif file_ext ~= ".pdf" then
             print(string.format("not converting %s (extension %s)", img.src, file_ext))
         end
         return img
