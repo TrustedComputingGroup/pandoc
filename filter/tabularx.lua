@@ -325,7 +325,7 @@ function Table(tbl)
         --
 
         -- Write out all the header rows.
-        latex_code = latex_code .. string.format('\\multicolumn{%s}{c}\n{\\Centering\\textit{\\Centering %s (continued from previous page)}}\\\\\n', Length(tbl.colspecs), escaped_caption)
+        latex_code = latex_code .. string.format('\\multicolumn{%s}{c}\n{\\Centering\\textit{\\Centering (continued from previous page)}}\\\\\n', Length(tbl.colspecs))
         if Length(tbl.head.rows) > 0 then
             latex_code = latex_code .. TabularRows(tbl.head.rows, true, false, plain, tbl.colspecs)
         end
