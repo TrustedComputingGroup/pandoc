@@ -83,7 +83,8 @@ FROM ${BASE} as build-fonts
 
 RUN apt update && apt install -y \
     wget \
-    xfonts-utils
+    xfonts-utils \
+    xz-utils
 
 # Install Arial via ttf-mscorefonts
 RUN wget http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.8.1_all.deb
@@ -95,6 +96,12 @@ RUN wget https://github.com/kaienfr/Font/raw/master/font/ARIALUNI.TTF -P /usr/sh
 
 # Install Noto Sans Mono
 RUN apt install -y fonts-noto
+
+# Install Libertinus Math
+RUN wget https://github.com/alerque/libertinus/releases/download/v7.040/Libertinus-7.040.tar.xz && \
+    tar -xJf Libertinus-7.040.tar.xz && \
+    mkdir -p /usr/share/fonts/OTF/ && \
+    cp Libertinus-7.040/static/OTF/*.otf /usr/share/fonts/OTF/
 
 # Build's done. Copy what we need into the actual container for running.
 FROM ${BASE} as run
@@ -109,6 +116,7 @@ COPY --from=build-texlive /texlivebins /usr/local/texlive
 COPY --from=build-fonts \
     /usr/share/fonts/truetype/msttcorefonts/Arial* \
     /usr/share/fonts/TTF/ARIAL* \
+    /usr/share/fonts/OTF/Libertinus* \
     /usr/share/fonts/truetype/noto/NotoSansMono* \
     /usr/share/fonts/
 
@@ -177,7 +185,6 @@ RUN tlmgr update --self && tlmgr install \
     ragged2e \
     selnolig \
     setspace \
-    tex-gyre \
     textpos \
     titling \
     unicode-math \

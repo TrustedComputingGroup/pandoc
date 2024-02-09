@@ -77,6 +77,12 @@ Reach out to <admin@trustedcomputinggroup> with any questions about this documen
 
 # Scope and Purpose
 
+::: Note :::
+This document demonstrates the TCG Pandoc toolset, which automatically adds
+"TCG Confidential" at the bottom of all drafts. This document is itself not TCG
+Confidential because it is a part of an open-source repository.
+::::::::::::
+
 The purpose of this guide is to demonstrate the usage of Markdown-plus-GitHub
 document-authorship flows for TCG workgroup usage.
 
@@ -877,6 +883,14 @@ Use the `.plain` class to avoid drawing any lines or background shading.
 This is useful when you want to present some tabular text without styling it
 like "an actual table".
 
+```md
+: {.plain}
+
+----- -----
+ like this
+----- -----
+```
+
 : {.plain}
 
 ----- -----
@@ -988,16 +1002,24 @@ we recommend using the functions `\mathbf` (for functions) and `\mathit` (for id
 This avoids strange kerning issues where a string is treated as a product of single-character symbols, like in @eq:hmac-iso-bad-kerning:
 
 ```md
-$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq H((\bar{K} \oplus \mathit{OPAD}) \Vert H((\bar{K} \oplus \mathit{IPAD}) \Vert \mathit{someTEXT})) $$ {#eq:hmac-iso}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq H((\bar{K} \oplus \mathit{OPAD}) \parallel H((\bar{K} \oplus \mathit{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-iso}
 ```
 
-$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq H((\bar{K} \oplus \mathit{OPAD}) \Vert H((\bar{K} \oplus \mathit{IPAD}) \Vert \mathit{someTEXT})) $$ {#eq:hmac-iso}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq H((\bar{K} \oplus \mathit{OPAD}) \parallel H((\bar{K} \oplus \mathit{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-iso}
 
 ```md
-$$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert someTEXT)) $$ {#eq:hmac-iso-bad-kerning}
+$$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \parallel H((\bar{K} \oplus IPAD) \parallel someTEXT)) $$ {#eq:hmac-iso-bad-kerning}
 ```
 
-$$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \Vert H((\bar{K} \oplus IPAD) \Vert someTEXT)) $$ {#eq:hmac-iso-bad-kerning}
+$$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \parallel H((\bar{K} \oplus IPAD) \parallel someTEXT)) $$ {#eq:hmac-iso-bad-kerning}
+
+You can use Unicode characters to make equations a little more readable in plain-text:
+
+```md
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) := H((\bar{K} ⊕ \mathit{OPAD}) \parallel H((\bar{K} ⊕ \mathit{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-unicode}
+```
+
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) := H((\bar{K} ⊕ \mathit{OPAD}) \parallel H((\bar{K} ⊕ \mathit{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-unicode}
 
 # Advanced Features
 
