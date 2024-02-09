@@ -615,9 +615,6 @@ Host->>TPM: TPM2_Quote
 TPM->>Host: <quoted PCRs>
 ```
 
-Crossreferences to Mermaid diagrams are supported by providing both `caption`
-and `#fig:xxxxx` classes in curly braces.
-
 ### Flow Charts
 
 Mermaid supports flow-charts like @fig:flowchart with the following notation:
@@ -639,6 +636,24 @@ graph TD;
     B-->D;
     C-->D;
 ```
+
+Crossreferences to Mermaid diagrams are supported by providing both `caption`
+and `#fig:xxxxx` classes in curly braces.
+
+## DrawIO Diagrams
+
+Some diagrams can't easily be represented in (human-maintained) code.
+
+[Draw.io](https://app.diagrams.net/) is a tool for creating sophisticated
+diagrams. There is a Visual Studio Code extension for it.
+
+Check in and add draw.io diagrams to your document like in @fig:sample-drawio:
+
+```md
+![Sample DrawIO Diagram](sample.drawio){#fig:sample-drawio width=50%}
+```
+
+![Sample DrawIO Diagram](sample.drawio){#fig:sample-drawio width=50%}
 
 # Tables {#sec:tables}
 

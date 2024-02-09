@@ -196,7 +196,17 @@ RUN tlmgr update --self && tlmgr install \
     zref
 
 RUN apt install -y \
-    imagemagick
+    dbus \
+    imagemagick \
+    libxss1 \
+    openbox \
+    wget \
+    xorg \
+    xvfb
+
+RUN wget https://github.com/jgraph/drawio-desktop/releases/download/v23.0.2/drawio-amd64-23.0.2.deb && \
+    dpkg -i drawio-amd64-23.0.2.deb && \
+    rm drawio-amd64-23.0.2.deb
 
 # https://stackoverflow.com/questions/52998331/imagemagick-security-policy-pdf-blocking-conversion
 RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
@@ -208,6 +218,7 @@ COPY ./filter/* /resources/filters/
 # mktexpk gets executed and needs a home dir, build one
 RUN mkdir -m 0777 /home/user
 ENV HOME="/home/user"
+ENV DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/dbus/system_bus_socket"
 
 COPY ./filter/pandoc-crossref.yaml /home/user/.pandoc-crossref/config.yaml
 

@@ -12,6 +12,9 @@ pdflog_output=""
 table_rules="no"
 block_quotes_are_informative_text="no"
 
+# Start up the dbus daemon (drawio will use it later)
+dbus-daemon --system || echo "Failed to start dbus daemon"
+
 # Setup an EXIT handler
 on_exit() {
 	if [[ "${is_tmp}" == "yes" && -e "${build_dir}" ]]; then
@@ -321,10 +324,12 @@ cp "${input_file}" "${build_dir}/${input_file}"
 # \newpage is rendered as the string "\newpage" in GitHub markdown.
 # Transform horizontal rules into \newpages.
 # Exception: the YAML front matter of the document, so undo the instance on the first line.
+# TODO: Turn this into a Pandoc filter.
 sed -i.bak 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${build_dir}/${input_file}"
 
 # Transform sections before the table of contents into section*, which does not number them.
 # While we're doing this, transform the case to all-caps.
+# TODO: Turn this into a Pandoc filter.
 sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${build_dir}/${input_file}"
 
 if test "${do_gitversion}" == "yes"; then
