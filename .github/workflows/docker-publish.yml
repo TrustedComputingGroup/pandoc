@@ -103,6 +103,7 @@ jobs:
         uses: trustedcomputinggroup/markdown@latest
         with:
           input-md: guide.tcg
+          extra-build-options: "--versioned_filenames"
           output-pdf: guide.pdf
           output-tex: guide.tex
           output-docx: guide.docx
@@ -111,7 +112,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: PDF
-          path: guide.pdf
+          path: guide.*.pdf
 
   # (In case of release only)
   # Use the container we just built to build the guide and attach it to the release
@@ -149,7 +150,7 @@ jobs:
         uses: trustedcomputinggroup/markdown@latest
         with:
           input-md: guide.tcg
-          extra-build-options: "--gitstatus --plain_quotes"
+          extra-build-options: "--versioned_filenames"
           output-pdf: guide.pdf
           output-docx: guide.docx
 
@@ -157,16 +158,18 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: guide.pdf
+          file: guide.*.pdf
           tag: ${{ github.ref }}
           overwrite: true
+          file_glob: true
           body: "Guide (PDF)"
 
       - name: Upload to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: guide.docx
+          file: guide.*.docx
           tag: ${{ github.ref }}
           overwrite: true
+          file_glob: true
           body: "Guide (Word)"

@@ -11,6 +11,7 @@ latex_output=""
 pdflog_output=""
 table_rules="no"
 block_quotes_are_informative_text="no"
+versioned_filenames="no"
 
 # Start up the dbus daemon (drawio will use it later)
 dbus-daemon --system || echo "Failed to start dbus daemon"
@@ -49,10 +50,11 @@ print_usage() {
 	echo "  --table_rules: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --plain_quotes: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --noplain_quotes: use block-quote syntax as informative text"
+	echo "  --versioned_filenames: insert version information before the file extension for outputs"
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,pdf:,latex:,pdflog:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,versioned_filenames,pdf:,latex:,pdflog:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -116,6 +118,10 @@ while true; do
 		;;
 	--table_rules)
 		table_rules="yes"
+		shift
+		;;
+	--versioned_filenames)
+		versioned_filenames="yes"
 		shift
 		;;
 	--help)
@@ -262,6 +268,48 @@ if test "${do_gitversion}" == "yes"; then
 	fi
 
 fi # Done with git version handling
+
+prefix_filename() {
+	local PREFIX=$1
+	local FULL_FILENAME=$2
+	local DIRNAME=$(dirname "${FULL_FILENAME}")
+	local FILENAME=$(basename "${FULL_FILENAME}")
+	local EXTENSION="${FILENAME##*.}"
+	local STRIPPED="${FILENAME%.*}"
+	local RESULT=""
+	if [ ! -z "${DIRNAME}" ]; then
+		RESULT="${DIRNAME}/"
+	fi
+	RESULT="${RESULT}${STRIPPED}${PREFIX}.${EXTENSION}"
+	echo "${RESULT}"
+}
+
+# Rename output files based on version info
+if [ "${versioned_filenames}" == "yes" ]; then
+	version_prefix=""
+	if [ ! -z "${GIT_VERSION}" ]; then
+		version_prefix="${version_prefix}.${GIT_VERSION}"
+	fi
+	if [ ! -z "${GIT_PRERELEASE}" ]; then
+		version_prefix="${version_prefix}.${GIT_PRERELEASE}"
+	fi
+	if [ ! -z "${GIT_REVISION}" ]; then
+		version_prefix="${version_prefix}.${GIT_REVISION}"
+	fi
+
+	if [ ! -z "${docx_output}" ]; then
+		docx_output=$(prefix_filename "${version_prefix}" "${docx_output}")
+	fi
+	if [ ! -z "${pdf_output}" ]; then
+		pdf_output=$(prefix_filename "${version_prefix}" "${pdf_output}")
+	fi
+	if [ ! -z "${latex_output}" ]; then
+		latex_output=$(prefix_filename "${version_prefix}" "${latex_output}")
+	fi
+	if [ ! -z "${html_output}" ]; then
+		html_output=$(prefix_filename "${version_prefix}" "${html_output}")
+	fi
+fi
 
 echo "Starting Build with"
 echo "file: ${input_file}"

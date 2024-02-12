@@ -68,6 +68,7 @@ jobs:
             *.lof
             *.lot
             *.toc
+            *.convert.pdf
           key: latex-${{ github.run_id }}
           restore-keys: latex
 
@@ -75,6 +76,7 @@ jobs:
         uses: trustedcomputinggroup/markdown@latest
         with:
           input-md: guide.tcg
+          extra-build-options: "--versioned_filenames"
           output-pdf: guide.pdf
           output-tex: guide.tex
           output-docx: guide.docx
@@ -83,17 +85,17 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: PDF
-          path: guide.pdf
+          path: guide.*.pdf
 
       - name: Upload TeX
         uses: actions/upload-artifact@master
         with:
           name: TeX
-          path: guide.tex
+          path: guide.*.tex
 
       - name: Upload Docx
         uses: actions/upload-artifact@master
         with:
           name: Word
-          path: guide.docx
+          path: guide.*.docx
 
