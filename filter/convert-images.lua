@@ -12,6 +12,33 @@ function runCommandSuppressOutput(command)
     return true
 end
 
+function getFileHash(file)
+    local f = assert(io.open(file, "r"))
+    local contents = f:read("*all")
+    f:close()
+    return pandoc.sha1(contents):sub(1,10)
+end
+
+function fileExists(file)
+    local f = io.open(file)
+    if f then
+        f:close()
+        return true
+    end
+    return false
+end
+
+function deleteFilesExcept(pattern, keep)
+    local f = io.popen(string.format("ls %s", pattern))
+    for filename in f:lines() do
+        if filename ~= keep then
+            os.remove(filename)
+            print(string.format("        deleted stale file %s", filename))
+        end
+    end
+    f:close()
+end
+
 -- Wrap calls to drawio in xvfb-run. Note that --no-sandbox has to be the last argument.
 -- https://github.com/jgraph/drawio-desktop/issues/249
 function drawio(source, dest)
@@ -19,7 +46,6 @@ function drawio(source, dest)
         print(string.format('failed to convert %s to %s using drawio, falling back to letting latex try to pick it up', img.src, new_filename))
         return false
     end
-    print(string.format("  Converted %s to %s with drawio.", source, dest))
     return true
 end
 
@@ -28,7 +54,6 @@ function imagemagick(source, dest)
         print(string.format('failed to convert %s to %s using imagemagick, falling back to letting latex try to pick it up', img.src, new_filename))
         return false
     end
-    print(string.format("  Converted %s to %s with ImageMagick.", source, dest))
     return true
 end
 
@@ -50,12 +75,18 @@ if FORMAT:match 'latex' then
         -- as well as speed up the latex render iterations.
         local file_ext = img.src:match("^.+(%..+)$")
         if file_ext and converters[file_ext] then
-            local new_filename = pandoc.sha1(img.src) .. '.temp.pdf'
-            if converters[file_ext](img.src, new_filename) then
+            local new_filename = img.src .. '.' .. getFileHash(img.src) .. '.convert.pdf'
+            if fileExists(new_filename) then
+                print(string.format("    not converting %s (already up-to-date as %s)", img.src, new_filename))
+                img.src = new_filename
+            elseif converters[file_ext](img.src, new_filename) then
+                print(string.format("    converted %s to %s", img.src, new_filename))
+                -- Delete stale copies of this file. This makes it easier to cache only the latest converted pdfs
+                deleteFilesExcept(img.src .. ".*.convert.pdf", new_filename)
                 img.src = new_filename
             end
         elseif file_ext ~= ".pdf" then
-            print(string.format("not converting %s (extension %s)", img.src, file_ext))
+            print(string.format("    not converting %s (extension %s)", img.src, file_ext))
         end
         return img
     end

@@ -599,7 +599,6 @@ rm -f core
 rm -f mermaid-filter.err .mermaid-config.json
 rm -f .puppeteer.json
 rm -f "${build_dir}/${input_file}.bak"
-rm -f *.temp.pdf
 
 echo "Overall workflow succeeded"
 exit 0

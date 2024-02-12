@@ -84,6 +84,21 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
+      - name: Cache LaTeX files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-latex-files
+        with:
+          path: |
+            *.aux
+            *.fdb_latexmk
+            *.lof
+            *.lot
+            *.toc
+            *.convert.pdf
+          key: latex-${{ github.run_id }}
+          restore-keys: latex
+
       - name: Run the action on guide
         uses: trustedcomputinggroup/markdown@latest
         with:
@@ -126,6 +141,7 @@ jobs:
             *.lof
             *.lot
             *.toc
+            *.convert.pdf
           key: latex-${{ github.run_id }}
           restore-keys: latex
 
