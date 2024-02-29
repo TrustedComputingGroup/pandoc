@@ -2,11 +2,13 @@
 
 function Table(el)
     if el.classes:find('landscape') then
-        return {
-            pandoc.RawBlock('latex', '\\begin{landscape}%'),
-            el,
-            pandoc.RawBlock('latex', '\\end{landscape}')
-        }
+        if FORMAT == 'latex' then
+            return {
+                pandoc.RawBlock('latex', '\\begin{landscape}%'),
+                el,
+                pandoc.RawBlock('latex', '\\end{landscape}')
+            }
+        end
     end
     return el
   end
@@ -27,11 +29,13 @@ function Figure(el)
     }
     -- Also, support the figure itself having the landscape class for some reason.
     if foundLandscape or el.classes:find('landscape') then
-        return {
-            pandoc.RawBlock('latex', '\\begin{landscape}%'),
-            el,
-            pandoc.RawBlock('latex', '\\end{landscape}')
-        }
+        if FORMAT == 'latex' then
+            return {
+                pandoc.RawBlock('latex', '\\begin{landscape}%'),
+                el,
+                pandoc.RawBlock('latex', '\\end{landscape}')
+            }
+        end
     end
     return el
   end
