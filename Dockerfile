@@ -12,7 +12,7 @@ RUN apt update && apt install -y \
     zlib1g \
     zlib1g-dev
 
-ENV PANDOC_REF=3.1.11.1
+ENV PANDOC_REF=3.1.12.1
 RUN git clone --branch=${PANDOC_REF} --depth=1 --quiet \
   https://github.com/jgm/pandoc /usr/src/pandoc
 
