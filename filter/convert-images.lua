@@ -58,34 +58,44 @@ function imagemagick(source, dest)
 end
 
 local converters = {
+    ['.drawio'] = drawio,
+    ['.drawio.svg'] = drawio,
     ['.jpg'] = imagemagick,
     ['.png'] = imagemagick,
-    ['.svg'] = imagemagick,
-    ['.drawio'] = drawio
+    ['.svg'] = imagemagick
 }
 
 function string:hassuffix(suffix)
     return self:sub(-#suffix) == suffix
 end
 
+function converterFor(filename)
+    for suffix, handler in pairs(converters) do
+        if filename:hassuffix(suffix) then
+            return handler
+        end
+    end
+    return nil
+end
+
 function Image (img)
     -- Try to convert anything that is not a pdf, jpg, or png.
     -- This allows us to support file types that latex doesn't (e.g., SVG),
     -- as well as speed up the latex render iterations.
-    local file_ext = img.src:match("^.+(%..+)$")
-    if file_ext and converters[file_ext] then
+    local converter = converterFor(img.src)
+    if converter then
         local new_filename = img.src .. '.' .. getFileHash(img.src) .. '.convert.pdf'
         if fileExists(new_filename) then
             print(string.format("    not converting %s (already up-to-date as %s)", img.src, new_filename))
             img.src = new_filename
-        elseif converters[file_ext](img.src, new_filename) then
+        elseif converter(img.src, new_filename) then
             print(string.format("    converted %s to %s", img.src, new_filename))
             -- Delete stale copies of this file. This makes it easier to cache only the latest converted pdfs
             deleteFilesExcept(img.src .. ".*.convert.pdf", new_filename)
             img.src = new_filename
         end
-    elseif file_ext ~= ".pdf" then
-        print(string.format("    not converting %s (extension %s)", img.src, file_ext))
+    else
+        print(string.format("    not converting %s", img.src))
     end
     return img
 end

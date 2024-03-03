@@ -650,10 +650,10 @@ diagrams. There is a Visual Studio Code extension for it.
 Check in and add draw.io diagrams to your document like in @fig:sample-drawio:
 
 ```md
-![Sample DrawIO Diagram](sample.drawio){#fig:sample-drawio width=50%}
+![Sample DrawIO Diagram](sample.drawio.svg){#fig:sample-drawio width=50%}
 ```
 
-![Sample DrawIO Diagram](sample.drawio){#fig:sample-drawio width=50%}
+![Sample DrawIO Diagram](sample.drawio.svg){#fig:sample-drawio width=50%}
 
 # Tables {#sec:tables}
 
