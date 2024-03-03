@@ -210,14 +210,13 @@ if test "${do_gitversion}" == "yes"; then
 	#   Where $REVISION is the number of commits since the last tag (e.g., 54)
 	# $VERSION-$REVISION-g$COMMIT --> version without prerelease tag at a particular commit (len 3)
 	# $VERSION-$PRERELEASE-$REVISION-g$COMMIT --> version with  (len 4)
+	GIT_COMMIT=$(git rev-parse --short HEAD)
 	len=${#dash_hunks[@]}
 	case $len in
 		1)
 			# If there is one hunk in the version information, it's either the tag (for a release)
 			# or the commit (not a release).
-			if [ -z $(git tag --points-at HEAD) ]; then
-				GIT_COMMIT="${dash_hunks[0]}"
-			else
+			if [ ! -z $(git tag --points-at HEAD) ]; then
 				GIT_VERSION="${dash_hunks[0]}"
 			fi
 			;;
@@ -229,7 +228,6 @@ if test "${do_gitversion}" == "yes"; then
 			if [ "${dash_hunks[2]:0:1}" == "g" ]; then
 				GIT_VERSION="${dash_hunks[0]}"
 				GIT_REVISION="${dash_hunks[1]}"
-				GIT_COMMIT="${dash_hunks[2]:1}"
 			else
 				>&2 echo "Malformed Git version: ${raw_version}"
 				exit 1
@@ -240,7 +238,6 @@ if test "${do_gitversion}" == "yes"; then
 				GIT_VERSION="${dash_hunks[0]}"
 				GIT_PRERELEASE="${dash_hunks[1]}"
 				GIT_REVISION="${dash_hunks[2]}"
-				GIT_COMMIT="${dash_hunks[3]:1}"
 			else
 				>&2 echo "Malformed Git version: ${raw_version}"
 				exit 1
@@ -255,7 +252,7 @@ if test "${do_gitversion}" == "yes"; then
 	if [ ! -z "${pr_number}" ]; then
 		# In the case of a PR, always just provide the PR number and commit
 		extra_pandoc_options+=" --metadata=pr_number:${pr_number}"
-		extra_pandoc_options+=" --metadata=revision:$(git rev-parse --short HEAD)"
+		extra_pandoc_options+=" --metadata=revision:${GIT_COMMIT}"
 		status="Pull Request"
 		if [ ! -z "${pr_repo}" ]; then
 			extra_pandoc_options+=" --metadata=pr_repo_url:https://github.com/${pr_repo}"
@@ -310,15 +307,19 @@ prefix_filename() {
 
 # Rename output files based on version info
 if [ "${versioned_filenames}" == "yes" ]; then
-	version_prefix=""
-	if [ ! -z "${GIT_VERSION}" ]; then
-		version_prefix="${version_prefix}.${GIT_VERSION}"
-	fi
-	if [ ! -z "${GIT_PRERELEASE}" ]; then
-		version_prefix="${version_prefix}.${GIT_PRERELEASE}"
-	fi
-	if [ ! -z "${GIT_REVISION}" ]; then
-		version_prefix="${version_prefix}.${GIT_REVISION}"
+	if [ ! -z "${pr_number}" ]; then
+		version_prefix=".pr${pr_number}.${GIT_COMMIT}"
+	else
+		version_prefix=""
+		if [ ! -z "${GIT_VERSION}" ]; then
+			version_prefix="${version_prefix}.${GIT_VERSION}"
+		fi
+		if [ ! -z "${GIT_PRERELEASE}" ]; then
+			version_prefix="${version_prefix}.${GIT_PRERELEASE}"
+		fi
+		if [ ! -z "${GIT_REVISION}" ]; then
+			version_prefix="${version_prefix}.${GIT_REVISION}"
+		fi
 	fi
 
 	if [ ! -z "${docx_output}" ]; then
