@@ -272,7 +272,7 @@ function Table(tbl)
         -- Undo this by decrementing the counter before starting the uncounted table.
         -- Decrementing the counter after the table can cause links in the list of tables to
         -- mistakenly point to the wrong table.
-        if not numbered then
+        if not numbered and escaped_caption ~= '' then
             latex_code = latex_code .. '\\addtocounter{table}{-1}\n'
         end
 
@@ -303,7 +303,9 @@ function Table(tbl)
         -- Create the first header. This consists of the caption, a top line, and any header lines.
         --
 
-        latex_code = latex_code .. string.format('\\%s{%s}\n', caption_cmd, escaped_caption)
+        if escaped_caption ~= '' then
+            latex_code = latex_code .. string.format('\\%s{%s}\n', caption_cmd, escaped_caption)
+        end
 
         --
         -- Add the label, if we have an identifier for this table.
@@ -312,7 +314,9 @@ function Table(tbl)
             latex_code = latex_code .. string.format('\\label{%s}\n', tbl.identifier)
         end
 
-        latex_code = latex_code .. '\\\\\n'
+        if escaped_caption ~= '' or tbl.identifier ~= '' then
+            latex_code = latex_code .. '\\\\\n'
+        end
 
         if Length(tbl.head.rows) > 0 then
             latex_code = latex_code .. TabularRows(tbl.head.rows, true, false, plain, tbl.colspecs)

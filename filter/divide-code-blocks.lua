@@ -3,6 +3,7 @@
 function CodeBlock(block)
     return {
         pandoc.RawInline('latex', [[
+            \vskip 3pt%
             \begin{customcodeblock}
             \textbf{\textit{\textcolor{codeblock-header}{\small \BeginDemarcated{Code}}}}
         ]]),

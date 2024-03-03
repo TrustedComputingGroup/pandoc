@@ -75,7 +75,7 @@
 }
 \newcommand{\EndDemarcated}[1]{
   \BeginAccSupp{method=plain,ActualText=End of #1}%
-  {\textcolor{white}{.}\vspace{-1em}}% Use a white period so it gets selected along with the block. Then retract the vertical space.
+  {\textcolor{white}{.}\vskip -12pt}% Use a white period so it gets selected along with the block. Then retract the vertical space.
   \EndAccSupp{}%
 }
 
@@ -284,12 +284,12 @@ $endif$
 \newmdenv[
   linewidth=0pt,
   backgroundcolor=codeblock-background,
-  skipabove=\parskip,
+  skipabove=5pt,
   nobreak=true]{customcodeblock}
 \newmdenv[
   linewidth=0pt,
   backgroundcolor=informative-background,
-  skipabove=\parskip,
+  skipabove=5pt,
   nobreak=true]{informative}
 
 \newcommand{\hlineifmdframed}{}
@@ -297,13 +297,16 @@ $endif$
   % HACK: We need to add an extra hline to the ends of tables inside of notes, because
   % (we don't know why) footers are dropped in tables inside of mdframeds.
   \renewcommand{\hlineifmdframed}{\hline}
+  % This manual skip is here in case a section begins with a an informative block.
+  \vskip 3pt%
   \begin{informative}
   \textbf{\textit{\textcolor{informative-header}{\small \BeginDemarcated{#1}}}}
   \color{informative-foreground}
 }
 \newcommand{\EndInformative}[1]{
   \textbf{\textit{\textcolor{informative-header}{\small \EndDemarcated{#1}}}}
-  \end{informative}
+  \end{informative}%
+  \vskip -7pt%
   \renewcommand{\hlineifmdframed}{}
 }
 
