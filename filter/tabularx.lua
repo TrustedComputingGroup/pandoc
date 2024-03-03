@@ -301,18 +301,13 @@ function Table(tbl)
         -- Create the first header. This consists of the caption, a top line, and any header lines.
         --
 
-        if escaped_caption ~= '' then
-            latex_code = latex_code .. string.format('\\%s{%s}\n', caption_cmd, escaped_caption)
-        end
-
-        --
-        -- Add the label, if we have an identifier for this table.
-        --
-        if tbl.identifier ~= '' then
-            latex_code = latex_code .. string.format('\\label{%s}\n', tbl.identifier)
-        end
-
         if escaped_caption ~= '' or tbl.identifier ~= '' then
+            if tbl.identifier ~= '' then
+                -- The label, if we have one, goes inside of the caption command.
+                latex_code = latex_code .. string.format('\\%s{%s \\label{%s}}\n', caption_cmd, escaped_caption, tbl.identifier)
+            else
+                latex_code = latex_code .. string.format('\\%s{%s}\n', caption_cmd, escaped_caption)
+            end
             latex_code = latex_code .. '\\\\\n'
         end
 
