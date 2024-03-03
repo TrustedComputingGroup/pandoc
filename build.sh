@@ -268,7 +268,7 @@ if test "${do_gitversion}" == "yes"; then
 		# Omit the revision if there isn't one (i.e., we are at straight-up Version)
 		if [ ! -z "${GIT_REVISION}" ]; then
 			extra_pandoc_options+=" --metadata=revision:${GIT_REVISION}"
-		elif [ ! -z "${GIT_COMMIT}" ]; then
+		elif [ -z "${GIT_VERSION}" ]; then
 			extra_pandoc_options+=" --metadata=revision:${GIT_COMMIT}"
 		fi
 
