@@ -45,9 +45,10 @@
 %%
 
 % Options for packages loaded elsewhere
-\PassOptionsToPackage{unicode$for(hyperrefoptions)$,$hyperrefoptions$$endfor$}{hyperref}
+\PassOptionsToPackage{unicode,hyperfootnotes=false}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames*,x11names*,table}{xcolor}
+\PassOptionsToPackage{perpage}{footmisc}
 
 \documentclass[
   paper=letter,
@@ -674,6 +675,8 @@ $endif$
     % use an image for the watermark so it doesn't interfere with selection
     \SetWatermarkText{\includegraphics[width=8.5in, height=11in]{/resources/img/draft.pdf}}
 }
+
+\usepackage{footnotebackref}
 
 \begin{document}
 
