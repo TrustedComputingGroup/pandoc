@@ -13,7 +13,7 @@ table_rules="no"
 block_quotes_are_informative_text="no"
 versioned_filenames="no"
 pr_number=""
-pr_repo_url=""
+pr_repo=""
 
 # Start up the dbus daemon (drawio will use it later)
 dbus-daemon --system || echo "Failed to start dbus daemon"
@@ -54,11 +54,11 @@ print_usage() {
 	echo "  --noplain_quotes: use block-quote syntax as informative text"
 	echo "  --versioned_filenames: insert version information before the file extension for outputs"
 	echo "  --pr_number=number: mark the document as a pull-request draft if using Git versioning."
-	echo "  --pr_repo_url=url: provide the URL for the repository for pull-request drafts (has no effect if --pr_number is not passed)."
+	echo "  --pr_repo=url: provide the URL for the repository for pull-request drafts (has no effect if --pr_number is not passed)."
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,versioned_filenames,pr_number:,pr_repo_url:,pdf:,latex:,pdflog:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,versioned_filenames,pr_number:,pr_repo:,pdf:,latex:,pdflog:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -132,8 +132,8 @@ while true; do
 		pr_number="${2}"
 		shift 2
 		;;
-	--pr_repo_url)
-		pr_repo_url="${2}"
+	--pr_repo)
+		pr_repo="${2}"
 		shift 2
 		;;
 	--help)
@@ -257,8 +257,8 @@ if test "${do_gitversion}" == "yes"; then
 		extra_pandoc_options+=" --metadata=pr_number:${pr_number}"
 		extra_pandoc_options+=" --metadata=revision:$(git rev-parse --short HEAD)"
 		status="Pull Request"
-		if [ ! -z "${pr_repo_url}" ]; then
-			extra_pandoc_options+=" --metadata=pr_repo_url:${pr_repo_url}"
+		if [ ! -z "${pr_repo}" ]; then
+			extra_pandoc_options+=" --metadata=pr_repo_url:https://github.com/${pr_repo}"
 		fi
 	else
 		# Otherwise, populate the full context based on what git show said.
