@@ -201,9 +201,10 @@ if test "${do_gitversion}" == "yes"; then
 	len=${#dash_hunks[@]}
 	case $len in
 		1)
-			if [ "${dash_hunks[0]:0:1}" == "g" ]; then
-				GIT_VERSION="0"
-				GIT_COMMIT="${dash_hunks[0]:1}"
+			# If there is one hunk in the version information, it's either the tag (for a release)
+			# or the commit (not a release).
+			if [ -z $(git tag --points-at HEAD) ]; then
+				GIT_COMMIT="${dash_hunks[0]}"
 			else
 				GIT_VERSION="${dash_hunks[0]}"
 			fi
@@ -255,7 +256,7 @@ if test "${do_gitversion}" == "yes"; then
 	# Do we set document status based on git version?
 	if [ "${do_gitstatus}" == "yes" ]; then
 		# If revision is 0 and this is not some kind of prerelease
-		if [ -z "${GIT_REVISION}" ] && [ -z "${GIT_PRERELEASE}" ]; then
+		if [ ! -z "${GIT_VERSION}" ] &&  [ -z "${GIT_REVISION}" ] && [ -z "${GIT_PRERELEASE}" ]; then
 			status="Published"
 		# If revision is 0 and this is some kind of prerelease
 		elif [ -z "${GIT_REVISION}" ] && [ ! -z "${GIT_PRERELEASE}" ]; then
