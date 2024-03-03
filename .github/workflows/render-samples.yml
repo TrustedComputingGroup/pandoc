@@ -76,7 +76,7 @@ jobs:
         uses: trustedcomputinggroup/markdown@latest
         with:
           input-md: guide.tcg
-          extra-build-options: "--versioned_filenames"
+          extra-build-options: "--versioned_filenames --pr_number=${{ github.event.number }} --pr_repo_url=${{ github.event.repository.url }} "
           output-pdf: guide.pdf
           output-tex: guide.tex
           output-docx: guide.docx

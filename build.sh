@@ -12,6 +12,8 @@ pdflog_output=""
 table_rules="no"
 block_quotes_are_informative_text="no"
 versioned_filenames="no"
+pr_number=""
+pr_repo_url=""
 
 # Start up the dbus daemon (drawio will use it later)
 dbus-daemon --system || echo "Failed to start dbus daemon"
@@ -51,10 +53,12 @@ print_usage() {
 	echo "  --plain_quotes: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --noplain_quotes: use block-quote syntax as informative text"
 	echo "  --versioned_filenames: insert version information before the file extension for outputs"
+	echo "  --pr_number=number: mark the document as a pull-request draft if using Git versioning."
+	echo "  --pr_repo_url=url: provide the URL for the repository for pull-request drafts (has no effect if --pr_number is not passed)."
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,versioned_filenames,pdf:,latex:,pdflog:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,versioned_filenames,pr_number:,pr_repo_url:,pdf:,latex:,pdflog:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -123,6 +127,14 @@ while true; do
 	--versioned_filenames)
 		versioned_filenames="yes"
 		shift
+		;;
+	--pr_number)
+		pr_number="${2}"
+		shift 2
+		;;
+	--pr_repo_url)
+		pr_repo_url="${2}"
+		shift 2
 		;;
 	--help)
 		print_usage
@@ -240,33 +252,44 @@ if test "${do_gitversion}" == "yes"; then
 			;;
 	esac
 
-	extra_pandoc_options+=" --metadata=version:${GIT_VERSION}"
-
-	if [ ! -z "${GIT_PRERELEASE}" ]; then
-		extra_pandoc_options+=" --metadata=prerelease:${GIT_PRERELEASE}"
-	fi
-
-	# Omit the revision if there isn't one (i.e., we are at straight-up Version)
-	if [ ! -z "${GIT_REVISION}" ]; then
-		extra_pandoc_options+=" --metadata=revision:${GIT_REVISION}"
-	elif [ ! -z "${GIT_COMMIT}" ]; then
-		extra_pandoc_options+=" --metadata=revision:${GIT_COMMIT}"
-	fi
-
-	# Do we set document status based on git version?
-	if [ "${do_gitstatus}" == "yes" ]; then
-		# If revision is 0 and this is not some kind of prerelease
-		if [ ! -z "${GIT_VERSION}" ] &&  [ -z "${GIT_REVISION}" ] && [ -z "${GIT_PRERELEASE}" ]; then
-			status="Published"
-		# If revision is 0 and this is some kind of prerelease
-		elif [ -z "${GIT_REVISION}" ] && [ ! -z "${GIT_PRERELEASE}" ]; then
-			status="Review"
-		# Everything else is a draft
-		else
-			status="Draft"
+	if [ ! -z "${pr_number}" ]; then
+		# In the case of a PR, always just provide the PR number and commit
+		extra_pandoc_options+=" --metadata=pr_number:${pr_number}"
+		extra_pandoc_options+=" --metadata=revision:$(git rev-parse --short HEAD)"
+		status="Pull Request"
+		if [ ! -z "${pr_repo_url}" ]; then
+			extra_pandoc_options+=" --metadata=pr_repo_url:${pr_repo_url}"
 		fi
-		extra_pandoc_options+=" --metadata=status:${status}"
+	else
+		# Otherwise, populate the full context based on what git show said.
+		extra_pandoc_options+=" --metadata=version:${GIT_VERSION}"
+
+		if [ ! -z "${GIT_PRERELEASE}" ]; then
+			extra_pandoc_options+=" --metadata=prerelease:${GIT_PRERELEASE}"
+		fi
+
+		# Omit the revision if there isn't one (i.e., we are at straight-up Version)
+		if [ ! -z "${GIT_REVISION}" ]; then
+			extra_pandoc_options+=" --metadata=revision:${GIT_REVISION}"
+		elif [ ! -z "${GIT_COMMIT}" ]; then
+			extra_pandoc_options+=" --metadata=revision:${GIT_COMMIT}"
+		fi
+
+		# Do we set document status based on git version?
+		if [ "${do_gitstatus}" == "yes" ]; then
+			# If revision is 0 and this is not some kind of prerelease
+			if [ ! -z "${GIT_VERSION}" ] &&  [ -z "${GIT_REVISION}" ] && [ -z "${GIT_PRERELEASE}" ]; then
+				status="Published"
+			# If revision is 0 and this is some kind of prerelease
+			elif [ -z "${GIT_REVISION}" ] && [ ! -z "${GIT_PRERELEASE}" ]; then
+				status="Review"
+			# Everything else is a draft
+			else
+				status="Draft"
+			fi
+		fi
 	fi
+	extra_pandoc_options+=" --metadata=status:\"${status}\""
 
 fi # Done with git version handling
 

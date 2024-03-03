@@ -504,6 +504,10 @@ $endif$
     \hskip 0.25em | \hskip 0.25em 
     v$version$
     $endif$
+    $if(pr_number)$
+    \hskip 0.25em | \hskip 0.25em 
+    \#$pr_number$
+    $endif$
     $if(prerelease)$
     \hskip 0.25em | \hskip 0.25em 
     $prerelease$
@@ -709,6 +713,14 @@ $endif$
     \setstretch{1.0}
     $if(version)$
     \large \textsf{Version $version$}\\
+    $endif$
+    $if(pr_number)$
+      $if(pr_repo_url)$
+        \def \PRRepoURL{$pr_repo_url$/pull/$pr_number$}
+        \href{\PRRepoURL}{\large \textsf{Pull Request $pr_number$}}\\
+      $else$
+        \large \textsf{Pull Request $pr_number$}\\
+      $endif$
     $endif$
     $if(revision)$
     \large \textsf{Revision $revision$}\\
