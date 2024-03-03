@@ -452,6 +452,22 @@ The result looks like this:
 int i = 42;
 ```
 
+## Footnotes {#sec:footnotes}
+
+```md
+You can use a footnote[^footnote-example] to provide additional details about something
+out of the way, at the bottom of the page.
+
+[^footnote-example]: See @sec:footnotes for more information about footnotes.
+```
+
+You can use a footnote[^footnote-example] to provide additional details about something
+out of the way, at the bottom of the page. The footnotes will be automatically numbered.[^footnote-numbering]
+
+[^footnote-example]: See @sec:footnotes for more information about footnotes.
+
+[^footnote-numbering]: Like this.
+
 ## Cross-References {#sec:cross-references}
 
 In general, sections, tables, figures, and equations can be referenced using the `@` symbol. These cross-references do not show up in the GitHub markdown, but will appear in the final document.
@@ -1092,9 +1108,10 @@ documents in Markdown:
     2.  Release another release candidate marked rc.2, rc.3, etc.
 6.  When the document is approved for public review, send out the release candidate that got
     approved.
-7.  When it comes time for final publication, release just 1.23.5. This will trigger a render
-    of a "Final" styled document. Note that according to the rules of semver, 1.23.5 is higher
-    than 1.23.5-rc.1.
+7.  When it comes time for final publication, release just 1.23.5.[^semver-ordering] This will trigger a render
+    of a "Final" styled document. 
+
+[^semver-ordering]: Note that according to the rules of semver, 1.23.5 is higher than 1.23.5-rc.1.
 
 ::: Note :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 If the spec is not rendered as part of a release, it will always be
