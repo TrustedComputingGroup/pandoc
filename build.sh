@@ -12,6 +12,8 @@ pdflog_output=""
 table_rules="no"
 block_quotes_are_informative_text="no"
 versioned_filenames="no"
+pr_number=""
+pr_repo=""
 
 # Start up the dbus daemon (drawio will use it later)
 dbus-daemon --system || echo "Failed to start dbus daemon"
@@ -51,10 +53,12 @@ print_usage() {
 	echo "  --plain_quotes: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --noplain_quotes: use block-quote syntax as informative text"
 	echo "  --versioned_filenames: insert version information before the file extension for outputs"
+	echo "  --pr_number=number: mark the document as a pull-request draft if using Git versioning."
+	echo "  --pr_repo=url: provide the URL for the repository for pull-request drafts (has no effect if --pr_number is not passed)."
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,versioned_filenames,pdf:,latex:,pdflog:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,versioned_filenames,pr_number:,pr_repo:,pdf:,latex:,pdflog:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -123,6 +127,14 @@ while true; do
 	--versioned_filenames)
 		versioned_filenames="yes"
 		shift
+		;;
+	--pr_number)
+		pr_number="${2}"
+		shift 2
+		;;
+	--pr_repo)
+		pr_repo="${2}"
+		shift 2
 		;;
 	--help)
 		print_usage
@@ -198,14 +210,13 @@ if test "${do_gitversion}" == "yes"; then
 	#   Where $REVISION is the number of commits since the last tag (e.g., 54)
 	# $VERSION-$REVISION-g$COMMIT --> version without prerelease tag at a particular commit (len 3)
 	# $VERSION-$PRERELEASE-$REVISION-g$COMMIT --> version with  (len 4)
+	GIT_COMMIT=$(git rev-parse --short HEAD)
 	len=${#dash_hunks[@]}
 	case $len in
 		1)
 			# If there is one hunk in the version information, it's either the tag (for a release)
 			# or the commit (not a release).
-			if [ -z $(git tag --points-at HEAD) ]; then
-				GIT_COMMIT="${dash_hunks[0]}"
-			else
+			if [ ! -z $(git tag --points-at HEAD) ]; then
 				GIT_VERSION="${dash_hunks[0]}"
 			fi
 			;;
@@ -217,7 +228,6 @@ if test "${do_gitversion}" == "yes"; then
 			if [ "${dash_hunks[2]:0:1}" == "g" ]; then
 				GIT_VERSION="${dash_hunks[0]}"
 				GIT_REVISION="${dash_hunks[1]}"
-				GIT_COMMIT="${dash_hunks[2]:1}"
 			else
 				>&2 echo "Malformed Git version: ${raw_version}"
 				exit 1
@@ -228,7 +238,6 @@ if test "${do_gitversion}" == "yes"; then
 				GIT_VERSION="${dash_hunks[0]}"
 				GIT_PRERELEASE="${dash_hunks[1]}"
 				GIT_REVISION="${dash_hunks[2]}"
-				GIT_COMMIT="${dash_hunks[3]:1}"
 			else
 				>&2 echo "Malformed Git version: ${raw_version}"
 				exit 1
@@ -240,33 +249,44 @@ if test "${do_gitversion}" == "yes"; then
 			;;
 	esac
 
-	extra_pandoc_options+=" --metadata=version:${GIT_VERSION}"
-
-	if [ ! -z "${GIT_PRERELEASE}" ]; then
-		extra_pandoc_options+=" --metadata=prerelease:${GIT_PRERELEASE}"
-	fi
-
-	# Omit the revision if there isn't one (i.e., we are at straight-up Version)
-	if [ ! -z "${GIT_REVISION}" ]; then
-		extra_pandoc_options+=" --metadata=revision:${GIT_REVISION}"
-	elif [ ! -z "${GIT_COMMIT}" ]; then
+	if [ ! -z "${pr_number}" ]; then
+		# In the case of a PR, always just provide the PR number and commit
+		extra_pandoc_options+=" --metadata=pr_number:${pr_number}"
 		extra_pandoc_options+=" --metadata=revision:${GIT_COMMIT}"
-	fi
-
-	# Do we set document status based on git version?
-	if [ "${do_gitstatus}" == "yes" ]; then
-		# If revision is 0 and this is not some kind of prerelease
-		if [ ! -z "${GIT_VERSION}" ] &&  [ -z "${GIT_REVISION}" ] && [ -z "${GIT_PRERELEASE}" ]; then
-			status="Published"
-		# If revision is 0 and this is some kind of prerelease
-		elif [ -z "${GIT_REVISION}" ] && [ ! -z "${GIT_PRERELEASE}" ]; then
-			status="Review"
-		# Everything else is a draft
-		else
-			status="Draft"
+		status="Pull Request"
+		if [ ! -z "${pr_repo}" ]; then
+			extra_pandoc_options+=" --metadata=pr_repo_url:https://github.com/${pr_repo}"
 		fi
-		extra_pandoc_options+=" --metadata=status:${status}"
+	else
+		# Otherwise, populate the full context based on what git show said.
+		extra_pandoc_options+=" --metadata=version:${GIT_VERSION}"
+
+		if [ ! -z "${GIT_PRERELEASE}" ]; then
+			extra_pandoc_options+=" --metadata=prerelease:${GIT_PRERELEASE}"
+		fi
+
+		# Omit the revision if there isn't one (i.e., we are at straight-up Version)
+		if [ ! -z "${GIT_REVISION}" ]; then
+			extra_pandoc_options+=" --metadata=revision:${GIT_REVISION}"
+		elif [ ! -z "${GIT_COMMIT}" ]; then
+			extra_pandoc_options+=" --metadata=revision:${GIT_COMMIT}"
+		fi
+
+		# Do we set document status based on git version?
+		if [ "${do_gitstatus}" == "yes" ]; then
+			# If revision is 0 and this is not some kind of prerelease
+			if [ ! -z "${GIT_VERSION}" ] &&  [ -z "${GIT_REVISION}" ] && [ -z "${GIT_PRERELEASE}" ]; then
+				status="Published"
+			# If revision is 0 and this is some kind of prerelease
+			elif [ -z "${GIT_REVISION}" ] && [ ! -z "${GIT_PRERELEASE}" ]; then
+				status="Review"
+			# Everything else is a draft
+			else
+				status="Draft"
+			fi
+		fi
 	fi
+	extra_pandoc_options+=" --metadata=status:\"${status}\""
 
 fi # Done with git version handling
 
@@ -287,15 +307,19 @@ prefix_filename() {
 
 # Rename output files based on version info
 if [ "${versioned_filenames}" == "yes" ]; then
-	version_prefix=""
-	if [ ! -z "${GIT_VERSION}" ]; then
-		version_prefix="${version_prefix}.${GIT_VERSION}"
-	fi
-	if [ ! -z "${GIT_PRERELEASE}" ]; then
-		version_prefix="${version_prefix}.${GIT_PRERELEASE}"
-	fi
-	if [ ! -z "${GIT_REVISION}" ]; then
-		version_prefix="${version_prefix}.${GIT_REVISION}"
+	if [ ! -z "${pr_number}" ]; then
+		version_prefix=".pr${pr_number}.${GIT_COMMIT}"
+	else
+		version_prefix=""
+		if [ ! -z "${GIT_VERSION}" ]; then
+			version_prefix="${version_prefix}.${GIT_VERSION}"
+		fi
+		if [ ! -z "${GIT_PRERELEASE}" ]; then
+			version_prefix="${version_prefix}.${GIT_PRERELEASE}"
+		fi
+		if [ ! -z "${GIT_REVISION}" ]; then
+			version_prefix="${version_prefix}.${GIT_REVISION}"
+		fi
 	fi
 
 	if [ ! -z "${docx_output}" ]; then
