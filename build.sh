@@ -566,10 +566,11 @@ if [ -n "${docx_output}" ]; then
 		--standalone
 		--lua-filter=mermaid-code-class-pre.lua
 		--filter=mermaid-filter
+		--lua-filter=convert-images.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
+		--lua-filter=landscape-pages.lua
 		--lua-filter=style-fenced-divs.lua
-		--lua-filter=make-informative-text.lua
 		--filter=pandoc-crossref
 		--resource-path=.:/resources
 		--data-dir=/resources
