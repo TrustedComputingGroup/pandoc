@@ -86,11 +86,14 @@ function TabularRow(height, colspecs, skips, rows_with_rowspans, row, i, plain, 
     local clines_code = ''
     local any_skips = false
     if not plain and (i > 1 or not no_first_hline) then
-        for j = 1,width do
+        local j = 1
+        while j <= width do
             if skips[(i-1)*width + j] then
                 any_skips = true
+                j = j + skips[(i-1)*width + j]
             else
                 clines_code = clines_code .. string.format("\\cline{%d-%d}", j, j)
+                j = j + 1
             end
         end
         -- Simplify a whole row of clines as just an hline.
@@ -115,10 +118,7 @@ function TabularRow(height, colspecs, skips, rows_with_rowspans, row, i, plain, 
             -- Even more complicated: We may need to put a multicolumn here (in the event that there are multiple
             -- skipped cells in a row).
             local skipstart = j
-            local skipend = j
-            while skips[(i-1)*width + skipend+1] do
-                skipend = skipend + 1
-            end
+            local skipend = j + skips[(i-1)*width + j] - 1
             if skipstart == skipend then
                 table.insert(row_code, ' ')
             else
@@ -177,9 +177,7 @@ function TabularRow(height, colspecs, skips, rows_with_rowspans, row, i, plain, 
                 -- tabularx/multirow/multicolumn want us to NOT provide empty "& &" cells after a multicolumn.
                 -- Multirow cells DO need empty "& &" cells populated.
                 for skipi=i+1,i+cell.row_span-1 do
-                    for skipj=j,j+cell.col_span-1 do
-                        skips[(skipi-1)*width + skipj] = true
-                    end
+                    skips[(skipi-1)*width + j] = cell.col_span
                 end
             end
 
