@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.3-labs
 ARG BASE=debian:bookworm-20240110-slim
 FROM ${BASE} as build-pandoc
 
@@ -12,24 +13,30 @@ RUN apt update && apt install -y \
     zlib1g \
     zlib1g-dev
 
-ENV PANDOC_REF=3.1.11.1
-RUN git clone --branch=${PANDOC_REF} --depth=1 --quiet \
-  https://github.com/jgm/pandoc /usr/src/pandoc
+ENV PANDOC_CLI_VERSION=3.1.12.2
+ENV PANDOC_CROSSREF_VERSION=0.3.17.0
 
-# Replace the default project config from the Pandoc repo.
-COPY ./pandoc/cabal.project /usr/src/pandoc/cabal.project
-
-# Fetch the dependencies separately, to increase the number of cases
-# where the Docker layer cache helps us.
 RUN cabal update && \
-    cabal build --dependencies-only \
-    pandoc
+    cabal install -j --only-dependencies \
+    pandoc-cli-${PANDOC_CLI_VERSION} \
+    pandoc-crossref-${PANDOC_CROSSREF_VERSION}
 
-# This layer takes a VERY long time to build.
+# Clone the source code associated with the target version of pandoc.
+RUN git clone --branch=${PANDOC_CLI_VERSION} --depth=1 --quiet \
+    https://github.com/jgm/pandoc /usr/src/pandoc
+
+# Initialize a cabal.project file with the correct flags, and pin pandoc-crossref to its target.
+RUN cat <<EOF > /usr/src/pandoc/cabal.project
+packages: .
+          pandoc-cli
+extra-packages: pandoc-crossref == ${PANDOC_CROSSREF_VERSION}
+flags: +embed_data_files +lua -server
+EOF
+
+# Compile the actual pandoc binaries.
 RUN cabal build -j \
     --disable-tests \
     --disable-bench \
-    --allow-newer 'lib:pandoc' \
     pandoc-cli pandoc-crossref
 
 # Copy just the binaries we want into /pandocbins/
@@ -106,6 +113,8 @@ RUN wget https://github.com/alerque/libertinus/releases/download/v7.040/Libertin
 # Build's done. Copy what we need into the actual container for running.
 FROM ${BASE} as run
 
+ARG TARGETPLATFORM
+
 # These binaries are by far the most costly part of the build. Grab them first to minimize invalidation.
 COPY --from=build-pandoc /pandocbins /usr/local/bin
 
@@ -140,7 +149,7 @@ RUN npm install --global --unsafe-perm puppeteer@21.7.0 imgur@2.3.0 mermaid-filt
 ENV PATH="${PATH}:/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux"
 
 # Packages that are needed despite not being used explicitly by the template:
-# catchfile, fancyvrb, hardwrap, lineno, ltablex, latexmk, needspace, pgf, zref
+# catchfile, fancyvrb, footmisc, hardwrap, lineno, ltablex, latexmk, needspace, pgf, zref
 RUN tlmgr update --self && tlmgr install \
     accsupp \
     adjustbox \
@@ -161,6 +170,7 @@ RUN tlmgr update --self && tlmgr install \
     fancyvrb \
     float \
     fontspec \
+    footmisc \
     footnotebackref \
     footnotehyper \
     fvextra \
@@ -204,9 +214,13 @@ RUN apt install -y \
     xorg \
     xvfb
 
-RUN wget https://github.com/jgraph/drawio-desktop/releases/download/v23.0.2/drawio-amd64-23.0.2.deb && \
-    dpkg -i drawio-amd64-23.0.2.deb && \
-    rm drawio-amd64-23.0.2.deb
+ENV DRAWIO_RELEASE=23.1.5
+
+# TARGETPLATFORM is linux/arm64 or linux/amd64. The release for amd64 is called drawio-amd64-23.1.5.deb.
+RUN export DRAWIO_DEB=drawio-${TARGETPLATFORM#linux/}-${DRAWIO_RELEASE}.deb && \
+    wget https://github.com/jgraph/drawio-desktop/releases/download/v${DRAWIO_RELEASE}/${DRAWIO_DEB} && \
+    dpkg -i ${DRAWIO_DEB} && \
+    rm ${DRAWIO_DEB}
 
 # https://stackoverflow.com/questions/52998331/imagemagick-security-policy-pdf-blocking-conversion
 RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
