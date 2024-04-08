@@ -40,33 +40,6 @@ and brands contained herein are the property of their respective owners.
 
 ---
 
-# Document Style
-
-**Key Words**
-
-The key words "MUST," "MUST NOT," "REQUIRED," "SHALL," "SHALL NOT," "SHOULD,"
-"SHOULD NOT," "RECOMMENDED," "MAY," and "OPTIONAL" in this document's normative
-statements are to be interpreted as described in
-[RFC 2119: Key words for use in RFCs to Indicate Requirement Levels](https://www.ietf.org/rfc/rfc2119.txt).
-
-**Statement Type**
-
-Please note an important distinction between different sections of text
-throughout this document. There are two distinctive kinds of text: _informative
-comments_ and _normative statements_. Because most of the text in this
-specification will be of the kind _normative statements_, the authors have
-informally defined it as the default and, as such, have specifically called out
-text of the kind _informative comment_. They have done this by flagging the
-beginning and end of each informative comment and highlighting its text in gray.
-This means that unless text is specifically marked as of the kind _informative
-comment_, it can be considered a _normative statement_.
-
-EXAMPLE:
-
-::: Informative ::::
-Reach out to <admin@trustedcomputinggroup> with any questions about this document.
-::::::::::::::::::::
-
 \tableofcontents
 
 \listoftables
