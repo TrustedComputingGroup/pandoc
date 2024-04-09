@@ -42,38 +42,33 @@ end
 -- Wrap calls to drawio in xvfb-run. Note that --no-sandbox has to be the last argument.
 -- https://github.com/jgraph/drawio-desktop/issues/249
 function drawio(source, dest)
+    print(string.format('converting %s using drawio...', source))
     if not runCommandSuppressOutput(string.format("xvfb-run -a drawio -x -f pdf -o %s %s --no-sandbox 2>&1", dest, source)) then
-        print(string.format('failed to convert %s to %s using drawio, falling back to letting latex try to pick it up', img.src, new_filename))
+        print(string.format('failed to convert %s to %s using drawio, falling back to letting latex try to pick it up', source, dest))
         return false
     end
     return true
 end
 
 function imagemagick(source, dest)
+    print(string.format('converting %s using imagemagick...', source))
     if not runCommandSuppressOutput(string.format("convert -density 300 %s %s 2>&1", source, dest)) then
-        print(string.format('failed to convert %s to %s using imagemagick, falling back to letting latex try to pick it up', img.src, new_filename))
+        print(string.format('failed to convert %s to %s using imagemagick, falling back to letting latex try to pick it up', source, dest))
         return false
     end
     return true
 end
-
-local converters = {
-    ['.drawio'] = drawio,
-    ['.drawio.svg'] = drawio,
-    ['.jpg'] = imagemagick,
-    ['.png'] = imagemagick,
-    ['.svg'] = imagemagick
-}
 
 function string:hassuffix(suffix)
     return self:sub(-#suffix) == suffix
 end
 
 function converterFor(filename)
-    for suffix, handler in pairs(converters) do
-        if filename:hassuffix(suffix) then
-            return handler
-        end
+    if filename:hassuffix('.drawio') or filename:hassuffix('.drawio.svg') then
+        return drawio
+    end
+    if filename:hassuffix('.jpg') or filename:hassuffix('.png') or filename:hassuffix('.svg') then
+        return imagemagick
     end
     return nil
 end
