@@ -178,6 +178,7 @@ RUN tlmgr update --self && tlmgr install \
     geometry \
     hardwrap \
     hyperref \
+    hyphenat \
     koma-script \
     latexmk \
     lineno \
