@@ -719,7 +719,7 @@ $endif$
     \vskip 0.5em
     \setstretch{1.0}
     $if(version)$
-    \large \textsf{Version $version$}\\
+    \large \textsf{Version $version$ $prerelease$}\\
     $endif$
     $if(pr_number)$
       $if(pr_repo_url)$
@@ -744,14 +744,8 @@ $endif$
       \small \textit{This document is an intermediate draft for comment only and is subject to change without notice. Readers should not design products based on this document.}\\
     }
     \vskip 1.5em
-    $if(prerelease)$
-      $if(status)$
-      \LARGE \textbf{TCG $status$ ($prerelease$)}\\
-      $endif$
-    $else$
-      $if(status)$
-      \LARGE \textbf{TCG $status$}\\
-      $endif$
+    $if(status)$
+    \LARGE \textbf{TCG $status$}\\
     $endif$
   \end{textblock*}
   \begin{textblock*}{2cm}(2cm,10.8cm)
