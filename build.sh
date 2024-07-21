@@ -497,6 +497,7 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		--filter=mermaid-filter
 		--lua-filter=informative-sections.lua
 		--lua-filter=convert-images.lua
+		--lua-filter=center-images.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
 		--lua-filter=landscape-pages.lua

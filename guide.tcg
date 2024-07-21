@@ -553,12 +553,23 @@ becomes:
 
 ![Adding an Image](add_plus_button.jpg){#fig:add-plus-button width=60%}
 
-The `{#fig:add-plus-button}` attribute (note there are no spaces between the `)` and the `{`!) does two things:
+Including a figure title (`Adding an Image` between the `[]` above) causes the image to numbered, included in
+the list of figures, and given a caption.
 
-1. Includes the figure in the List of Figures (if you used `\listoffigures` as described in @sec:toc).
-2. Numbers the figure so you can reference it as @fig:add-plus-button by just typing `@fig:add-plus-button`.
+The `{#fig:add-plus-button}` attribute (note there are no spaces between the `)` and the `{`!) allows you to
+reference it as @fig:add-plus-button by just typing `@fig:add-plus-button`.
 
 Including `width=60%` here specifies that the image should take up 60% of the page's width.
+
+Without the title and `#fig` attribute,
+
+```md
+![](add_plus_button.jpg)
+```
+
+looks like:
+
+![](add_plus_button.jpg)
 
 ![An SVG Image](stack.svg){#fig:sample-svg width=50%}
 
