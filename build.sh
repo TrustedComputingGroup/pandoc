@@ -375,12 +375,15 @@ fi
 
 # There are some configuration dependencies required for Mermaid.
 # They have to be in the current directory.
+# --disable-gpu is added here based on:
+# https://github.com/puppeteer/puppeteer/issues/11640
 cat <<- EOF > ./.puppeteer.json
 {
 	"executablePath": "$browser",
 	"args": [
 		"--no-sandbox",
-		"--disable-setuid-sandbox"
+		"--disable-setuid-sandbox",
+		"--disable-gpu"
 	]
 }
 EOF

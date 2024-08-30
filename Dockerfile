@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.3-labs
-ARG BASE=debian:bookworm-20240110-slim
+ARG BASE=debian:bookworm-20240812-slim
 FROM ${BASE} as build-pandoc
 
 WORKDIR /usr/src/pandoc
@@ -13,8 +13,8 @@ RUN apt update && apt install -y \
     zlib1g \
     zlib1g-dev
 
-ENV PANDOC_CLI_VERSION=3.1.12.2
-ENV PANDOC_CROSSREF_VERSION=0.3.17.0
+ENV PANDOC_CLI_VERSION=3.3
+ENV PANDOC_CROSSREF_VERSION=0.3.17.1
 
 RUN cabal update && \
     cabal install -j --only-dependencies \
@@ -143,7 +143,7 @@ RUN apt install -y \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN npm install --global --unsafe-perm puppeteer@21.7.0 imgur@2.3.0 mermaid-filter@1.4.7 typescript@5.3.3 pandiff@0.6.0
+RUN npm install --global --unsafe-perm puppeteer@23.2.1 imgur@2.4.2 mermaid-filter@1.4.7 typescript@5.5.4 pandiff@0.6.0
 
 # Lazy: Just put both possible texlive paths into the path. Only one will get populated.
 ENV PATH="${PATH}:/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux"
@@ -216,7 +216,7 @@ RUN apt install -y \
     xorg \
     xvfb
 
-ENV DRAWIO_RELEASE=23.1.5
+ENV DRAWIO_RELEASE=24.7.8
 
 # TARGETPLATFORM is linux/arm64 or linux/amd64. The release for amd64 is called drawio-amd64-23.1.5.deb.
 RUN export DRAWIO_DEB=drawio-${TARGETPLATFORM#linux/}-${DRAWIO_RELEASE}.deb && \
