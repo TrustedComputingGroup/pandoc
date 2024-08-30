@@ -14,6 +14,7 @@ block_quotes_are_informative_text="no"
 versioned_filenames="no"
 pr_number=""
 pr_repo=""
+DIFFBASE=""
 
 # Start up the dbus daemon (drawio will use it later)
 dbus-daemon --system || echo "Failed to start dbus daemon"
@@ -42,6 +43,7 @@ print_usage() {
 	echo "  --latex=output: enable output of latex and specify the output file name."
 	echo "  --html=output: enable output of html and specify the output file name."
 	echo "  --pdflog=output: enable logging of pdf engine and specify the output file name."
+	echo "  --diff=commit: create diff documents against the provided commit"
 	echo
 	echo "Miscellaneous"
 	echo "  --resourcedir=dir: Set the resource directory, defaults to root for pandoc containers"
@@ -67,6 +69,10 @@ fi
 eval set -- "${options}"
 while true; do
 	case "$1" in
+	--diff)
+		DIFFBASE="${2}"
+		shift 2
+		;;
 	--nogitversion)
 		do_gitstatus="no"
 		do_gitversion="no"
@@ -349,6 +355,9 @@ echo "browser: ${browser}"
 echo "use git version: ${do_gitversion}"
 echo "use table rules: ${table_rules}"
 echo "make block quotes Informative Text: ${block_quotes_are_informative_text}"
+if [ ! -z "${DIFFBASE}" ]; then
+	echo "diff against: ${DIFFBASE}"
+fi
 if test "${do_gitversion}" == "yes"; then
 	echo "Git Generated Document Version Information"
 	if [ ! -z "${GIT_VERSION}" ]; then
