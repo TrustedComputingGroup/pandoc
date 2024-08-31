@@ -54,7 +54,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4.1.1
         with:
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-tags: true
 
       - name: Cache LaTeX files
@@ -76,7 +76,7 @@ jobs:
         uses: trustedcomputinggroup/markdown@latest
         with:
           input-md: guide.tcg
-          extra-build-options: "--versioned_filenames --pr_number=${{ github.event.number }} --pr_repo=${{ github.repository }} "
+          extra-build-options: "--versioned_filenames --pr_number=${{ github.event.number }} --pr_repo=${{ github.repository }} --diff=${{ github.event.pull_request.base.sha }}"
           output-pdf: guide.pdf
           output-tex: guide.tex
           output-docx: guide.docx
