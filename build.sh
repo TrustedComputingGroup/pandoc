@@ -405,17 +405,22 @@ mkdir -p "${build_dir}/$(dirname ${input_file})"
 cp "${input_file}" "${build_dir}/${input_file}"
 
 # Hacks
+do_md_fixups() {
+	FIXUP_INPUT=$1
 
-# \newpage is rendered as the string "\newpage" in GitHub markdown.
-# Transform horizontal rules into \newpages.
-# Exception: the YAML front matter of the document, so undo the instance on the first line.
-# TODO: Turn this into a Pandoc filter.
-sed -i.bak 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${build_dir}/${input_file}"
+	# \newpage is rendered as the string "\newpage" in GitHub markdown.
+	# Transform horizontal rules into \newpages.
+	# Exception: the YAML front matter of the document, so undo the instance on the first line.
+	# TODO: Turn this into a Pandoc filter.
+	sed -i.bak 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${FIXUP_INPUT}"
 
-# Transform sections before the table of contents into section*, which does not number them.
-# While we're doing this, transform the case to all-caps.
-# TODO: Turn this into a Pandoc filter.
-sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${build_dir}/${input_file}"
+	# Transform sections before the table of contents into section*, which does not number them.
+	# While we're doing this, transform the case to all-caps.
+	# TODO: Turn this into a Pandoc filter.
+	sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${FIXUP_INPUT}"
+}
+
+do_md_fixups "${build_dir}/${input_file}"
 
 if test "${do_gitversion}" == "yes"; then
 	# If using the git information for versioning, grab the date from there
@@ -608,6 +613,7 @@ if [ -n "${DIFFBASE}" -a -n "${pdf_output}" ]; then
 	fi
 	git checkout "${DIFFBASE}"
 	cp "${input_file}" "${build_dir}/${input_file}"
+	do_md_fixups "${build_dir}/${input_file}"
 
 	do_latex "${build_dir}/${input_file}" "${TEMP_DIFFBASE_TEX_FILE}"
 	echo "latexdiffing"
@@ -627,6 +633,7 @@ if [ -n "${DIFFBASE}" -a -n "${pdf_output}" ]; then
 		git stash apply stash^{/pandoc_diff_stash}
 	fi
 	cp "${input_file}" "${build_dir}/${input_file}"
+	do_md_fixups "${build_dir}/${input_file}"
 
 fi
 
