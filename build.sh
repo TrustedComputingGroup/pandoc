@@ -472,11 +472,12 @@ retry () {
 	return 1
 }
 
-TEMP_TEX_FILE="${build_dir}/${input_file}.tex"
-TEMP_DIFFBASE_TEX_FILE="${build_dir}/${input_file}_diffbase.tex"
-TEMP_DIFF_TEX_FILE="${build_dir}/${input_file}_diff.tex"
+TEMP_TEX_FILE="${build_dir}/${input_file%.*}.tmp.tex"
+TEMP_DIFFBASE_TEX_FILE="${build_dir}/${input_file%.*}_diffbase.tmp.tex"
+TEMP_DIFF_TEX_FILE="${build_dir}/${input_file%.*}_diff.tmp.tex"
 
 LATEX_LOG="${build_dir}/latex.log"
+LATEXDIFF_LOG="${build_dir}/latexdiff.log"
 
 analyze_latex_logs() {
 	local LOGFILE=$1
@@ -551,16 +552,16 @@ do_pdf() {
 	TEMP_PDF_OUTPUT="$(basename ${TEX_INPUT%.*}).pdf"
 
 	echo "Rendering PDF of ${TEX_INPUT} to ${PDF_OUTPUT}"
-	start=$(date +%s)
+		start=$(date +%s)
 	# Runs twice to populate aux, lof, lot, toc, then update the page numbers due
-	# to the impact of populating the lof, lot, toc.
+		# to the impact of populating the lof, lot, toc.
 	latexmk "${TEX_INPUT}" -pdflatex=xelatex -pdf -diagnostics > "${LOG_OUTPUT}"
-	if [ $? -ne 0 ]; then
-		FAILED=true
-		echo "PDF output failed"
-	fi
-	end=$(date +%s)
-	# Write any LaTeX errors to stderr.
+		if [ $? -ne 0 ]; then
+			FAILED=true
+			echo "PDF output failed"
+		fi
+		end=$(date +%s)
+		# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "] ! " "${LOG_OUTPUT}"
 
 	# Clean up after latexmk. Deliberately leave behind aux, lof, lot, and toc to speed up future runs.
@@ -599,10 +600,18 @@ fi
 if [ -n "${DIFFBASE}" -a -n "${pdf_output}" ]; then
 	echo "Generating PDF diff against ${DIFFBASE}..."
 	githead=$(git symbolic-ref -q --short HEAD || git describe --tags --exact-match)
+	# Check if we need to stash
+	git diff-index --quiet HEAD --
+	GIT_DIR_IS_CLEAN=$?
+	if [ $GIT_DIR_IS_CLEAN -ne 0 ]; then
+		git stash push -m pandoc_diff_stash
+	fi
 	git checkout "${DIFFBASE}"
+	cp "${input_file}" "${build_dir}/${input_file}"
+
 	do_latex "${build_dir}/${input_file}" "${TEMP_DIFFBASE_TEX_FILE}"
 	echo "latexdiffing"
-	latexdiff "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}"
+	latexdiff "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${LATEXDIFF_LOG}"
 	diff_tex_output=$(prefix_filename _diff "${latex_output}")
 	diff_output=$(prefix_filename _diff "${pdf_output}")
 	do_pdf "${TEMP_DIFF_TEX_FILE}" "${diff_output}" "${LATEX_LOG}"
@@ -614,6 +623,11 @@ if [ -n "${DIFFBASE}" -a -n "${pdf_output}" ]; then
 
 	echo "Reverting repository state to ${githead}"
 	git checkout ${githead}
+	if [ $GIT_DIR_IS_CLEAN -ne 0 ]; then
+		git stash apply stash^{/pandoc_diff_stash}
+	fi
+	cp "${input_file}" "${build_dir}/${input_file}"
+
 fi
 
 # Generate the docx output

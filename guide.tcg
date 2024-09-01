@@ -480,8 +480,6 @@ To create an informative note, use the following syntax:
 ::: Informative ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 This is the only informative text block in this document.
 
-These blocks can contain multiple paragraphs.
-
 These blocks can even contain tables! However, be wary of providing tables that are
 too large in an Informative Text block.
 
@@ -493,12 +491,10 @@ too large in an Informative Text block.
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ```
 
-The above Markdown code becomes:
+The above Markdown code now becomes:
 
 ::: Informative ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 This is the only informative text block in this document.
-
-These blocks can contain multiple paragraphs, bulleted lists, etc.
 
 These blocks can even contain tables!
 
