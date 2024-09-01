@@ -473,11 +473,8 @@ retry () {
 }
 
 TEMP_TEX_FILE="${build_dir}/${input_file}.tex"
-DIFFBASE_TEX_FILE="${build_dir}/${input_file}_diffbase.tex"
-# LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
-TEMP_PDF_FILE="$(basename ${input_file}).pdf"
-DIFF_TEX_FILE="$(basename ${input_file})_diff.tex"
-DIFF_PDF_FILE="$(basename ${input_file})_diff.pdf"
+TEMP_DIFFBASE_TEX_FILE="${build_dir}/${input_file}_diffbase.tex"
+TEMP_DIFF_TEX_FILE="${build_dir}/${input_file}_diff.tex"
 
 LATEX_LOG="${build_dir}/latex.log"
 
@@ -551,9 +548,9 @@ do_pdf() {
 	TEX_INPUT="$1"
 	PDF_OUTPUT="$2"
 	LOG_OUTPUT="$3"
-	TEMP_PDF_OUTPUT="$(basename ${TEX_INPUT}).pdf"
+	TEMP_PDF_OUTPUT="$(basename ${TEX_INPUT%.*}).pdf"
 
-	echo "Rendering PDF"
+	echo "Rendering PDF of ${TEX_INPUT} to ${PDF_OUTPUT}"
 	start=$(date +%s)
 	# Runs twice to populate aux, lof, lot, toc, then update the page numbers due
 	# to the impact of populating the lof, lot, toc.
@@ -573,7 +570,7 @@ do_pdf() {
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "! " "${LATEX_LOG}"
 	if [[ ! "${FAILED}" = "true" ]]; then
-		mv "${TEMP_PDF_OUTPUT}" "${pdf_output}"
+		mv "${TEMP_PDF_OUTPUT}" "${PDF_OUTPUT}"
 		analyze_latex_logs "${LATEX_LOG}"
 	fi
 	rm -f "${LATEX_LOG}"
@@ -603,16 +600,16 @@ if [ -n "${DIFFBASE}" -a -n "${pdf_output}" ]; then
 	echo "Generating PDF diff against ${DIFFBASE}..."
 	githead=$(git symbolic-ref -q --short HEAD || git describe --tags --exact-match)
 	git checkout "${DIFFBASE}"
-	do_latex "${build_dir}/${input_file}" "${DIFFBASE_TEX_FILE}"
+	do_latex "${build_dir}/${input_file}" "${TEMP_DIFFBASE_TEX_FILE}"
 	echo "latexdiffing"
-	latexdiff "${DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${DIFF_TEX_FILE}"
+	latexdiff "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}"
 	diff_tex_output=$(prefix_filename _diff "${latex_output}")
 	diff_output=$(prefix_filename _diff "${pdf_output}")
-	do_pdf "${DIFF_TEX_FILE}" "${diff_output}" "${LATEX_LOG}"
+	do_pdf "${TEMP_DIFF_TEX_FILE}" "${diff_output}" "${LATEX_LOG}"
 
 	rm -f "${LATEX_LOG}"
 	if [ -n "${latex_output}" ]; then
-		cp "${DIFF_TEX_FILE}" "${diff_tex_output}"
+		cp "${TEMP_DIFF_TEX_FILE}" "${diff_tex_output}"
 	fi
 
 	echo "Reverting repository state to ${githead}"
