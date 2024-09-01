@@ -182,6 +182,7 @@ RUN tlmgr update --self && tlmgr install \
     koma-script \
     latexmk \
     lineno \
+    listings \
     ltablex \
     makecell \
     mathtools \
@@ -199,6 +200,7 @@ RUN tlmgr update --self && tlmgr install \
     setspace \
     textpos \
     titling \
+    ulem \
     unicode-math \
     upquote \
     varwidth \
@@ -210,6 +212,7 @@ RUN tlmgr update --self && tlmgr install \
 RUN apt install -y \
     dbus \
     imagemagick \
+    latexdiff \
     libxss1 \
     openbox \
     wget \

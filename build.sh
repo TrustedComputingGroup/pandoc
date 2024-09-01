@@ -473,8 +473,11 @@ retry () {
 }
 
 TEMP_TEX_FILE="${build_dir}/${input_file}.tex"
+DIFFBASE_TEX_FILE="${build_dir}/${input_file}_diffbase.tex"
 # LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
 TEMP_PDF_FILE="$(basename ${input_file}).pdf"
+DIFF_TEX_FILE="$(basename ${input_file})_diff.tex"
+DIFF_PDF_FILE="$(basename ${input_file})_diff.pdf"
 
 LATEX_LOG="${build_dir}/latex.log"
 
@@ -496,12 +499,10 @@ analyze_latex_logs() {
 	fi
 }
 
-# For LaTeX and PDF output, we use Pandoc to compile to an intermediate .tex file
-# That way, LaTeX errors on PDF output point to lines that match the .tex.
-if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
-	mkdir -p "$(dirname ${pdf_output})"
-	echo "Generating LaTeX Output"
+do_latex() {
 	start=$(date +%s)
+	input=$1
+	output=$2
 	CMD=(pandoc
 		--standalone
 		--template=tcg.tex
@@ -535,8 +536,8 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		--from=${FROM}
 		${extra_pandoc_options}
 		--to=latex
-		--output="'${TEMP_TEX_FILE}'"
-		"'${build_dir}/${input_file}'")
+		--output="'${output}'"
+		"'${input}'")
 	retry 5 "${CMD[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
@@ -544,40 +545,78 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 	fi
 	end=$(date +%s)
 	echo "Elapsed time: $(($end-$start)) seconds"
+}
+
+do_pdf() {
+	TEX_INPUT="$1"
+	PDF_OUTPUT="$2"
+	LOG_OUTPUT="$3"
+	TEMP_PDF_OUTPUT="$(basename ${TEX_INPUT}).pdf"
+
+	echo "Rendering PDF"
+	start=$(date +%s)
+	# Runs twice to populate aux, lof, lot, toc, then update the page numbers due
+	# to the impact of populating the lof, lot, toc.
+	latexmk "${TEX_INPUT}" -pdflatex=xelatex -pdf -diagnostics > "${LOG_OUTPUT}"
+	if [ $? -ne 0 ]; then
+		FAILED=true
+		echo "PDF output failed"
+	fi
+	end=$(date +%s)
+	# Write any LaTeX errors to stderr.
+	>&2 grep -A 5 "] ! " "${LOG_OUTPUT}"
+
+	# Clean up after latexmk. Deliberately leave behind aux, lof, lot, and toc to speed up future runs.
+	rm -f *.fls
+	rm -f *.log
+	echo "Elapsed time: $(($end-$start)) seconds"
+	# Write any LaTeX errors to stderr.
+	>&2 grep -A 5 "! " "${LATEX_LOG}"
+	if [[ ! "${FAILED}" = "true" ]]; then
+		mv "${TEMP_PDF_OUTPUT}" "${pdf_output}"
+		analyze_latex_logs "${LATEX_LOG}"
+	fi
+	rm -f "${LATEX_LOG}"
+}
+
+# For LaTeX and PDF output, we use Pandoc to compile to an intermediate .tex file
+# That way, LaTeX errors on PDF output point to lines that match the .tex.
+if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
+	mkdir -p "$(dirname ${pdf_output})"
+	echo "Generating LaTeX Output"
+	do_latex "${build_dir}/${input_file}" "${TEMP_TEX_FILE}"
 
 	if [ -n "${latex_output}" ]; then
 		cp "${TEMP_TEX_FILE}" "${latex_output}"
 	fi
 
 	if [ -n "${pdf_output}" ]; then
-		echo "Rendering PDF"
-		start=$(date +%s)
-		# Run twice to populate aux, lof, lot, toc, then update the page numbers due
-		# to the impact of populating the lof, lot, toc.
-		latexmk "${TEMP_TEX_FILE}" -pdflatex=xelatex -pdf -diagnostics > "${LATEX_LOG}"
-		if [ $? -ne 0 ]; then
-			FAILED=true
-			echo "PDF output failed"
-		fi
-		end=$(date +%s)
-		# Write any LaTeX errors to stderr.
-		>&2 grep -A 5 "] ! " "${LATEX_LOG}"
-
-		# Clean up after latexmk. Deliberately leave behind aux, lof, lot, and toc to speed up future runs.
-		rm -f *.fls
-		rm -f *.log
+		do_pdf "${TEMP_TEX_FILE}" "${pdf_output}" "${LATEX_LOG}"
 		if [ -n "${pdflog_output}" ]; then
 			cp "${LATEX_LOG}" "${pdflog_output}"
 		fi
-		echo "Elapsed time: $(($end-$start)) seconds"
-		# Write any LaTeX errors to stderr.
-		>&2 grep -A 5 "! " "${LATEX_LOG}"
-		if [[ ! "${FAILED}" = "true" ]]; then
-			mv "${TEMP_PDF_FILE}" "${pdf_output}"
-			analyze_latex_logs "${LATEX_LOG}"
-		fi
 		rm -f "${LATEX_LOG}"
 	fi	
+fi
+
+if [ -n "${DIFFBASE}" -a -n "${pdf_output}" ]; then
+	echo "Generating PDF diff against ${DIFFBASE}..."
+	githead=$(git symbolic-ref -q --short HEAD || git describe --tags --exact-match)
+	git checkout "${DIFFBASE}"
+	do_latex "${build_dir}/${input_file}" "${DIFFBASE_TEX_FILE}"
+	echo "latexdiffing"
+	latexdiff "${DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${DIFF_TEX_FILE}"
+	diff_tex_output=$(prefix_filename _diff "${latex_output}")
+	diff_output=$(prefix_filename _diff "${pdf_output}")
+	do_pdf "${DIFF_TEX_FILE}" "${diff_output}" "${LATEX_LOG}"
+
+	rm -f "${LATEX_LOG}"
+	if [ -n "${latex_output}" ]; then
+		cp "${DIFF_TEX_FILE}" "${diff_tex_output}"
+	fi
+
+	echo "Reverting repository state to ${githead}"
+	git checkout ${githead}
 fi
 
 # Generate the docx output
