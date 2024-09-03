@@ -149,7 +149,7 @@ RUN npm install --global --unsafe-perm puppeteer@23.2.1 imgur@2.4.2 mermaid-filt
 ENV PATH="${PATH}:/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux"
 
 # Packages that are needed despite not being used explicitly by the template:
-# bigfoot, catchfile, fancyvrb, footmisc, hardwrap, lineno, ltablex, latexmk, needspace, pgf, zref
+# bigfoot, catchfile, changebar, datetime2, fancyvrb, footmisc, hardwrap, lineno, ltablex, latexmk, marginnote, needspace, pdfcomment, pgf, soulpos, zref
 RUN tlmgr update --self && tlmgr install \
     accsupp \
     adjustbox \
@@ -164,6 +164,8 @@ RUN tlmgr update --self && tlmgr install \
     booktabs \
     caption \
     catchfile \
+    changebar \
+    datetime2 \
     draftwatermark \
     enumitem \
     etoolbox \
@@ -185,6 +187,7 @@ RUN tlmgr update --self && tlmgr install \
     listings \
     ltablex \
     makecell \
+    marginnote \
     mathtools \
     mdframed \
     microtype \
@@ -192,12 +195,14 @@ RUN tlmgr update --self && tlmgr install \
     needspace \
     newunicodechar \
     pagecolor \
+    pdfcomment \
     pdflscape \
     pgf \
     polyglossia \
     ragged2e \
     selnolig \
     setspace \
+    soulpos \
     textpos \
     titling \
     ulem \

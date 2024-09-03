@@ -570,8 +570,7 @@ do_pdf() {
 	>&2 grep -A 5 "] ! " "${LOG_OUTPUT}"
 
 	# Clean up after latexmk. Deliberately leave behind aux, lof, lot, and toc to speed up future runs.
-	rm -f *.fls
-	rm -f *.log
+
 	echo "Elapsed time: $(($end-$start)) seconds"
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "! " "${LATEX_LOG}"
@@ -579,6 +578,8 @@ do_pdf() {
 		mv "${TEMP_PDF_OUTPUT}" "${PDF_OUTPUT}"
 		analyze_latex_logs "${LATEX_LOG}"
 	fi
+	rm -f *.fls
+	rm -f *.log
 	rm -f "${LATEX_LOG}"
 }
 
@@ -598,7 +599,6 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		if [ -n "${pdflog_output}" ]; then
 			cp "${LATEX_LOG}" "${pdflog_output}"
 		fi
-		rm -f "${LATEX_LOG}"
 	fi	
 fi
 
@@ -617,12 +617,11 @@ if [ -n "${DIFFBASE}" -a -n "${pdf_output}" ]; then
 
 	do_latex "${build_dir}/${input_file}" "${TEMP_DIFFBASE_TEX_FILE}"
 	echo "latexdiffing"
-	latexdiff "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${LATEXDIFF_LOG}"
+	latexdiff --type CCHANGEBAR --driver xetex "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${LATEXDIFF_LOG}"
 	diff_tex_output=$(prefix_filename _diff "${latex_output}")
 	diff_output=$(prefix_filename _diff "${pdf_output}")
 	do_pdf "${TEMP_DIFF_TEX_FILE}" "${diff_output}" "${LATEX_LOG}"
 
-	rm -f "${LATEX_LOG}"
 	if [ -n "${latex_output}" ]; then
 		cp "${TEMP_DIFF_TEX_FILE}" "${diff_tex_output}"
 	fi
