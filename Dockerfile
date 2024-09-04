@@ -146,11 +146,13 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 RUN npm install --global --unsafe-perm puppeteer@23.2.1 imgur@2.4.2 mermaid-filter@1.4.7 typescript@5.5.4 pandiff@0.6.0
 
 # Lazy: Just put both possible texlive paths into the path. Only one will get populated.
-ENV PATH="${PATH}:/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux"
+# Prefer to use LaTeX binaries from /usr/local/texlive instead of other paths.
+ENV PATH="/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux:${PATH}"
 
 # Packages that are needed despite not being used explicitly by the template:
-# bigfoot, catchfile, changebar, datetime2, fancyvrb, footmisc, hardwrap, lineno, ltablex, latexmk, marginnote, needspace, pdfcomment, pgf, soulpos, zref
-RUN tlmgr update --self && tlmgr install \
+# bigfoot, catchfile, changebar, datetime2, fancyvrb, footmisc, hardwrap, lineno, ltablex, latexmk, lualatex-math, luatex, luatex85, luatexbase, marginnote, needspace, pdfcomment, pgf, selnolig, soulpos, zref
+# --force is required because tlmgr throws a warning trying to install selnolig
+RUN tlmgr update --self && tlmgr install --force \
     accsupp \
     adjustbox \
     appendix \
@@ -186,6 +188,10 @@ RUN tlmgr update --self && tlmgr install \
     lineno \
     listings \
     ltablex \
+    lualatex-math \
+    luatex \
+    luatex85 \
+    luatexbase \
     makecell \
     marginnote \
     mathtools \
@@ -210,7 +216,6 @@ RUN tlmgr update --self && tlmgr install \
     upquote \
     varwidth \
     xcolor \
-    xetex \
     xltabular \
     zref
 

@@ -420,6 +420,15 @@ do_md_fixups() {
 	sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${FIXUP_INPUT}"
 }
 
+do_tex_fixups() {
+	FIXUP_INPUT=$1
+
+	# We have a "code" enviroment that displays everything, including comments.
+	# Sometimes latexdiff injects comments that it thinks won't be displayed.
+	# Delete those latexdiff comments.
+	sed -i.bak 's/%DIFDELCMD.*//g' "${FIXUP_INPUT}"
+}
+
 do_md_fixups "${build_dir}/${input_file}"
 
 if test "${do_gitversion}" == "yes"; then
@@ -560,7 +569,7 @@ do_pdf() {
 		start=$(date +%s)
 	# Runs twice to populate aux, lof, lot, toc, then update the page numbers due
 		# to the impact of populating the lof, lot, toc.
-	latexmk "${TEX_INPUT}" -pdflatex=xelatex -pdf -diagnostics > "${LOG_OUTPUT}"
+	latexmk "${TEX_INPUT}" -pdflatex="lualatex %O %S" -pdf -dvi- -ps- -pdf -diagnostics > "${LOG_OUTPUT}"
 		if [ $? -ne 0 ]; then
 			FAILED=true
 			echo "PDF output failed"
@@ -573,14 +582,14 @@ do_pdf() {
 
 	echo "Elapsed time: $(($end-$start)) seconds"
 	# Write any LaTeX errors to stderr.
-	>&2 grep -A 5 "! " "${LATEX_LOG}"
+	>&2 grep -A 5 "! " "${LOG_OUTPUT}"
 	if [[ ! "${FAILED}" = "true" ]]; then
 		mv "${TEMP_PDF_OUTPUT}" "${PDF_OUTPUT}"
-		analyze_latex_logs "${LATEX_LOG}"
+		analyze_latex_logs "${LOG_OUTPUT}"
 	fi
 	rm -f *.fls
-	rm -f *.log
-	rm -f "${LATEX_LOG}"
+	# rm -f *.log
+	# rm -f "${LOG_OUTPUT}"
 }
 
 # For LaTeX and PDF output, we use Pandoc to compile to an intermediate .tex file
@@ -617,14 +626,18 @@ if [ -n "${DIFFBASE}" -a -n "${pdf_output}" ]; then
 
 	do_latex "${build_dir}/${input_file}" "${TEMP_DIFFBASE_TEX_FILE}"
 	echo "latexdiffing"
-	latexdiff --type CCHANGEBAR --driver xetex "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${LATEXDIFF_LOG}"
+	latexdiff --type PDFCOMMENT --floattype FLOATSAFE --driver lualatex "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${LATEXDIFF_LOG}"
+	do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
+
 	diff_tex_output=$(prefix_filename _diff "${latex_output}")
 	diff_output=$(prefix_filename _diff "${pdf_output}")
-	do_pdf "${TEMP_DIFF_TEX_FILE}" "${diff_output}" "${LATEX_LOG}"
+	do_pdf "${TEMP_DIFF_TEX_FILE}" "${diff_output}" "${LATEXDIFF_LOG}"
 
 	if [ -n "${latex_output}" ]; then
 		cp "${TEMP_DIFF_TEX_FILE}" "${diff_tex_output}"
 	fi
+
+	cat "${LATEXDIFF_LOG}"
 
 	echo "Reverting repository state to ${githead}"
 	git checkout ${githead}
