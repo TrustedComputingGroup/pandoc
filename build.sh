@@ -4,6 +4,7 @@ RESOURCE_DIR="/"  #default to root of pandoc container buildout
 DO_GITVERSION="yes"
 DO_GITSTATUS="yes"
 PDF_OUTPUT=""
+DIFFPDF_OUTPUT=""
 DOCX_OUTPUT=""
 HTML_OUTPUT=""
 LATEX_OUTPUT=""
@@ -41,7 +42,9 @@ print_usage() {
 	echo "  --latex=output: enable output of latex and specify the output file name."
 	echo "  --html=output: enable output of html and specify the output file name."
 	echo "  --pdflog=output: enable logging of pdf engine and specify the output file name."
-	echo "  --diff=commit: create diff documents against the provided commit"
+	echo "  --diffpdf=output: enable output of pdf diff and specify the output file name (requires --diffpdf)"
+	echo "  --diffbase=ref: create diff documents against the provided commit (no effect if --diffpdf is not provided)"
+	echo "  --diffpdflog=output: enable logging of pdf engine during diffing and specify the output file name."
 	echo
 	echo "Miscellaneous"
 	echo "  --resourcedir=dir: Set the resource directory, defaults to root for pandoc containers"
@@ -57,7 +60,7 @@ print_usage() {
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diff:,pdf:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,diffpdflog:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -66,7 +69,7 @@ fi
 eval set -- "${options}"
 while true; do
 	case "$1" in
-	--diff)
+	--diffbase)
 		DIFFBASE="${2}"
 		shift 2
 		;;
@@ -115,6 +118,14 @@ while true; do
 		PDF_OUTPUT="${2}"
 		shift 2
 		;;
+	--diffpdf)
+		DIFFPDF_OUTPUT="${2}"
+		shift 2
+		;;
+	--diffpdflog)
+		DIFFPDFLOG_OUTPUT="${2}"
+		shift 2
+		;;
 	--html)
 		HTML_OUTPUT="${2}"
 		shift 2
@@ -157,6 +168,7 @@ readonly PR_REPO
 readonly DIFFBASE
 readonly PDF_ENGINE
 readonly PDFLOG_OUTPUT
+readonly DIFFPDFLOG_OUTPUT
 
 shift "$(( OPTIND - 1 ))"
 
@@ -198,6 +210,25 @@ mkdir -p "${BUILD_DIR}"
 cp -r . "${BUILD_DIR}"
 cd "${BUILD_DIR}"
 
+# Let git work
+git config --global --add safe.directory "${BUILD_DIR}"
+
+# make sure the diff arguments make sense
+if [ -n "${DIFFPDF_OUTPUT}" ]; then
+	# --diff must be provided, and it must make sense to Git
+	if [ -z "${DIFFBASE}" ]; then
+		>&2 echo "--diffpdf was provided, but --diffbase was not."
+		print_usage
+		exit 1
+	fi
+	git rev-parse --verify "${DIFFBASE}" > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		>&2 echo "--diffbase was provided, but it was not a valid Git commit, tag, or branch name."
+		print_usage
+		exit 1
+	fi
+fi
+
 # Get the default browser
 if ! browser=$(command -v "chromium-browser"); then
 	if ! browser=$(command -v "chromium"); then
@@ -210,8 +241,6 @@ fi
 # figure out git version and revision if needed.
 EXTRA_PANDOC_OPTIONS=""
 if test "${DO_GITVERSION}" == "yes"; then
-	git config --global --add safe.directory /workspace
-
 	# TODO: Should we fail if dirty?
 	raw_version="$(git describe --always --tags)"
 	echo "Git version: ${raw_version}"
@@ -348,6 +377,9 @@ if [ "${VERSIONED_FILENAMES}" == "yes" ]; then
 	if [ ! -z "${PDF_OUTPUT}" ]; then
 		PDF_OUTPUT=$(prefix_filename "${version_prefix}" "${PDF_OUTPUT}")
 	fi
+	if [ ! -z "${DIFFPDF_OUTPUT}" ]; then
+		DIFFPDF_OUTPUT=$(prefix_filename "${DIFFBASE}_to_${version_prefix}" "${DIFFPDF_OUTPUT}")
+	fi
 	if [ ! -z "${LATEX_OUTPUT}" ]; then
 		LATEX_OUTPUT=$(prefix_filename "${version_prefix}" "${LATEX_OUTPUT}")
 	fi
@@ -356,6 +388,7 @@ if [ "${VERSIONED_FILENAMES}" == "yes" ]; then
 	fi
 fi
 readonly PDF_OUTPUT
+readonly DIFFPDF_OUTPUT
 readonly DOCX_OUTPUT
 readonly HTML_OUTPUT
 readonly LATEX_OUTPUT
@@ -364,16 +397,15 @@ echo "Starting Build with"
 echo "file: ${INPUT_FILE}"
 echo "docx: ${DOCX_OUTPUT:-none}"
 echo "pdf: ${PDF_OUTPUT:-none} (engine: ${PDF_ENGINE})"
+echo "diff pdf: ${DIFFPDF_OUTPUT:-none} (engine: ${PDF_ENGINE})"
 echo "latex: ${latex_ouput:-none}"
 echo "html: ${html_ouput:-none}"
 echo "resource dir: ${RESOURCE_DIR}"
 echo "build dir: ${BUILD_DIR}"
 echo "browser: ${browser}"
 echo "use git version: ${DO_GITVERSION}"
-echo "use table rules: ${TABLE_RULES}"
-echo "make block quotes Informative Text: ${BLOCK_QUOTES_ARE_INFORMATIVE_TEXT}"
 if [ ! -z "${DIFFBASE}" ]; then
-	echo "diff against: ${DIFFBASE}"
+	echo "diff against: ${DIFFBASE} ($(git rev-parse --verify ${DIFFBASE}))"
 fi
 if test "${DO_GITVERSION}" == "yes"; then
 	echo "Git Generated Document Version Information"
@@ -418,18 +450,27 @@ if [ "${BLOCK_QUOTES_ARE_INFORMATIVE_TEXT}" == "yes" ]; then
 	EXTRA_PANDOC_OPTIONS+=" --lua-filter=informative-quote-blocks.lua"
 fi
 
-# Hacks
+# Use sed to perform some basic fixups on certain input files.
+do_md_fixups() {
+	local input=$1
+	# \newpage is rendered as the string "\newpage" in GitHub markdown.
+	# Transform horizontal rules into \newpages.
+	# Exception: the YAML front matter of the document, so undo the instance on the first line.
+	# TODO: Turn this into a Pandoc filter.
+	sed -i.bak 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${input}"
 
-# \newpage is rendered as the string "\newpage" in GitHub markdown.
-# Transform horizontal rules into \newpages.
-# Exception: the YAML front matter of the document, so undo the instance on the first line.
-# TODO: Turn this into a Pandoc filter.
-sed -i.bak 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${BUILD_DIR}/${INPUT_FILE}"
-
-# Transform sections before the table of contents into section*, which does not number them.
-# While we're doing this, transform the case to all-caps.
-# TODO: Turn this into a Pandoc filter.
-sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${BUILD_DIR}/${INPUT_FILE}"
+	# Transform sections before the table of contents into section*, which does not number them.
+	# While we're doing this, transform the case to all-caps.
+	# TODO: Turn this into a Pandoc filter.
+	sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${input}"
+}
+do_tex_fixups() {
+	local input=$1
+	# We have a "code" enviroment that displays everything, including comments.
+	# Sometimes latexdiff injects comments that it thinks won't be displayed.
+	# Delete those latexdiff comments.
+	sed -i.bak 's/%DIFDELCMD.*//g' "${input}"
+}
 
 if test "${DO_GITVERSION}" == "yes"; then
 	# If using the git information for versioning, grab the date from there
@@ -565,7 +606,7 @@ do_pdf() {
 
 	local logfile=$3
 	# LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
-	readonly temp_pdf_file="$(basename ${input%.*}).pdf"
+	local temp_pdf_file="$(basename ${input%.*}).pdf"
 
 	echo "Rendering PDF"
 	local start=$(date +%s)
@@ -581,9 +622,6 @@ do_pdf() {
 	>&2 grep -A 5 "] ! " "${logfile}"
 
 	# Copy aux, lof, lot, and toc files back to the source directory so they can be cached and speed up future runs.
-	if [ -n "${PDFLOG_OUTPUT}" ]; then
-		cp "${logfile}" "${SOURCE_DIR}/${PDFLOG_OUTPUT}"
-	fi
 	cp *.aux "${SOURCE_DIR}"
 	cp *.lof "${SOURCE_DIR}"
 	cp *.lot "${SOURCE_DIR}"
@@ -700,7 +738,8 @@ do_html() {
 # Generate .tex output if either latex or pdf formats were requested, because
 # the .tex is an intermediate requirement to the pdf.
 readonly TEMP_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.tex"
-if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
+if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" -o -n "${DIFFPDF_OUTPUT}" ]; then
+	do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
 	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TEX_FILE}"
 fi
 if [ -n "${LATEX_OUTPUT}" ]; then
@@ -711,6 +750,12 @@ fi
 readonly LATEX_LOG="${BUILD_DIR}/latex.log"
 if [ -n "${PDF_OUTPUT}" ]; then
 	do_pdf "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${PDF_OUTPUT}" "${LATEX_LOG}"
+
+	# Copy the logs, if requested.
+	if [ -n "${PDFLOG_OUTPUT}" ]; then
+		mkdir -p "$(dirname ${SOURCE_DIR}/${PDFLOG_OUTPUT})"
+		cp "${LATEX_LOG}" "${SOURCE_DIR}/${PDFLOG_OUTPUT}"
+	fi
 fi	
 
 # Generate the docx output
@@ -722,6 +767,32 @@ fi
 export MERMAID_FILTER_FORMAT="svg"
 if [ -n "${HTML_OUTPUT}" ]; then
 	do_html "${BUILD_DIR}/${INPUT_FILE}" "${SOURCE_DIR}/${HTML_OUTPUT}"
+fi
+
+# Generate the diff output
+# Do this last so we can do whatever we want to the build directory
+readonly TEMP_DIFFBASE_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.diffbase.tex"
+readonly TEMP_DIFF_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.diff.tex"
+readonly TEMP_LATEXDIFF_LOG="${BUILD_DIR}/latexdiff.log"
+export MERMAID_FILTER_FORMAT="pdf"
+if [ -n "${DIFFPDF_OUTPUT}" ]; then
+	git reset --hard ${DIFFBASE}
+
+	do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
+	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}"
+	latexdiff --type PDFCOMMENT --driver "${PDF_DRIVER}" "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
+	do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
+	do_pdf "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${LATEX_LOG}"
+
+	# Copy the logs, if requested. Note that this file gets the latexdiff and PDF driver output.
+	if [ -n "${DIFFPDFLOG_OUTPUT}" ]; then
+		mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT})"
+		echo "latexdiff output:" > "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		cat "${TEMP_LATEXDIFF_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		echo "" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		echo "${PDF_DRIVER} output:" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		cat "${LATEX_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+	fi
 fi
 
 if [ "${FAILED}" = "true" ]; then
