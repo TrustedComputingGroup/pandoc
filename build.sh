@@ -484,11 +484,7 @@ retry () {
 	return 1
 }
 
-readonly TEMP_TEX_FILE="${BUILD_DIR}/${input_file}.tex"
-# LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
-readonly TEMP_PDF_FILE="$(basename ${input_file}).pdf"
-readonly LATEX_LOG="${BUILD_DIR}/latex.log"
-
+# Greps the latex logs to surface relevant errors and warnings.
 analyze_latex_logs() {
 	local logfile=$1
 
@@ -507,18 +503,15 @@ analyze_latex_logs() {
 	fi
 }
 
-# For LaTeX and PDF output, we use Pandoc to compile to an intermediate .tex file
-# That way, LaTeX errors on PDF output point to lines that match the .tex.
-if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
-	if [ -n "${PDF_OUTPUT}" ]; then
-		mkdir -p "${SOURCE_DIR}/$(dirname ${PDF_OUTPUT})"
-	fi
-	if [ -n "${LATEX_OUTPUT}" ]; then
-		mkdir -p "${SOURCE_DIR}/$(dirname ${LATEX_OUTPUT})"
-	fi
+# Takes Markdown input and writes LaTeX output using pandoc.
+do_latex() {
+	local input=$1
+	local output=$2
+	mkdir -p "$(dirname ${output})"
+
 	echo "Generating LaTeX Output"
-	start=$(date +%s)
-	cmd=(pandoc
+	local start=$(date +%s)
+	local cmd=(pandoc
 		--standalone
 		--template=tcg.tex
 		--lua-filter=mermaid-code-class-pre.lua
@@ -551,61 +544,69 @@ if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
 		--from=${FROM}
 		${extra_pandoc_options}
 		--to=latex
-		--output="'${TEMP_TEX_FILE}'"
-		"'${BUILD_DIR}/${input_file}'")
+		--output="'${output}'"
+		"'${input}'")
 	retry 5 "${cmd[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "LaTeX/PDF output failed"
 	fi
-	end=$(date +%s)
+	local end=$(date +%s)
 	echo "Elapsed time: $(($end-$start)) seconds"
+}
 
-	if [ -n "${LATEX_OUTPUT}" ]; then
-		cp "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
+# Takes LaTeX input and writes PDF output and logs using the PDF engine of choice.
+do_pdf() {
+	local input=$1
+	local output=$2
+	mkdir -p "$(dirname ${output})"
+
+	local logfile=$3
+	# LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
+	readonly temp_pdf_file="$(basename ${input}).pdf"
+
+	echo "Rendering PDF"
+	start=$(date +%s)
+	# latexmk takes care of repeatedly calling the PDF engine. A run may take multiple passes due to the need to
+	# update .toc and other files.
+	latexmk "${input}" -pdflatex="${PDF_ENGINE}" -pdf -diagnostics > "${logfile}"
+	if [ $? -ne 0 ]; then
+		FAILED=true
+		echo "PDF output failed"
 	fi
+	end=$(date +%s)
+	# Write any LaTeX errors to stderr.
+	>&2 grep -A 5 "] ! " "${logfile}"
 
-	if [ -n "${PDF_OUTPUT}" ]; then
-		echo "Rendering PDF"
-		start=$(date +%s)
-		# latexmk takes care of repeatedly calling the PDF engine. A run may take multiple passes due to the need to
-		# update .toc and other files.
-		latexmk "${TEMP_TEX_FILE}" -pdflatex="${PDF_ENGINE}" -pdf -diagnostics > "${LATEX_LOG}"
-		if [ $? -ne 0 ]; then
-			FAILED=true
-			echo "PDF output failed"
-		fi
-		end=$(date +%s)
-		# Write any LaTeX errors to stderr.
-		>&2 grep -A 5 "] ! " "${LATEX_LOG}"
+	# Copy aux, lof, lot, and toc files back to the source directory so they can be cached and speed up future runs.
+	if [ -n "${PDFLOG_OUTPUT}" ]; then
+		cp "${logfile}" "${PDFLOG_OUTPUT}"
+	fi
+	cp *.aux "${SOURCE_DIR}"
+	cp *.lof "${SOURCE_DIR}"
+	cp *.lot "${SOURCE_DIR}"
+	cp *.toc "${SOURCE_DIR}"
+	# Copy converted images so they can be cached as well.
+	cp *.convert.pdf "${SOURCE_DIR}"
+	echo "Elapsed time: $(($end-$start)) seconds"
+	# Write any LaTeX errors to stderr.
+	>&2 grep -A 5 "! " "${logfile}"
+	if [[ ! "${FAILED}" = "true" ]]; then
+		mv "${temp_pdf_file}" "${output}"
+		analyze_latex_logs "${logfile}"
+	fi
+}
 
-		# Copy aux, lof, lot, and toc files back to the source directory so they can be cached and speed up future runs.
-		if [ -n "${PDFLOG_OUTPUT}" ]; then
-			cp "${LATEX_LOG}" "${PDFLOG_OUTPUT}"
-		fi
-		cp *.aux "${SOURCE_DIR}"
-		cp *.lof "${SOURCE_DIR}"
-		cp *.lot "${SOURCE_DIR}"
-		cp *.toc "${SOURCE_DIR}"
-		# Copy converted images so they can be cached as well.
-		cp *.convert.pdf "${SOURCE_DIR}"
-		echo "Elapsed time: $(($end-$start)) seconds"
-		# Write any LaTeX errors to stderr.
-		>&2 grep -A 5 "! " "${LATEX_LOG}"
-		if [[ ! "${FAILED}" = "true" ]]; then
-			mv "${TEMP_PDF_FILE}" "${SOURCE_DIR}/${PDF_OUTPUT}"
-			analyze_latex_logs "${LATEX_LOG}"
-		fi
-	fi	
-fi
-
-# Generate the docx output
-if [ -n "${DOCX_OUTPUT}" ]; then
+# Takes Markdown input and writes Docx output using pandoc.
+do_docx() {
+	local input=$1
+	local output=$2
+	mkdir -p "$(dirname ${output})"
 	# Prepare the title-page for the docx version.
 	subtitle="Version ${GIT_VERSION:-${DATE}}, Revision ${GIT_REVISION:-0}"
 	# Prefix the document with a Word page-break, since Pandoc doesn't do docx
 	# title pages.
-	cat <<- 'EOF' > "${BUILD_DIR}/${input_file}.prefixed"
+	cat <<- 'EOF' > "${input}.prefixed"
 	```{=openxml}
 	<w:p>
 		<w:r>
@@ -614,9 +615,8 @@ if [ -n "${DOCX_OUTPUT}" ]; then
 	</w:p>
 	```
 	EOF
-	cat ${BUILD_DIR}/${input_file} >> ${BUILD_DIR}/${input_file}.prefixed
+	cat "${BUILD_DIR}/${input_file}" >> "${input}.prefixed"
 
-	mkdir -p "${SOURCE_DIR}/$(dirname ${DOCX_OUTPUT})"
 	echo "Generating DOCX Output"
 	cmd=(pandoc
 		--embed-resources
@@ -636,22 +636,23 @@ if [ -n "${DOCX_OUTPUT}" ]; then
 		--reference-doc=/resources/templates/tcg.docx
 		${extra_pandoc_options}
 		--to=docx
-		--output="'${SOURCE_DIR}/${DOCX_OUTPUT}'"
-		"'${BUILD_DIR}/${input_file}.prefixed'")
+		--output="'${output}'"
+		"'${input}.prefixed'")
 	retry 5 "${cmd[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "DOCX output failed"
 	else
-		echo "DOCX output generated to file: ${DOCX_OUTPUT}"
+		echo "DOCX output generated to file: ${output}"
 	fi
-fi
+}
 
-# Generate the html output
-export MERMAID_FILTER_FORMAT="svg"
-if [ -n "${HTML_OUTPUT}" ]; then
-	mkdir -p "${SOURCE_DIR}/$(dirname ${HTML_OUTPUT})"
-	echo "Generating html Output"
+# Takes Markdown input and writes HTML output using pandoc.
+do_html() {
+	local input=$1
+	local output=$2
+	mkdir -p "$(dirname ${output})"
+	echo "Generating HTML Output"
 	cmd=(pandoc
 		--toc
 		-V colorlinks=true
@@ -683,27 +684,48 @@ if [ -n "${HTML_OUTPUT}" ]; then
 		--from=${FROM}
 		${extra_pandoc_options}
 		--to=html
-		--output="'${SOURCE_DIR}/${HTML_OUTPUT}'"
-		"'${BUILD_DIR}/${input_file}'")
+		--output="'${output}'"
+		"'${input}'")
 	retry 5 "${cmd[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "HTML output failed"
 	else
-		echo "HTML output generated to file: ${HTML_OUTPUT}"
+		echo "HTML output generated to file: ${output}"
 	fi
+}
+
+# Generate .tex output if either latex or pdf formats were requested, because
+# the .tex is an intermediate requirement to the pdf.
+readonly TEMP_TEX_FILE="${BUILD_DIR}/${input_file}.tex"
+if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
+	do_latex "${BUILD_DIR}/${input_file}" "${TEMP_TEX_FILE}"
+fi
+if [ -n "${LATEX_OUTPUT}" ]; then
+	cp "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
+fi
+
+# Generate the PDF output
+readonly LATEX_LOG="${BUILD_DIR}/latex.log"
+if [ -n "${PDF_OUTPUT}" ]; then
+	do_pdf "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${PDF_OUTPUT}" "${LATEX_LOG}"
+fi	
+
+# Generate the docx output
+if [ -n "${DOCX_OUTPUT}" ]; then
+	do_docx "${BUILD_DIR}/${input_file}" "${SOURCE_DIR}/${DOCX_OUTPUT}"
+fi
+
+# Generate the html output
+export MERMAID_FILTER_FORMAT="svg"
+if [ -n "${HTML_OUTPUT}" ]; then
+	do_html "${BUILD_DIR}/${input_file}" "${SOURCE_DIR}/${HTML_OUTPUT}"
 fi
 
 if [ "${FAILED}" = "true" ]; then
 	echo "Overall workflow failed"
 	exit 1
 fi
-
-# on success remove this output
-rm -f core
-rm -f mermaid-filter.err .mermaid-config.json
-rm -f .puppeteer.json
-rm -f "${BUILD_DIR}/${input_file}.bak"
 
 echo "Overall workflow succeeded"
 exit 0
