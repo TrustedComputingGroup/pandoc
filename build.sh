@@ -168,18 +168,20 @@ if [ $# -ne 1 ]; then
 fi
 
 # input file check
-input_file=$1
-if [ ! -e "${input_file}" ]; then
-   >&2 echo "${input_file} does not exist, exiting..."
+INPUT_FILE=$1
+if [ ! -e "${INPUT_FILE}" ]; then
+   >&2 echo "${INPUT_FILE} does not exist, exiting..."
    exit 1
 fi
 
+# at least one output must be requested
 if [ -z "${PDF_OUTPUT}${LATEX_OUTPUT}${DOCX_OUTPUT}${HTML_OUTPUT}" ]; then
 	>&2 echo "Expected --pdf, --docx, --html, or --latex option"
 	print_usage
 	exit 1
 fi
 
+# the pdf engine must be supported
 if [ "${PDF_ENGINE}" != "xelatex" -a "${PDF_ENGINE}" != "lualatex" ]; then
 	>&2 echo "Unsupported PDF engine '${PDF_ENGINE}', expected one of: xelatex, lualatex"
 	print_usage
@@ -206,7 +208,7 @@ if ! browser=$(command -v "chromium-browser"); then
 fi
 
 # figure out git version and revision if needed.
-extra_pandoc_options=""
+EXTRA_PANDOC_OPTIONS=""
 if test "${DO_GITVERSION}" == "yes"; then
 	git config --global --add safe.directory /workspace
 
@@ -269,25 +271,25 @@ if test "${DO_GITVERSION}" == "yes"; then
 
 	if [ ! -z "${PR_NUMBER}" ]; then
 		# In the case of a PR, always just provide the PR number and commit
-		extra_pandoc_options+=" --metadata=PR_NUMBER:${PR_NUMBER}"
-		extra_pandoc_options+=" --metadata=revision:${GIT_COMMIT}"
+		EXTRA_PANDOC_OPTIONS+=" --metadata=PR_NUMBER:${PR_NUMBER}"
+		EXTRA_PANDOC_OPTIONS+=" --metadata=revision:${GIT_COMMIT}"
 		status="Pull Request"
 		if [ ! -z "${PR_REPO}" ]; then
-			extra_pandoc_options+=" --metadata=PR_REPO_url:https://github.com/${PR_REPO}"
+			EXTRA_PANDOC_OPTIONS+=" --metadata=PR_REPO_url:https://github.com/${PR_REPO}"
 		fi
 	else
 		# Otherwise, populate the full context based on what git show said.
-		extra_pandoc_options+=" --metadata=version:${GIT_VERSION}"
+		EXTRA_PANDOC_OPTIONS+=" --metadata=version:${GIT_VERSION}"
 
 		if [ ! -z "${GIT_PRERELEASE}" ]; then
-			extra_pandoc_options+=" --metadata=prerelease:${GIT_PRERELEASE}"
+			EXTRA_PANDOC_OPTIONS+=" --metadata=prerelease:${GIT_PRERELEASE}"
 		fi
 
 		# Omit the revision if there isn't one (i.e., we are at straight-up Version)
 		if [ ! -z "${GIT_REVISION}" ]; then
-			extra_pandoc_options+=" --metadata=revision:${GIT_REVISION}"
+			EXTRA_PANDOC_OPTIONS+=" --metadata=revision:${GIT_REVISION}"
 		elif [ -z "${GIT_VERSION}" ]; then
-			extra_pandoc_options+=" --metadata=revision:${GIT_COMMIT}"
+			EXTRA_PANDOC_OPTIONS+=" --metadata=revision:${GIT_COMMIT}"
 		fi
 
 		# Do we set document status based on git version?
@@ -304,7 +306,7 @@ if test "${DO_GITVERSION}" == "yes"; then
 			fi
 		fi
 	fi
-	extra_pandoc_options+=" --metadata=status:\"${status}\""
+	EXTRA_PANDOC_OPTIONS+=" --metadata=status:\"${status}\""
 
 fi # Done with git version handling
 
@@ -359,7 +361,7 @@ readonly HTML_OUTPUT
 readonly LATEX_OUTPUT
 
 echo "Starting Build with"
-echo "file: ${input_file}"
+echo "file: ${INPUT_FILE}"
 echo "docx: ${DOCX_OUTPUT:-none}"
 echo "pdf: ${PDF_OUTPUT:-none} (engine: ${PDF_ENGINE})"
 echo "latex: ${latex_ouput:-none}"
@@ -413,7 +415,7 @@ cat <<- EOF > ./.puppeteer.json
 EOF
 
 if [ "${BLOCK_QUOTES_ARE_INFORMATIVE_TEXT}" == "yes" ]; then
-	extra_pandoc_options+=" --lua-filter=informative-quote-blocks.lua"
+	EXTRA_PANDOC_OPTIONS+=" --lua-filter=informative-quote-blocks.lua"
 fi
 
 # Hacks
@@ -422,19 +424,19 @@ fi
 # Transform horizontal rules into \newpages.
 # Exception: the YAML front matter of the document, so undo the instance on the first line.
 # TODO: Turn this into a Pandoc filter.
-sed -i.bak 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${BUILD_DIR}/${input_file}"
+sed -i.bak 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${BUILD_DIR}/${INPUT_FILE}"
 
 # Transform sections before the table of contents into section*, which does not number them.
 # While we're doing this, transform the case to all-caps.
 # TODO: Turn this into a Pandoc filter.
-sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${BUILD_DIR}/${input_file}"
+sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${BUILD_DIR}/${INPUT_FILE}"
 
 if test "${DO_GITVERSION}" == "yes"; then
 	# If using the git information for versioning, grab the date from there
 	DATE="$(git show -s --date=format:'%Y/%m/%d' --format=%ad)"
 else
 	# Else, grab the date from the front matter and generate the full date and year.
-	DATE="$(grep date: "${input_file}" | head -n 1 | cut -d ' ' -f 2)"
+	DATE="$(grep date: "${INPUT_FILE}" | head -n 1 | cut -d ' ' -f 2)"
 fi
 
 YEAR="$(date --date="${DATE}" +%Y)"
@@ -542,7 +544,7 @@ do_latex() {
 		--metadata=colorlinks:true
 		--metadata=contact:admin@trustedcomputinggroup.org
 		--from=${FROM}
-		${extra_pandoc_options}
+		${EXTRA_PANDOC_OPTIONS}
 		--to=latex
 		--output="'${output}'"
 		"'${input}'")
@@ -563,10 +565,10 @@ do_pdf() {
 
 	local logfile=$3
 	# LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
-	readonly temp_pdf_file="$(basename ${input}).pdf"
+	readonly temp_pdf_file="$(basename ${input%.*}).pdf"
 
 	echo "Rendering PDF"
-	start=$(date +%s)
+	local start=$(date +%s)
 	# latexmk takes care of repeatedly calling the PDF engine. A run may take multiple passes due to the need to
 	# update .toc and other files.
 	latexmk "${input}" -pdflatex="${PDF_ENGINE}" -pdf -diagnostics > "${logfile}"
@@ -574,13 +576,13 @@ do_pdf() {
 		FAILED=true
 		echo "PDF output failed"
 	fi
-	end=$(date +%s)
+	local end=$(date +%s)
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "] ! " "${logfile}"
 
 	# Copy aux, lof, lot, and toc files back to the source directory so they can be cached and speed up future runs.
 	if [ -n "${PDFLOG_OUTPUT}" ]; then
-		cp "${logfile}" "${PDFLOG_OUTPUT}"
+		cp "${logfile}" "${SOURCE_DIR}/${PDFLOG_OUTPUT}"
 	fi
 	cp *.aux "${SOURCE_DIR}"
 	cp *.lof "${SOURCE_DIR}"
@@ -603,7 +605,7 @@ do_docx() {
 	local output=$2
 	mkdir -p "$(dirname ${output})"
 	# Prepare the title-page for the docx version.
-	subtitle="Version ${GIT_VERSION:-${DATE}}, Revision ${GIT_REVISION:-0}"
+	local subtitle="Version ${GIT_VERSION:-${DATE}}, Revision ${GIT_REVISION:-0}"
 	# Prefix the document with a Word page-break, since Pandoc doesn't do docx
 	# title pages.
 	cat <<- 'EOF' > "${input}.prefixed"
@@ -615,7 +617,7 @@ do_docx() {
 	</w:p>
 	```
 	EOF
-	cat "${BUILD_DIR}/${input_file}" >> "${input}.prefixed"
+	cat "${BUILD_DIR}/${INPUT_FILE}" >> "${input}.prefixed"
 
 	echo "Generating DOCX Output"
 	cmd=(pandoc
@@ -634,7 +636,7 @@ do_docx() {
 		--from='${FROM}+raw_attribute'
 		--metadata=subtitle:"'${subtitle}'"
 		--reference-doc=/resources/templates/tcg.docx
-		${extra_pandoc_options}
+		${EXTRA_PANDOC_OPTIONS}
 		--to=docx
 		--output="'${output}'"
 		"'${input}.prefixed'")
@@ -653,7 +655,7 @@ do_html() {
 	local output=$2
 	mkdir -p "$(dirname ${output})"
 	echo "Generating HTML Output"
-	cmd=(pandoc
+	local cmd=(pandoc
 		--toc
 		-V colorlinks=true
 		-V linkcolor=blue
@@ -682,7 +684,7 @@ do_html() {
 		--metadata=colorlinks:true
 		--metadata=contact:admin@trustedcomputinggroup.org
 		--from=${FROM}
-		${extra_pandoc_options}
+		${EXTRA_PANDOC_OPTIONS}
 		--to=html
 		--output="'${output}'"
 		"'${input}'")
@@ -697,9 +699,9 @@ do_html() {
 
 # Generate .tex output if either latex or pdf formats were requested, because
 # the .tex is an intermediate requirement to the pdf.
-readonly TEMP_TEX_FILE="${BUILD_DIR}/${input_file}.tex"
+readonly TEMP_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.tex"
 if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
-	do_latex "${BUILD_DIR}/${input_file}" "${TEMP_TEX_FILE}"
+	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TEX_FILE}"
 fi
 if [ -n "${LATEX_OUTPUT}" ]; then
 	cp "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
@@ -713,13 +715,13 @@ fi
 
 # Generate the docx output
 if [ -n "${DOCX_OUTPUT}" ]; then
-	do_docx "${BUILD_DIR}/${input_file}" "${SOURCE_DIR}/${DOCX_OUTPUT}"
+	do_docx "${BUILD_DIR}/${INPUT_FILE}" "${SOURCE_DIR}/${DOCX_OUTPUT}"
 fi
 
 # Generate the html output
 export MERMAID_FILTER_FORMAT="svg"
 if [ -n "${HTML_OUTPUT}" ]; then
-	do_html "${BUILD_DIR}/${input_file}" "${SOURCE_DIR}/${HTML_OUTPUT}"
+	do_html "${BUILD_DIR}/${INPUT_FILE}" "${SOURCE_DIR}/${HTML_OUTPUT}"
 fi
 
 if [ "${FAILED}" = "true" ]; then
