@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-IS_TMP="yes"	  # default to no tmp directory
 RESOURCE_DIR="/"  #default to root of pandoc container buildout
 DO_GITVERSION="yes"
 DO_GITSTATUS="yes"
@@ -20,8 +19,8 @@ dbus-daemon --system || echo "Failed to start dbus daemon"
 
 # Setup an EXIT handler
 on_exit() {
-	if [[ "${IS_TMP}" == "yes" && -e "${build_dir}" ]]; then
-		rm -rf "${build_dir}"
+	if [[ -e "${BUILD_DIR}" ]]; then
+		rm -rf "${BUILD_DIR}"
 	fi
 }
 
@@ -36,7 +35,7 @@ print_usage() {
 	echo
 	echo "Options:"
 	echo
-	echo "Output Control"
+	echo "Output Control (note that output file names are always relative to the current directory)"
 	echo "  --docx=output: enable output of docx and specify the output file name."
 	echo "  --pdf=output: enable output of pdf and specify the output file name."
 	echo "  --latex=output: enable output of latex and specify the output file name."
@@ -46,7 +45,6 @@ print_usage() {
 	echo
 	echo "Miscellaneous"
 	echo "  --resourcedir=dir: Set the resource directory, defaults to root for pandoc containers"
-	echo "  --notmp: Do not use a tempory directory for processing steps, instead create a directory called \"build\" in CWD"
 	echo "  --gitversion: legacy flag, no effect (default starting with 0.9.0)"
     echo "  --gitstatus: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --nogitversion: Do not use git to describe the generate document version and revision metadata."
@@ -59,7 +57,7 @@ print_usage() {
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diff:,pdf:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diff:,pdf:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -95,10 +93,6 @@ while true; do
 		;;
 	--table_rules)
 		# legacy option; just ignore this
-		shift
-		;;
-	--notmp)
-		IS_TMP="no"
 		shift
 		;;
 	--docx)
@@ -154,7 +148,6 @@ while true; do
 done
 
 # Mark globals set from the command line as readonly when we're done updating them.
-readonly IS_TMP
 readonly RESOURCE_DIR
 readonly DO_GITVERSION
 readonly DO_GITSTATUS
@@ -193,13 +186,15 @@ if [ "${PDF_ENGINE}" != "xelatex" -a "${PDF_ENGINE}" != "lualatex" ]; then
 	exit 1
 fi
 
-# Set up the output directory, either tmp or build in pwd.
-if [ "${IS_TMP}" == "yes" ]; then
-	build_dir="/tmp/tcg.pandoc"
-else
-	build_dir="$(pwd)/build"
-fi
-mkdir -p "${build_dir}"
+# Set up the build directory, either tmp or build in pwd.
+readonly BUILD_DIR="/tmp/tcg.pandoc"
+readonly SOURCE_DIR=$(pwd)
+mkdir -p "${BUILD_DIR}"
+# Copy everything into the build directory, then change to that directory.
+# This will allow us to manipulate the Git state without side effects
+# to callers of docker_run.
+cp -r . "${BUILD_DIR}"
+cd "${BUILD_DIR}"
 
 # Get the default browser
 if ! browser=$(command -v "chromium-browser"); then
@@ -369,9 +364,8 @@ echo "docx: ${DOCX_OUTPUT:-none}"
 echo "pdf: ${PDF_OUTPUT:-none} (engine: ${PDF_ENGINE})"
 echo "latex: ${latex_ouput:-none}"
 echo "html: ${html_ouput:-none}"
-echo "use tmp: ${IS_TMP}"
 echo "resource dir: ${RESOURCE_DIR}"
-echo "build dir: ${build_dir}"
+echo "build dir: ${BUILD_DIR}"
 echo "browser: ${browser}"
 echo "use git version: ${DO_GITVERSION}"
 echo "use table rules: ${TABLE_RULES}"
@@ -422,21 +416,18 @@ if [ "${BLOCK_QUOTES_ARE_INFORMATIVE_TEXT}" == "yes" ]; then
 	extra_pandoc_options+=" --lua-filter=informative-quote-blocks.lua"
 fi
 
-mkdir -p "${build_dir}/$(dirname ${input_file})"
-cp "${input_file}" "${build_dir}/${input_file}"
-
 # Hacks
 
 # \newpage is rendered as the string "\newpage" in GitHub markdown.
 # Transform horizontal rules into \newpages.
 # Exception: the YAML front matter of the document, so undo the instance on the first line.
 # TODO: Turn this into a Pandoc filter.
-sed -i.bak 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${build_dir}/${input_file}"
+sed -i.bak 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${BUILD_DIR}/${input_file}"
 
 # Transform sections before the table of contents into section*, which does not number them.
 # While we're doing this, transform the case to all-caps.
 # TODO: Turn this into a Pandoc filter.
-sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${build_dir}/${input_file}"
+sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${BUILD_DIR}/${input_file}"
 
 if test "${DO_GITVERSION}" == "yes"; then
 	# If using the git information for versioning, grab the date from there
@@ -493,10 +484,10 @@ retry () {
 	return 1
 }
 
-readonly TEMP_TEX_FILE="${build_dir}/${input_file}.tex"
+readonly TEMP_TEX_FILE="${BUILD_DIR}/${input_file}.tex"
 # LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
 readonly TEMP_PDF_FILE="$(basename ${input_file}).pdf"
-readonly LATEX_LOG="${build_dir}/latex.log"
+readonly LATEX_LOG="${BUILD_DIR}/latex.log"
 
 analyze_latex_logs() {
 	local logfile=$1
@@ -520,10 +511,10 @@ analyze_latex_logs() {
 # That way, LaTeX errors on PDF output point to lines that match the .tex.
 if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
 	if [ -n "${PDF_OUTPUT}" ]; then
-		mkdir -p "$(dirname ${PDF_OUTPUT})"
+		mkdir -p "${SOURCE_DIR}/$(dirname ${PDF_OUTPUT})"
 	fi
 	if [ -n "${LATEX_OUTPUT}" ]; then
-		mkdir -p "$(dirname ${LATEX_OUTPUT})"
+		mkdir -p "${SOURCE_DIR}/$(dirname ${LATEX_OUTPUT})"
 	fi
 	echo "Generating LaTeX Output"
 	start=$(date +%s)
@@ -561,7 +552,7 @@ if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
 		${extra_pandoc_options}
 		--to=latex
 		--output="'${TEMP_TEX_FILE}'"
-		"'${build_dir}/${input_file}'")
+		"'${BUILD_DIR}/${input_file}'")
 	retry 5 "${cmd[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
@@ -571,14 +562,14 @@ if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
 	echo "Elapsed time: $(($end-$start)) seconds"
 
 	if [ -n "${LATEX_OUTPUT}" ]; then
-		cp "${TEMP_TEX_FILE}" "${LATEX_OUTPUT}"
+		cp "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
 	fi
 
 	if [ -n "${PDF_OUTPUT}" ]; then
 		echo "Rendering PDF"
 		start=$(date +%s)
-		# Run twice to populate aux, lof, lot, toc, then update the page numbers due
-		# to the impact of populating the lof, lot, toc.
+		# latexmk takes care of repeatedly calling the PDF engine. A run may take multiple passes due to the need to
+		# update .toc and other files.
 		latexmk "${TEMP_TEX_FILE}" -pdflatex="${PDF_ENGINE}" -pdf -diagnostics > "${LATEX_LOG}"
 		if [ $? -ne 0 ]; then
 			FAILED=true
@@ -588,20 +579,23 @@ if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
 		# Write any LaTeX errors to stderr.
 		>&2 grep -A 5 "] ! " "${LATEX_LOG}"
 
-		# Clean up after latexmk. Deliberately leave behind aux, lof, lot, and toc to speed up future runs.
-		rm -f *.fls
-		rm -f *.log
+		# Copy aux, lof, lot, and toc files back to the source directory so they can be cached and speed up future runs.
 		if [ -n "${PDFLOG_OUTPUT}" ]; then
 			cp "${LATEX_LOG}" "${PDFLOG_OUTPUT}"
 		fi
+		cp *.aux "${SOURCE_DIR}"
+		cp *.lof "${SOURCE_DIR}"
+		cp *.lot "${SOURCE_DIR}"
+		cp *.toc "${SOURCE_DIR}"
+		# Copy converted images so they can be cached as well.
+		cp *.convert.pdf "${SOURCE_DIR}"
 		echo "Elapsed time: $(($end-$start)) seconds"
 		# Write any LaTeX errors to stderr.
 		>&2 grep -A 5 "! " "${LATEX_LOG}"
 		if [[ ! "${FAILED}" = "true" ]]; then
-			mv "${TEMP_PDF_FILE}" "${PDF_OUTPUT}"
+			mv "${TEMP_PDF_FILE}" "${SOURCE_DIR}/${PDF_OUTPUT}"
 			analyze_latex_logs "${LATEX_LOG}"
 		fi
-		rm -f "${LATEX_LOG}"
 	fi	
 fi
 
@@ -611,7 +605,7 @@ if [ -n "${DOCX_OUTPUT}" ]; then
 	subtitle="Version ${GIT_VERSION:-${DATE}}, Revision ${GIT_REVISION:-0}"
 	# Prefix the document with a Word page-break, since Pandoc doesn't do docx
 	# title pages.
-	cat <<- 'EOF' > "${build_dir}/${input_file}.prefixed"
+	cat <<- 'EOF' > "${BUILD_DIR}/${input_file}.prefixed"
 	```{=openxml}
 	<w:p>
 		<w:r>
@@ -620,9 +614,9 @@ if [ -n "${DOCX_OUTPUT}" ]; then
 	</w:p>
 	```
 	EOF
-	cat ${build_dir}/${input_file} >> ${build_dir}/${input_file}.prefixed
+	cat ${BUILD_DIR}/${input_file} >> ${BUILD_DIR}/${input_file}.prefixed
 
-	mkdir -p "$(dirname ${DOCX_OUTPUT})"
+	mkdir -p "${SOURCE_DIR}/$(dirname ${DOCX_OUTPUT})"
 	echo "Generating DOCX Output"
 	cmd=(pandoc
 		--embed-resources
@@ -642,8 +636,8 @@ if [ -n "${DOCX_OUTPUT}" ]; then
 		--reference-doc=/resources/templates/tcg.docx
 		${extra_pandoc_options}
 		--to=docx
-		--output="'${DOCX_OUTPUT}'"
-		"'${build_dir}/${input_file}.prefixed'")
+		--output="'${SOURCE_DIR}/${DOCX_OUTPUT}'"
+		"'${BUILD_DIR}/${input_file}.prefixed'")
 	retry 5 "${cmd[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
@@ -656,7 +650,7 @@ fi
 # Generate the html output
 export MERMAID_FILTER_FORMAT="svg"
 if [ -n "${HTML_OUTPUT}" ]; then
-	mkdir -p "$(dirname ${HTML_OUTPUT})"
+	mkdir -p "${SOURCE_DIR}/$(dirname ${HTML_OUTPUT})"
 	echo "Generating html Output"
 	cmd=(pandoc
 		--toc
@@ -689,8 +683,8 @@ if [ -n "${HTML_OUTPUT}" ]; then
 		--from=${FROM}
 		${extra_pandoc_options}
 		--to=html
-		--output="'${HTML_OUTPUT}'"
-		"'${build_dir}/${input_file}'")
+		--output="'${SOURCE_DIR}/${HTML_OUTPUT}'"
+		"'${BUILD_DIR}/${input_file}'")
 	retry 5 "${cmd[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
@@ -709,7 +703,7 @@ fi
 rm -f core
 rm -f mermaid-filter.err .mermaid-config.json
 rm -f .puppeteer.json
-rm -f "${build_dir}/${input_file}.bak"
+rm -f "${BUILD_DIR}/${input_file}.bak"
 
 echo "Overall workflow succeeded"
 exit 0
