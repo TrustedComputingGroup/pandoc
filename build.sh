@@ -186,11 +186,11 @@ if [ "${PDF_ENGINE}" != "xelatex" -a "${PDF_ENGINE}" != "lualatex" ]; then
 	exit 1
 fi
 
-# Set up the build directory, either tmp or build in pwd.
+# Set up the build directory.
 readonly BUILD_DIR="/tmp/tcg.pandoc"
 readonly SOURCE_DIR=$(pwd)
 mkdir -p "${BUILD_DIR}"
-# Copy everything into the build directory, then change to that directory.
+# Copy everything into the build directory, then cd to that directory.
 # This will allow us to manipulate the Git state without side effects
 # to callers of docker_run.
 cp -r . "${BUILD_DIR}"
