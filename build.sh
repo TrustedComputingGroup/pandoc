@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
 
-is_tmp="yes"	  # default to no tmp directory
-resource_dir="/"  #default to root of pandoc container buildout
-do_gitversion="yes"
-do_gitstatus="yes"
-pdf_output=""
-docx_output=""
-html_output=""
-latex_output=""
-pdflog_output=""
-table_rules="no"
-block_quotes_are_informative_text="no"
-versioned_filenames="no"
-pr_number=""
-pr_repo=""
+IS_TMP="yes"	  # default to no tmp directory
+RESOURCE_DIR="/"  #default to root of pandoc container buildout
+DO_GITVERSION="yes"
+DO_GITSTATUS="yes"
+PDF_OUTPUT=""
+DOCX_OUTPUT=""
+HTML_OUTPUT=""
+LATEX_OUTPUT=""
+PDFLOG_OUTPUT=""
+VERSIONED_FILENAMES="no"
+PR_NUMBER=""
+PR_REPO=""
 DIFFBASE=""
 PDF_ENGINE=xelatex
 
@@ -22,7 +20,7 @@ dbus-daemon --system || echo "Failed to start dbus daemon"
 
 # Setup an EXIT handler
 on_exit() {
-	if [[ "${is_tmp}" == "yes" && -e "${build_dir}" ]]; then
+	if [[ "${IS_TMP}" == "yes" && -e "${build_dir}" ]]; then
 		rm -rf "${build_dir}"
 	fi
 }
@@ -54,15 +52,14 @@ print_usage() {
 	echo "  --nogitversion: Do not use git to describe the generate document version and revision metadata."
 	echo "  --table_rules: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --plain_quotes: legacy flag, no effect (default starting with 0.9.0)"
-	echo "  --noplain_quotes: use block-quote syntax as informative text"
 	echo "  --versioned_filenames: insert version information before the file extension for outputs"
 	echo "  --pr_number=number: mark the document as a pull-request draft if using Git versioning."
-	echo "  --pr_repo=url: provide the URL for the repository for pull-request drafts (has no effect if --pr_number is not passed)."
+	echo "  --pr_repo=url: provide the URL for the repository for pull-request drafts (has no effect if --PR_NUMBER is not passed)."
 	echo "  --pdf_engine=(xelatex|lualatex): use the given latex engine (default xelatex)"
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,versioned_filenames,pr_number:,pr_repo:,diff:,pdf:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diff:,pdf:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -76,8 +73,8 @@ while true; do
 		shift 2
 		;;
 	--nogitversion)
-		do_gitstatus="no"
-		do_gitversion="no"
+		DO_GITSTATUS="no"
+		DO_GITVERSION="no"
 		shift
 		;;
 	--puppeteer)
@@ -96,24 +93,24 @@ while true; do
 		# legacy option; just ignore this
 		shift
 		;;
-	--noplain_quotes)
-		block_quotes_are_informative_text="yes"
+	--table_rules)
+		# legacy option; just ignore this
 		shift
 		;;
 	--notmp)
-		is_tmp="no"
+		IS_TMP="no"
 		shift
 		;;
 	--docx)
-		docx_output="${2}"
+		DOCX_OUTPUT="${2}"
 		shift 2
 		;;
 	--latex)
-		latex_output="${2}"
+		LATEX_OUTPUT="${2}"
 		shift 2
 		;;
 	--pdflog)
-		pdflog_output="${2}"
+		PDFLOG_OUTPUT="${2}"
 		shift 2
 		;;
 	--pdf_engine)
@@ -121,31 +118,27 @@ while true; do
 		shift 2
 		;;
 	--pdf)
-		pdf_output="${2}"
+		PDF_OUTPUT="${2}"
 		shift 2
 		;;
 	--html)
-		html_output="${2}"
+		HTML_OUTPUT="${2}"
 		shift 2
 		;;
 	--resourcedir)
-		resource_dir="${2}"
+		RESOURCE_DIR="${2}"
 		shift 2
 		;;
-	--table_rules)
-		table_rules="yes"
-		shift
-		;;
 	--versioned_filenames)
-		versioned_filenames="yes"
+		VERSIONED_FILENAMES="yes"
 		shift
 		;;
 	--pr_number)
-		pr_number="${2}"
+		PR_NUMBER="${2}"
 		shift 2
 		;;
 	--pr_repo)
-		pr_repo="${2}"
+		PR_REPO="${2}"
 		shift 2
 		;;
 	--help)
@@ -159,6 +152,18 @@ while true; do
 		;;
 	esac
 done
+
+# Mark globals set from the command line as readonly when we're done updating them.
+readonly IS_TMP
+readonly RESOURCE_DIR
+readonly DO_GITVERSION
+readonly DO_GITSTATUS
+readonly VERSIONED_FILENAMES
+readonly PR_NUMBER
+readonly PR_REPO
+readonly DIFFBASE
+readonly PDF_ENGINE
+readonly PDFLOG_OUTPUT
 
 shift "$(( OPTIND - 1 ))"
 
@@ -176,7 +181,7 @@ if [ ! -e "${input_file}" ]; then
    exit 1
 fi
 
-if [ -z "${pdf_output}${latex_output}${docx_output}${html_output}" ]; then
+if [ -z "${PDF_OUTPUT}${LATEX_OUTPUT}${DOCX_OUTPUT}${HTML_OUTPUT}" ]; then
 	>&2 echo "Expected --pdf, --docx, --html, or --latex option"
 	print_usage
 	exit 1
@@ -189,7 +194,7 @@ if [ "${PDF_ENGINE}" != "xelatex" -a "${PDF_ENGINE}" != "lualatex" ]; then
 fi
 
 # Set up the output directory, either tmp or build in pwd.
-if [ "${is_tmp}" == "yes" ]; then
+if [ "${IS_TMP}" == "yes" ]; then
 	build_dir="/tmp/tcg.pandoc"
 else
 	build_dir="$(pwd)/build"
@@ -207,7 +212,7 @@ fi
 
 # figure out git version and revision if needed.
 extra_pandoc_options=""
-if test "${do_gitversion}" == "yes"; then
+if test "${DO_GITVERSION}" == "yes"; then
 	git config --global --add safe.directory /workspace
 
 	# TODO: Should we fail if dirty?
@@ -267,13 +272,13 @@ if test "${do_gitversion}" == "yes"; then
 			;;
 	esac
 
-	if [ ! -z "${pr_number}" ]; then
+	if [ ! -z "${PR_NUMBER}" ]; then
 		# In the case of a PR, always just provide the PR number and commit
-		extra_pandoc_options+=" --metadata=pr_number:${pr_number}"
+		extra_pandoc_options+=" --metadata=PR_NUMBER:${PR_NUMBER}"
 		extra_pandoc_options+=" --metadata=revision:${GIT_COMMIT}"
 		status="Pull Request"
-		if [ ! -z "${pr_repo}" ]; then
-			extra_pandoc_options+=" --metadata=pr_repo_url:https://github.com/${pr_repo}"
+		if [ ! -z "${PR_REPO}" ]; then
+			extra_pandoc_options+=" --metadata=PR_REPO_url:https://github.com/${PR_REPO}"
 		fi
 	else
 		# Otherwise, populate the full context based on what git show said.
@@ -291,7 +296,7 @@ if test "${do_gitversion}" == "yes"; then
 		fi
 
 		# Do we set document status based on git version?
-		if [ "${do_gitstatus}" == "yes" ]; then
+		if [ "${DO_GITSTATUS}" == "yes" ]; then
 			# If revision is 0 and this is not some kind of prerelease
 			if [ ! -z "${GIT_VERSION}" ] &&  [ -z "${GIT_REVISION}" ] && [ -z "${GIT_PRERELEASE}" ]; then
 				status="Published"
@@ -309,24 +314,24 @@ if test "${do_gitversion}" == "yes"; then
 fi # Done with git version handling
 
 prefix_filename() {
-	local PREFIX=$1
-	local FULL_FILENAME=$2
-	local DIRNAME=$(dirname "${FULL_FILENAME}")
-	local FILENAME=$(basename "${FULL_FILENAME}")
-	local EXTENSION="${FILENAME##*.}"
-	local STRIPPED="${FILENAME%.*}"
-	local RESULT=""
-	if [ ! -z "${DIRNAME}" ]; then
-		RESULT="${DIRNAME}/"
+	local prefix=$1
+	local full_filename=$2
+	local dirname=$(dirname "${full_filename}")
+	local filename=$(basename "${full_filename}")
+	local extension="${filename##*.}"
+	local stripped="${filename%.*}"
+	local result=""
+	if [ ! -z "${dirname}" ]; then
+		result="${dirname}/"
 	fi
-	RESULT="${RESULT}${STRIPPED}${PREFIX}.${EXTENSION}"
-	echo "${RESULT}"
+	result="${result}${stripped}${prefix}.${extension}"
+	echo "${result}"
 }
 
 # Rename output files based on version info
-if [ "${versioned_filenames}" == "yes" ]; then
-	if [ ! -z "${pr_number}" ]; then
-		version_prefix=".pr${pr_number}.${GIT_COMMIT}"
+if [ "${VERSIONED_FILENAMES}" == "yes" ]; then
+	if [ ! -z "${PR_NUMBER}" ]; then
+		version_prefix=".pr${PR_NUMBER}.${GIT_COMMIT}"
 	else
 		version_prefix=""
 		if [ ! -z "${GIT_VERSION}" ]; then
@@ -340,37 +345,41 @@ if [ "${versioned_filenames}" == "yes" ]; then
 		fi
 	fi
 
-	if [ ! -z "${docx_output}" ]; then
-		docx_output=$(prefix_filename "${version_prefix}" "${docx_output}")
+	if [ ! -z "${DOCX_OUTPUT}" ]; then
+		DOCX_OUTPUT=$(prefix_filename "${version_prefix}" "${DOCX_OUTPUT}")
 	fi
-	if [ ! -z "${pdf_output}" ]; then
-		pdf_output=$(prefix_filename "${version_prefix}" "${pdf_output}")
+	if [ ! -z "${PDF_OUTPUT}" ]; then
+		PDF_OUTPUT=$(prefix_filename "${version_prefix}" "${PDF_OUTPUT}")
 	fi
-	if [ ! -z "${latex_output}" ]; then
-		latex_output=$(prefix_filename "${version_prefix}" "${latex_output}")
+	if [ ! -z "${LATEX_OUTPUT}" ]; then
+		LATEX_OUTPUT=$(prefix_filename "${version_prefix}" "${LATEX_OUTPUT}")
 	fi
-	if [ ! -z "${html_output}" ]; then
-		html_output=$(prefix_filename "${version_prefix}" "${html_output}")
+	if [ ! -z "${HTML_OUTPUT}" ]; then
+		HTML_OUTPUT=$(prefix_filename "${version_prefix}" "${HTML_OUTPUT}")
 	fi
 fi
+readonly PDF_OUTPUT
+readonly DOCX_OUTPUT
+readonly HTML_OUTPUT
+readonly LATEX_OUTPUT
 
 echo "Starting Build with"
 echo "file: ${input_file}"
-echo "docx: ${docx_output:-none}"
-echo "pdf: ${pdf_output:-none} (engine: ${PDF_ENGINE})"
+echo "docx: ${DOCX_OUTPUT:-none}"
+echo "pdf: ${PDF_OUTPUT:-none} (engine: ${PDF_ENGINE})"
 echo "latex: ${latex_ouput:-none}"
 echo "html: ${html_ouput:-none}"
-echo "use tmp: ${is_tmp}"
-echo "resource dir: ${resource_dir}"
+echo "use tmp: ${IS_TMP}"
+echo "resource dir: ${RESOURCE_DIR}"
 echo "build dir: ${build_dir}"
 echo "browser: ${browser}"
-echo "use git version: ${do_gitversion}"
-echo "use table rules: ${table_rules}"
-echo "make block quotes Informative Text: ${block_quotes_are_informative_text}"
+echo "use git version: ${DO_GITVERSION}"
+echo "use table rules: ${TABLE_RULES}"
+echo "make block quotes Informative Text: ${BLOCK_QUOTES_ARE_INFORMATIVE_TEXT}"
 if [ ! -z "${DIFFBASE}" ]; then
 	echo "diff against: ${DIFFBASE}"
 fi
-if test "${do_gitversion}" == "yes"; then
+if test "${DO_GITVERSION}" == "yes"; then
 	echo "Git Generated Document Version Information"
 	if [ ! -z "${GIT_VERSION}" ]; then
 		echo "    version: ${GIT_VERSION}"
@@ -384,7 +393,7 @@ if test "${do_gitversion}" == "yes"; then
 	if [ ! -z "${GIT_COMMIT}" ]; then
 		echo "    commit: ${GIT_COMMIT}"
 	fi
-	if [ "${do_gitstatus}" == "yes" ]; then
+	if [ "${DO_GITSTATUS}" == "yes" ]; then
 		echo "    status: ${status}"
 	fi
 fi
@@ -409,7 +418,7 @@ cat <<- EOF > ./.puppeteer.json
 }
 EOF
 
-if [ "${block_quotes_are_informative_text}" == "yes" ]; then
+if [ "${BLOCK_QUOTES_ARE_INFORMATIVE_TEXT}" == "yes" ]; then
 	extra_pandoc_options+=" --lua-filter=informative-quote-blocks.lua"
 fi
 
@@ -429,7 +438,7 @@ sed -i.bak 's/^---$/\\newpage/g;1s/\\newpage/---/g' "${build_dir}/${input_file}"
 # TODO: Turn this into a Pandoc filter.
 sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${build_dir}/${input_file}"
 
-if test "${do_gitversion}" == "yes"; then
+if test "${DO_GITVERSION}" == "yes"; then
 	# If using the git information for versioning, grab the date from there
 	DATE="$(git show -s --date=format:'%Y/%m/%d' --format=%ad)"
 else
@@ -469,52 +478,56 @@ export MERMAID_FILTER_BACKGROUND="transparent"
 # When the Markdown Pandoc writer can preserve rowspan and colspan tables, we
 # should consider running Markdown in its own flow first.
 retry () {
-	local TIMES=$1
+	local times=$1
 	shift
-	local COMMAND="$@"
-	n=1
-	until [ "${n}" -gt "${TIMES}" ]; do
-		eval "${COMMAND[@]}" && return 0
-		if [ "${n}" -lt "${TIMES}" ]; then
-			echo "Assuming transient error. Retrying up to ${TIMES} times..."
+	local command="$@"
+	local n=1
+	until [ "${n}" -gt "${times}" ]; do
+		eval "${command[@]}" && return 0
+		if [ "${n}" -lt "${times}" ]; then
+			echo "Assuming transient error. Retrying up to ${times} times..."
 		fi
 		n=$((n+1))
 	done
-	echo "Command failed after ${TIMES}"
+	echo "Command failed after ${times}"
 	return 1
 }
 
-TEMP_TEX_FILE="${build_dir}/${input_file}.tex"
+readonly TEMP_TEX_FILE="${build_dir}/${input_file}.tex"
 # LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
-TEMP_PDF_FILE="$(basename ${input_file}).pdf"
-
-LATEX_LOG="${build_dir}/latex.log"
+readonly TEMP_PDF_FILE="$(basename ${input_file}).pdf"
+readonly LATEX_LOG="${build_dir}/latex.log"
 
 analyze_latex_logs() {
-	local LOGFILE=$1
+	local logfile=$1
 
-	local RUNCOUNT=$(grep "Run number " "${LOGFILE}" | tail -n 1 | cut -d ' ' -f 3)
-	local PASSES="passes"
-	if [ "${RUNCOUNT}" -eq "1" ]; then
-		PASSES="pass"
+	local runcount=$(grep "Run number " "${logfile}" | tail -n 1 | cut -d ' ' -f 3)
+	local passes="passes"
+	if [ "${runcount}" -eq "1" ]; then
+		passes="pass"
 	fi
-	echo "Completed PDF rendering after ${RUNCOUNT} ${PASSES}."
+	echo "Completed PDF rendering after ${runcount} ${passes}."
 
 	# Print any warnings from only the last run.
-	local WARNINGS=$(sed -n "/Run number ${RUNCOUNT}/,$ p" "${LOGFILE}" | grep "LaTeX Warning: ")
-	if [ ! -z "${WARNINGS}" ]; then
+	local warnings=$(sed -n "/Run number ${runcount}/,$ p" "${logfile}" | grep "LaTeX Warning: ")
+	if [ ! -z "${warnings}" ]; then
 		echo "LaTeX warnings (may be ignorable - check the output!):"
-		echo "${WARNINGS}"
+		echo "${warnings}"
 	fi
 }
 
 # For LaTeX and PDF output, we use Pandoc to compile to an intermediate .tex file
 # That way, LaTeX errors on PDF output point to lines that match the .tex.
-if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
-	mkdir -p "$(dirname ${pdf_output})"
+if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
+	if [ -n "${PDF_OUTPUT}" ]; then
+		mkdir -p "$(dirname ${PDF_OUTPUT})"
+	fi
+	if [ -n "${LATEX_OUTPUT}" ]; then
+		mkdir -p "$(dirname ${LATEX_OUTPUT})"
+	fi
 	echo "Generating LaTeX Output"
 	start=$(date +%s)
-	CMD=(pandoc
+	cmd=(pandoc
 		--standalone
 		--template=tcg.tex
 		--lua-filter=mermaid-code-class-pre.lua
@@ -549,7 +562,7 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		--to=latex
 		--output="'${TEMP_TEX_FILE}'"
 		"'${build_dir}/${input_file}'")
-	retry 5 "${CMD[@]}"
+	retry 5 "${cmd[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "LaTeX/PDF output failed"
@@ -557,11 +570,11 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 	end=$(date +%s)
 	echo "Elapsed time: $(($end-$start)) seconds"
 
-	if [ -n "${latex_output}" ]; then
-		cp "${TEMP_TEX_FILE}" "${latex_output}"
+	if [ -n "${LATEX_OUTPUT}" ]; then
+		cp "${TEMP_TEX_FILE}" "${LATEX_OUTPUT}"
 	fi
 
-	if [ -n "${pdf_output}" ]; then
+	if [ -n "${PDF_OUTPUT}" ]; then
 		echo "Rendering PDF"
 		start=$(date +%s)
 		# Run twice to populate aux, lof, lot, toc, then update the page numbers due
@@ -578,14 +591,14 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		# Clean up after latexmk. Deliberately leave behind aux, lof, lot, and toc to speed up future runs.
 		rm -f *.fls
 		rm -f *.log
-		if [ -n "${pdflog_output}" ]; then
-			cp "${LATEX_LOG}" "${pdflog_output}"
+		if [ -n "${PDFLOG_OUTPUT}" ]; then
+			cp "${LATEX_LOG}" "${PDFLOG_OUTPUT}"
 		fi
 		echo "Elapsed time: $(($end-$start)) seconds"
 		# Write any LaTeX errors to stderr.
 		>&2 grep -A 5 "! " "${LATEX_LOG}"
 		if [[ ! "${FAILED}" = "true" ]]; then
-			mv "${TEMP_PDF_FILE}" "${pdf_output}"
+			mv "${TEMP_PDF_FILE}" "${PDF_OUTPUT}"
 			analyze_latex_logs "${LATEX_LOG}"
 		fi
 		rm -f "${LATEX_LOG}"
@@ -593,9 +606,9 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 fi
 
 # Generate the docx output
-if [ -n "${docx_output}" ]; then
+if [ -n "${DOCX_OUTPUT}" ]; then
 	# Prepare the title-page for the docx version.
-	SUBTITLE="Version ${GIT_VERSION:-${DATE}}, Revision ${GIT_REVISION:-0}"
+	subtitle="Version ${GIT_VERSION:-${DATE}}, Revision ${GIT_REVISION:-0}"
 	# Prefix the document with a Word page-break, since Pandoc doesn't do docx
 	# title pages.
 	cat <<- 'EOF' > "${build_dir}/${input_file}.prefixed"
@@ -609,9 +622,9 @@ if [ -n "${docx_output}" ]; then
 	EOF
 	cat ${build_dir}/${input_file} >> ${build_dir}/${input_file}.prefixed
 
-	mkdir -p "$(dirname ${docx_output})"
+	mkdir -p "$(dirname ${DOCX_OUTPUT})"
 	echo "Generating DOCX Output"
-	CMD=(pandoc
+	cmd=(pandoc
 		--embed-resources
 		--standalone
 		--lua-filter=mermaid-code-class-pre.lua
@@ -625,28 +638,27 @@ if [ -n "${docx_output}" ]; then
 		--resource-path=.:/resources
 		--data-dir=/resources
 		--from='${FROM}+raw_attribute'
-		--metadata=subtitle:"'${SUBTITLE}'"
+		--metadata=subtitle:"'${subtitle}'"
 		--reference-doc=/resources/templates/tcg.docx
 		${extra_pandoc_options}
 		--to=docx
-		--output="'${docx_output}'"
+		--output="'${DOCX_OUTPUT}'"
 		"'${build_dir}/${input_file}.prefixed'")
-	retry 5 "${CMD[@]}"
+	retry 5 "${cmd[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "DOCX output failed"
 	else
-		echo "DOCX output generated to file: ${docx_output}"
+		echo "DOCX output generated to file: ${DOCX_OUTPUT}"
 	fi
 fi
 
-export MERMAID_FILTER_FORMAT="svg"
-
 # Generate the html output
-if [ -n "${html_output}" ]; then
-	mkdir -p "$(dirname ${html_output})"
+export MERMAID_FILTER_FORMAT="svg"
+if [ -n "${HTML_OUTPUT}" ]; then
+	mkdir -p "$(dirname ${HTML_OUTPUT})"
 	echo "Generating html Output"
-	CMD=(pandoc
+	cmd=(pandoc
 		--toc
 		-V colorlinks=true
 		-V linkcolor=blue
@@ -677,14 +689,14 @@ if [ -n "${html_output}" ]; then
 		--from=${FROM}
 		${extra_pandoc_options}
 		--to=html
-		--output="'${html_output}'"
+		--output="'${HTML_OUTPUT}'"
 		"'${build_dir}/${input_file}'")
-	retry 5 "${CMD[@]}"
+	retry 5 "${cmd[@]}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "HTML output failed"
 	else
-		echo "HTML output generated to file: ${html_output}"
+		echo "HTML output generated to file: ${HTML_OUTPUT}"
 	fi
 fi
 
