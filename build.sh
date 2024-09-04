@@ -15,6 +15,7 @@ versioned_filenames="no"
 pr_number=""
 pr_repo=""
 DIFFBASE=""
+PDF_ENGINE=xelatex
 
 # Start up the dbus daemon (drawio will use it later)
 dbus-daemon --system || echo "Failed to start dbus daemon"
@@ -57,10 +58,11 @@ print_usage() {
 	echo "  --versioned_filenames: insert version information before the file extension for outputs"
 	echo "  --pr_number=number: mark the document as a pull-request draft if using Git versioning."
 	echo "  --pr_repo=url: provide the URL for the repository for pull-request drafts (has no effect if --pr_number is not passed)."
+	echo "  --pdf_engine=(xelatex|lualatex): use the given latex engine (default xelatex)"
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,versioned_filenames,pr_number:,pr_repo:,diff:,pdf:,latex:,pdflog:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,notmp,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,noplain_quotes,versioned_filenames,pr_number:,pr_repo:,diff:,pdf:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -112,6 +114,10 @@ while true; do
 		;;
 	--pdflog)
 		pdflog_output="${2}"
+		shift 2
+		;;
+	--pdf_engine)
+		PDF_ENGINE="${2}"
 		shift 2
 		;;
 	--pdf)
@@ -172,6 +178,12 @@ fi
 
 if [ -z "${pdf_output}${latex_output}${docx_output}${html_output}" ]; then
 	>&2 echo "Expected --pdf, --docx, --html, or --latex option"
+	print_usage
+	exit 1
+fi
+
+if [ "${PDF_ENGINE}" != "xelatex" -a "${PDF_ENGINE}" != "lualatex" ]; then
+	>&2 echo "Unsupported PDF engine '${PDF_ENGINE}', expected one of: xelatex, lualatex"
 	print_usage
 	exit 1
 fi
@@ -345,7 +357,7 @@ fi
 echo "Starting Build with"
 echo "file: ${input_file}"
 echo "docx: ${docx_output:-none}"
-echo "pdf: ${pdf_output:-none}"
+echo "pdf: ${pdf_output:-none} (engine: ${PDF_ENGINE})"
 echo "latex: ${latex_ouput:-none}"
 echo "html: ${html_ouput:-none}"
 echo "use tmp: ${is_tmp}"
@@ -554,7 +566,7 @@ if [ -n "${pdf_output}" -o -n "${latex_output}" ]; then
 		start=$(date +%s)
 		# Run twice to populate aux, lof, lot, toc, then update the page numbers due
 		# to the impact of populating the lof, lot, toc.
-		latexmk "${TEMP_TEX_FILE}" -pdflatex=xelatex -pdf -diagnostics > "${LATEX_LOG}"
+		latexmk "${TEMP_TEX_FILE}" -pdflatex="${PDF_ENGINE}" -pdf -diagnostics > "${LATEX_LOG}"
 		if [ $? -ne 0 ]; then
 			FAILED=true
 			echo "PDF output failed"
