@@ -484,9 +484,7 @@ retry () {
 	return 1
 }
 
-readonly TEMP_TEX_FILE="${BUILD_DIR}/${input_file}.tex"
-readonly LATEX_LOG="${BUILD_DIR}/latex.log"
-
+# Greps the latex logs to surface relevant errors and warnings.
 analyze_latex_logs() {
 	local logfile=$1
 
@@ -505,9 +503,12 @@ analyze_latex_logs() {
 	fi
 }
 
+# Takes Markdown input and writes LaTeX output using pandoc.
 do_latex() {
 	local input=$1
 	local output=$2
+	mkdir -p "$(dirname ${output})"
+
 	echo "Generating LaTeX Output"
 	local start=$(date +%s)
 	local cmd=(pandoc
@@ -554,13 +555,16 @@ do_latex() {
 	echo "Elapsed time: $(($end-$start)) seconds"
 }
 
-# LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
-readonly TEMP_PDF_FILE="$(basename ${input_file}).pdf"
-
+# Takes LaTeX input and writes PDF output and logs using the PDF engine of choice.
 do_pdf() {
 	local input=$1
 	local output=$2
+	mkdir -p "$(dirname ${output})"
+
 	local logfile=$3
+	# LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
+	readonly temp_pdf_file="$(basename ${input}).pdf"
+
 	echo "Rendering PDF"
 	start=$(date +%s)
 	# latexmk takes care of repeatedly calling the PDF engine. A run may take multiple passes due to the need to
@@ -588,35 +592,16 @@ do_pdf() {
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "! " "${logfile}"
 	if [[ ! "${FAILED}" = "true" ]]; then
-		mv "${TEMP_PDF_FILE}" "${output}"
+		mv "${temp_pdf_file}" "${output}"
 		analyze_latex_logs "${logfile}"
 	fi
 }
 
-# For LaTeX and PDF output, we use Pandoc to compile to an intermediate .tex file
-# That way, LaTeX errors on PDF output point to lines that match the .tex.
-if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
-	if [ -n "${PDF_OUTPUT}" ]; then
-		mkdir -p "${SOURCE_DIR}/$(dirname ${PDF_OUTPUT})"
-	fi
-	if [ -n "${LATEX_OUTPUT}" ]; then
-		mkdir -p "${SOURCE_DIR}/$(dirname ${LATEX_OUTPUT})"
-	fi
-
-	do_latex "${BUILD_DIR}/${input_file}" "${TEMP_TEX_FILE}"
-
-	if [ -n "${LATEX_OUTPUT}" ]; then
-		cp "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
-	fi
-
-	if [ -n "${PDF_OUTPUT}" ]; then
-		do_pdf "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${PDF_OUTPUT}" "${LATEX_LOG}"
-	fi	
-fi
-
+# Takes Markdown input and writes Docx output using pandoc.
 do_docx() {
 	local input=$1
 	local output=$2
+	mkdir -p "$(dirname ${output})"
 	# Prepare the title-page for the docx version.
 	subtitle="Version ${GIT_VERSION:-${DATE}}, Revision ${GIT_REVISION:-0}"
 	# Prefix the document with a Word page-break, since Pandoc doesn't do docx
@@ -632,7 +617,6 @@ do_docx() {
 	EOF
 	cat "${BUILD_DIR}/${input_file}" >> "${input}.prefixed"
 
-	mkdir -p "${SOURCE_DIR}/$(dirname ${DOCX_OUTPUT})"
 	echo "Generating DOCX Output"
 	cmd=(pandoc
 		--embed-resources
@@ -663,16 +647,12 @@ do_docx() {
 	fi
 }
 
-# Generate the docx output
-if [ -n "${DOCX_OUTPUT}" ]; then
-	do_docx "${BUILD_DIR}/${input_file}" "${SOURCE_DIR}/${DOCX_OUTPUT}"
-fi
-
+# Takes Markdown input and writes HTML output using pandoc.
 do_html() {
 	local input=$1
 	local output=$2
-	mkdir -p "${SOURCE_DIR}/$(dirname ${HTML_OUTPUT})"
-	echo "Generating html Output"
+	mkdir -p "$(dirname ${output})"
+	echo "Generating HTML Output"
 	cmd=(pandoc
 		--toc
 		-V colorlinks=true
@@ -715,16 +695,32 @@ do_html() {
 	fi
 }
 
+# Generate .tex output if either latex or pdf formats were requested, because
+# the .tex is an intermediate requirement to the pdf.
+readonly TEMP_TEX_FILE="${BUILD_DIR}/${input_file}.tex"
+if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" ]; then
+	do_latex "${BUILD_DIR}/${input_file}" "${TEMP_TEX_FILE}"
+fi
+if [ -n "${LATEX_OUTPUT}" ]; then
+	cp "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
+fi
+
+# Generate the PDF output
+readonly LATEX_LOG="${BUILD_DIR}/latex.log"
+if [ -n "${PDF_OUTPUT}" ]; then
+	do_pdf "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${PDF_OUTPUT}" "${LATEX_LOG}"
+fi	
+
+# Generate the docx output
+if [ -n "${DOCX_OUTPUT}" ]; then
+	do_docx "${BUILD_DIR}/${input_file}" "${SOURCE_DIR}/${DOCX_OUTPUT}"
+fi
+
 # Generate the html output
 export MERMAID_FILTER_FORMAT="svg"
 if [ -n "${HTML_OUTPUT}" ]; then
 	do_html "${BUILD_DIR}/${input_file}" "${SOURCE_DIR}/${HTML_OUTPUT}"
 fi
-
-rm -f core
-rm -f mermaid-filter.err .mermaid-config.json
-rm -f .puppeteer.json
-rm -f "${BUILD_DIR}/${input_file}.bak"
 
 if [ "${FAILED}" = "true" ]; then
 	echo "Overall workflow failed"
