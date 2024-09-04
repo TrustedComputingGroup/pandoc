@@ -145,8 +145,9 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 
 RUN npm install --global --unsafe-perm puppeteer@23.2.1 imgur@2.4.2 mermaid-filter@1.4.7 typescript@5.5.4 pandiff@0.6.0
 
-# Lazy: Just put both possible texlive paths into the path. Only one will get populated.
-ENV PATH="${PATH}:/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux"
+# Important: /usr/local/texlive/bin/ paths come before other paths. We want to use the texlive we
+# built above, not any that happen to have come along with our base image.
+ENV PATH="/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux:${PATH}"
 
 # Packages that are needed despite not being used explicitly by the template:
 # bigfoot, catchfile, fancyvrb, footmisc, hardwrap, lineno, ltablex, latexmk, needspace, pgf, zref
@@ -183,6 +184,10 @@ RUN tlmgr update --self && tlmgr install \
     latexmk \
     lineno \
     ltablex \
+    lualatex-math \
+    luatex \
+    luatex85 \
+    luatexbase \
     makecell \
     mathtools \
     mdframed \
