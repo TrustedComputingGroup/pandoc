@@ -82,6 +82,7 @@ jobs:
           pdf: true
           tex: true
           docx: true
+          diffbase: "${{ github.event.pull_request.base.sha }}"
           pr-number: "${{ github.event.number }}"
           pr-repo: "${{ github.repository }}"
 
@@ -90,6 +91,12 @@ jobs:
         with:
           name: PDF
           path: guide.*.pdf
+
+      - name: Upload logs
+        uses: actions/upload-artifact@master
+        with:
+          name: Logs
+          path: guide.*.log
 
       - name: Upload TeX
         uses: actions/upload-artifact@master
