@@ -380,6 +380,12 @@ if [ "${VERSIONED_FILENAMES}" == "yes" ]; then
 	if [ ! -z "${DIFFPDF_OUTPUT}" ]; then
 		DIFFPDF_OUTPUT=$(prefix_filename ".$(echo ${DIFFBASE} | cut -c1-10).to${version_prefix}" "${DIFFPDF_OUTPUT}")
 	fi
+	if [ ! -z "${PDFLOG_OUTPUT}" ]; then
+		PDFLOG_OUTPUT=$(prefix_filename "${version_prefix}" "${PDFLOG_OUTPUT}")
+	fi
+	if [ ! -z "${DIFFPDFLOG_OUTPUT}" ]; then
+		DIFFPDFLOG_OUTPUT=$(prefix_filename ".$(echo ${DIFFBASE} | cut -c1-10).to${version_prefix}" "${DIFFPDFLOG_OUTPUT}")
+	fi
 	if [ ! -z "${LATEX_OUTPUT}" ]; then
 		LATEX_OUTPUT=$(prefix_filename "${version_prefix}" "${LATEX_OUTPUT}")
 	fi
