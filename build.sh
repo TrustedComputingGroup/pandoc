@@ -569,10 +569,12 @@ do_latex() {
 	local output=$2
 	mkdir -p "$(dirname ${output})"
 
+	# Issue: highlighting breaks diffing due to the \xxxxTok commands generated during highlighting being fragile.
 	echo "Generating LaTeX Output"
 	local start=$(date +%s)
 	local cmd=(pandoc
 		--standalone
+		--no-highlight
 		--template=tcg.tex
 		--lua-filter=mermaid-code-class-pre.lua
 		--filter=mermaid-filter
