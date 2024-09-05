@@ -51,7 +51,7 @@ runs:
     - run: >
         /usr/bin/build.sh
         --versioned_filenames
-        $( [ -n "${{ inputs.pr-repo }}" && -n "${{ inputs.pr-number }}" ] && --pr_number=${{ inputs.pr-number }} --pr_repo=${{ inputs.pr-repo }} )
+        $( [ -n "${{ inputs.pr-repo }}" -a -n "${{ inputs.pr-number }}" ] && --pr_number=${{ inputs.pr-number }} --pr_repo=${{ inputs.pr-repo }} )
         $( [ "${{ inputs.pdf }}" == 'true' ] && echo --pdf=${{ inputs.output-basename }}.pdf --pdflog=inputs.output-basename }}.pdf.log )
         $( [ "${{ inputs.diffbase }}" == 'true' ] && echo --diffbase=${{ inputs.diffbase }} --diffpdf=${diff_file_name}.pdf --diffpdflog=${diff_file_name}.pdf.log )
         $( [ "${{ inputs.output-html }}" == 'true' ] && echo --html=${{ inputs.output-basename }}.html )
