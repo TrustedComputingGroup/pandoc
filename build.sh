@@ -813,17 +813,16 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 	fi
 fi
 if [ "${FAILED}" != "true" -a -n "${DIFFPDF_OUTPUT}" ]; then
-		do_pdf "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${LATEX_LOG}"
+	do_pdf "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${LATEX_LOG}"
 
-		# Copy the logs, if requested. Note that this file gets the latexdiff and PDF driver output.
-		if [ -n "${DIFFPDFLOG_OUTPUT}" ]; then
-			mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT})"
-			echo "latexdiff output:" > "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
-			cat "${TEMP_LATEXDIFF_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
-			echo "" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
-			echo "${PDF_ENGINE} output:" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
-			cat "${LATEX_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
-		fi
+	# Copy the logs, if requested. Note that this file gets the latexdiff and PDF driver output.
+	if [ -n "${DIFFPDFLOG_OUTPUT}" ]; then
+		mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT})"
+		echo "latexdiff output:" > "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		cat "${TEMP_LATEXDIFF_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		echo "" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		echo "${PDF_ENGINE} output:" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		cat "${LATEX_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
 	fi
 fi
 
