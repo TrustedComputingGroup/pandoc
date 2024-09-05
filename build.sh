@@ -5,6 +5,7 @@ DO_GITVERSION="yes"
 DO_GITSTATUS="yes"
 PDF_OUTPUT=""
 DIFFPDF_OUTPUT=""
+DIFFTEX_OUTPUT=""
 DOCX_OUTPUT=""
 HTML_OUTPUT=""
 LATEX_OUTPUT=""
@@ -42,8 +43,9 @@ print_usage() {
 	echo "  --latex=output: enable output of latex and specify the output file name."
 	echo "  --html=output: enable output of html and specify the output file name."
 	echo "  --pdflog=output: enable logging of pdf engine and specify the output file name."
-	echo "  --diffpdf=output: enable output of pdf diff and specify the output file name (requires --diffpdf)"
-	echo "  --diffbase=ref: create diff documents against the provided commit (no effect if --diffpdf is not provided)"
+	echo "  --diffpdf=output: enable output of pdf diff and specify the output file name (requires --diffbase)"
+	echo "  --difftex=output: enable output of tex diff and specify the output file name (requires --diffbase)"
+	echo "  --diffbase=ref: create diff documents against the provided commit (no effect if --diffpdf or --difftex is not provided)"
 	echo "  --diffpdflog=output: enable logging of pdf engine during diffing and specify the output file name."
 	echo
 	echo "Miscellaneous"
@@ -60,7 +62,7 @@ print_usage() {
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,diffpdflog:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -120,6 +122,10 @@ while true; do
 		;;
 	--diffpdf)
 		DIFFPDF_OUTPUT="${2}"
+		shift 2
+		;;
+	--difftex)
+		DIFFTEX_OUTPUT="${2}"
 		shift 2
 		;;
 	--diffpdflog)
@@ -214,8 +220,8 @@ cd "${BUILD_DIR}"
 git config --global --add safe.directory "${BUILD_DIR}"
 
 # make sure the diff arguments make sense
-if [ -n "${DIFFPDF_OUTPUT}" ]; then
-	# --diff must be provided, and it must make sense to Git
+if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
+	# --diffbase must be provided, and it must make sense to Git
 	if [ -z "${DIFFBASE}" ]; then
 		>&2 echo "--diffpdf was provided, but --diffbase was not."
 		print_usage
@@ -380,6 +386,9 @@ if [ "${VERSIONED_FILENAMES}" == "yes" ]; then
 	if [ ! -z "${DIFFPDF_OUTPUT}" ]; then
 		DIFFPDF_OUTPUT=$(prefix_filename ".$(echo ${DIFFBASE} | cut -c1-10).to${version_prefix}" "${DIFFPDF_OUTPUT}")
 	fi
+	if [ ! -z "${DIFFTEX_OUTPUT}" ]; then
+		DIFFTEX_OUTPUT=$(prefix_filename ".$(echo ${DIFFBASE} | cut -c1-10).to${version_prefix}" "${DIFFTEX_OUTPUT}")
+	fi
 	if [ ! -z "${PDFLOG_OUTPUT}" ]; then
 		PDFLOG_OUTPUT=$(prefix_filename "${version_prefix}" "${PDFLOG_OUTPUT}")
 	fi
@@ -395,6 +404,7 @@ if [ "${VERSIONED_FILENAMES}" == "yes" ]; then
 fi
 readonly PDF_OUTPUT
 readonly DIFFPDF_OUTPUT
+readonly DIFFTEX_OUTPUT
 readonly DOCX_OUTPUT
 readonly HTML_OUTPUT
 readonly LATEX_OUTPUT
@@ -405,6 +415,7 @@ echo "docx: ${DOCX_OUTPUT:-none}"
 echo "pdf: ${PDF_OUTPUT:-none} (engine: ${PDF_ENGINE})"
 echo "diff pdf: ${DIFFPDF_OUTPUT:-none} (engine: ${PDF_ENGINE})"
 echo "latex: ${latex_ouput:-none}"
+echo "diff latex: ${DIFFTEX_OUTPUT:-none} "
 echo "html: ${html_ouput:-none}"
 echo "resource dir: ${RESOURCE_DIR}"
 echo "build dir: ${BUILD_DIR}"
@@ -746,7 +757,7 @@ do_html() {
 # Generate .tex output if either latex or pdf formats were requested, because
 # the .tex is an intermediate requirement to the pdf.
 readonly TEMP_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.tex"
-if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" -o -n "${DIFFPDF_OUTPUT}" ]; then
+if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" -o -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 	do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
 	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TEX_FILE}"
 fi
@@ -783,7 +794,7 @@ readonly TEMP_DIFFBASE_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.diffbase.tex"
 readonly TEMP_DIFF_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.diff.tex"
 readonly TEMP_LATEXDIFF_LOG="${BUILD_DIR}/latexdiff.log"
 export MERMAID_FILTER_FORMAT="pdf"
-if [ -n "${DIFFPDF_OUTPUT}" ]; then
+if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}"]; then
 	git fetch --unshallow --quiet && git reset --hard ${DIFFBASE}
 	if [ $? -ne 0 ]; then
 		FAILED=true
@@ -793,6 +804,13 @@ if [ -n "${DIFFPDF_OUTPUT}" ]; then
 		do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}"
 		latexdiff --type PDFCOMMENT --driver "${PDF_ENGINE}" "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
 		do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
+		if [ -n "${DIFFTEX_OUTPUT}" ]; then
+			mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFTEX_OUTPUT})"
+			cp "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFTEX_OUTPUT}"
+		fi
+	fi
+fi
+if [ "${FAILED}" != "true" -a -n "${DIFFPDF_OUTPUT}" ]; then
 		do_pdf "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${LATEX_LOG}"
 
 		# Copy the logs, if requested. Note that this file gets the latexdiff and PDF driver output.
@@ -807,7 +825,7 @@ if [ -n "${DIFFPDF_OUTPUT}" ]; then
 	fi
 fi
 
-if [ "${FAILED}" = "true" ]; then
+if [ "${FAILED}" == "true" ]; then
 	echo "Overall workflow failed"
 	exit 1
 fi
