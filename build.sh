@@ -378,7 +378,7 @@ if [ "${VERSIONED_FILENAMES}" == "yes" ]; then
 		PDF_OUTPUT=$(prefix_filename "${version_prefix}" "${PDF_OUTPUT}")
 	fi
 	if [ ! -z "${DIFFPDF_OUTPUT}" ]; then
-		DIFFPDF_OUTPUT=$(prefix_filename "$(echo ${DIFFBASE} | cut -c1-20).to.${version_prefix}" "${DIFFPDF_OUTPUT}")
+		DIFFPDF_OUTPUT=$(prefix_filename ".$(echo ${DIFFBASE} | cut -c1-10).to${version_prefix}" "${DIFFPDF_OUTPUT}")
 	fi
 	if [ ! -z "${LATEX_OUTPUT}" ]; then
 		LATEX_OUTPUT=$(prefix_filename "${version_prefix}" "${LATEX_OUTPUT}")
