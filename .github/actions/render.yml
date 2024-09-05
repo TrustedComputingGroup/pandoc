@@ -1,0 +1,64 @@
+name: 'Render'
+description: 'Render a TCG Markdown document'
+inputs:
+  input-md:
+    description: 'The name of the Markdown file to render'
+    required: true
+  output-basename:
+    description: 'The base name (without extension) to use for output file(s)'
+    required: true
+  pr-repo:
+    description: 'Pull request repo (use with pr-number)'
+    required: false
+    type: 'string'
+  pr-number:
+    description: 'Pull request number to reference (use with pr-repo)'
+    required: false
+    type: 'string'
+  pdf:
+    description: 'Render to PDF'
+    required: false
+    type: 'boolean'
+    default: 'true'
+  diffbase:
+    description: 'The revision to diff against'
+    required: false
+    type: 'string'
+  html:
+    description: 'Render to HTML'
+    required: false
+    type: 'boolean'
+    default: 'false'
+  docx:
+    description: 'Render to Word'
+    required: false
+    type: 'boolean'
+    default: 'false'
+  tex:
+    description: 'Render to TeX'
+    required: false
+    type: 'boolean'
+    default: 'false'
+  extra-build-options:
+    description: 'Additional build options to be passed to build.sh'
+runs:
+  using: 'composite'
+  steps:
+    # let the container take ownership of the repo dir, in case the user wants to check in the results
+    # workaround to https://github.com/actions/runner/issues/2033
+    - run: chown -R $(id -u):$(id -g) $PWD
+      shell: sh
+    - run: >
+        /usr/bin/build.sh
+        --versioned_filenames
+        $( [ -n "${{ inputs.pr-repo }}" && -n "${{ inputs.pr-number }}" ] && --pr_number=${{ inputs.pr-number }} --pr_repo=${{ inputs.pr-repo }} )
+        $( [ "${{ inputs.pdf }}" == 'true' ] && echo --pdf=${{ inputs.output-basename }}.pdf --pdflog=inputs.output-basename }}.pdf.log )
+        $( [ "${{ inputs.diffbase }}" == 'true' ] && echo --diffbase=${{ inputs.diffbase }} --diffpdf=${diff_file_name}.pdf --diffpdflog=${diff_file_name}.pdf.log )
+        $( [ "${{ inputs.output-html }}" == 'true' ] && echo --html=${{ inputs.output-basename }}.html )
+        $( [ "${{ inputs.output-docx }}" == 'true' ] && echo --docx=${{ inputs.output-basename }}.docx )
+        $( [ "${{ inputs.output-tex }}" == 'true' ] && echo --latex=${{ inputs.output-basename }}.tex )
+        ${{ inputs.extra-build-options }}
+        ${{ inputs.input-md }}
+      shell: sh
+      env:
+        diff_file_name: "${{ inputs.output-basename }}.$(echo ${{ inputs.diffbase }} | cut -c1-20).diff"
