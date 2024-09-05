@@ -621,13 +621,15 @@ do_pdf() {
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "] ! " "${logfile}"
 
-	# Copy aux, lof, lot, and toc files back to the source directory so they can be cached and speed up future runs.
-	cp *.aux "${SOURCE_DIR}"
-	cp *.lof "${SOURCE_DIR}"
-	cp *.lot "${SOURCE_DIR}"
-	cp *.toc "${SOURCE_DIR}"
+	# Copy aux, lof, lot, toc, upa, and upb files (if any) back to the source directory so they can be cached and speed up future runs.
+	cp *.aux "${SOURCE_DIR}" 2>/dev/null
+	cp *.lof "${SOURCE_DIR}" 2>/dev/null
+	cp *.lot "${SOURCE_DIR}" 2>/dev/null
+	cp *.toc "${SOURCE_DIR}" 2>/dev/null
+	cp *.upa "${SOURCE_DIR}" 2>/dev/null
+	cp *.upb "${SOURCE_DIR}" 2>/dev/null
 	# Copy converted images so they can be cached as well.
-	cp *.convert.pdf "${SOURCE_DIR}"
+	cp *.convert.pdf "${SOURCE_DIR}" 2>/dev/null
 	echo "Elapsed time: $(($end-$start)) seconds"
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "! " "${logfile}"
@@ -780,7 +782,7 @@ if [ -n "${DIFFPDF_OUTPUT}" ]; then
 
 	do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
 	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}"
-	latexdiff --type PDFCOMMENT --driver "${PDF_DRIVER}" "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
+	latexdiff --type PDFCOMMENT --driver "${PDF_ENGINE}" "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
 	do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
 	do_pdf "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${LATEX_LOG}"
 
@@ -790,7 +792,7 @@ if [ -n "${DIFFPDF_OUTPUT}" ]; then
 		echo "latexdiff output:" > "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
 		cat "${TEMP_LATEXDIFF_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
 		echo "" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
-		echo "${PDF_DRIVER} output:" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		echo "${PDF_ENGINE} output:" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
 		cat "${LATEX_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
 	fi
 fi

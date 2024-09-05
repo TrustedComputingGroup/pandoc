@@ -8,3 +8,5 @@
 *.lot
 *.toc
 *.fdb_latexmk
+*.upa
+*.upb
