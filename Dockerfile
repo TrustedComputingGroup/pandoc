@@ -151,6 +151,8 @@ ENV PATH="/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-lin
 
 # Packages that are needed despite not being used explicitly by the template:
 # bigfoot, catchfile, fancyvrb, footmisc, hardwrap, lineno, ltablex, latexmk, needspace, pgf, zref
+# Package dependencies introduced by latexdiff:
+# changebar, datetime2, latexdiff, listings, marginnote, pdfcomment, soulpos, ulem
 RUN tlmgr update --self && tlmgr install \
     accsupp \
     adjustbox \
@@ -165,6 +167,8 @@ RUN tlmgr update --self && tlmgr install \
     booktabs \
     caption \
     catchfile \
+    changebar \
+    datetime2 \
     draftwatermark \
     enumitem \
     etoolbox \
@@ -181,14 +185,17 @@ RUN tlmgr update --self && tlmgr install \
     hyperref \
     hyphenat \
     koma-script \
+    latexdiff \
     latexmk \
     lineno \
+    listings \
     ltablex \
     lualatex-math \
     luatex \
     luatex85 \
     luatexbase \
     makecell \
+    marginnote \
     mathtools \
     mdframed \
     microtype \
@@ -196,14 +203,17 @@ RUN tlmgr update --self && tlmgr install \
     needspace \
     newunicodechar \
     pagecolor \
+    pdfcomment \
     pdflscape \
     pgf \
     polyglossia \
     ragged2e \
     selnolig \
     setspace \
+    soulpos \
     textpos \
     titling \
+    ulem \
     unicode-math \
     upquote \
     varwidth \
