@@ -779,21 +779,25 @@ readonly TEMP_LATEXDIFF_LOG="${BUILD_DIR}/latexdiff.log"
 export MERMAID_FILTER_FORMAT="pdf"
 if [ -n "${DIFFPDF_OUTPUT}" ]; then
 	git reset --hard ${DIFFBASE}
+	if [ $? -ne 0 ]; then
+		FAILED=true
+		echo "diff output failed"
+	else
+		do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
+		do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}"
+		latexdiff --type PDFCOMMENT --driver "${PDF_ENGINE}" "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
+		do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
+		do_pdf "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${LATEX_LOG}"
 
-	do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
-	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}"
-	latexdiff --type PDFCOMMENT --driver "${PDF_ENGINE}" "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
-	do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
-	do_pdf "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${LATEX_LOG}"
-
-	# Copy the logs, if requested. Note that this file gets the latexdiff and PDF driver output.
-	if [ -n "${DIFFPDFLOG_OUTPUT}" ]; then
-		mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT})"
-		echo "latexdiff output:" > "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
-		cat "${TEMP_LATEXDIFF_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
-		echo "" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
-		echo "${PDF_ENGINE} output:" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
-		cat "${LATEX_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		# Copy the logs, if requested. Note that this file gets the latexdiff and PDF driver output.
+		if [ -n "${DIFFPDFLOG_OUTPUT}" ]; then
+			mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT})"
+			echo "latexdiff output:" > "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+			cat "${TEMP_LATEXDIFF_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+			echo "" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+			echo "${PDF_ENGINE} output:" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+			cat "${LATEX_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		fi
 	fi
 fi
 
