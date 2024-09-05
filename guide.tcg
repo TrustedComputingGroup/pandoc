@@ -488,7 +488,7 @@ too large in an Informative Text block.
 | Document Type     | Informative Blocks     |
 | ----------------- | ---------------------- |
 | SPECIFICATION     | Usually                |
-| GUIDANCE          | Rarely                 |
+| GUIDANCE          | Sometimes              |
 | REFERENCE         | Rarely                 |
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ```
@@ -498,14 +498,15 @@ The above Markdown code becomes:
 ::: Informative ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 This is the only informative text block in this document.
 
-These blocks can contain multiple paragraphs, bulleted lists, etc.
+These blocks can contain multiple paragraphs.
 
-These blocks can even contain tables!
+These blocks can even contain tables! However, be wary of providing tables that are
+too large in an Informative Text block.
 
 | Document Type     | Informative Blocks     |
 | ----------------- | ---------------------- |
 | SPECIFICATION     | Usually                |
-| GUIDANCE          | Rarely                 |
+| GUIDANCE          | Sometimes              |
 | REFERENCE         | Rarely                 |
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
