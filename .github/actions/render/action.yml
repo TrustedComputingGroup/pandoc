@@ -53,7 +53,7 @@ runs:
         --versioned_filenames
         $( [ -n "${{ inputs.pr-repo }}" -a -n "${{ inputs.pr-number }}" ] && echo --pr_number=${{ inputs.pr-number }} --pr_repo=${{ inputs.pr-repo }} )
         $( [ -n "${{ inputs.diffbase }}" ] && echo --diffbase=${{ inputs.diffbase }} --diffpdf=${diff_file_name}.pdf --diffpdflog=${diff_file_name}.pdf.log )
-        $( ${{ inputs.pdf }} && echo --pdf=${{ inputs.output-basename }}.pdf --pdflog=inputs.output-basename }}.pdf.log )
+        $( ${{ inputs.pdf }} && echo --pdf=${{ inputs.output-basename }}.pdf --pdflog=${{ inputs.output-basename }}.pdf.log )
         $( ${{ inputs.html }} && echo --html=${{ inputs.output-basename }}.html )
         $( ${{ inputs.docx }} && echo --docx=${{ inputs.output-basename }}.docx )
         $( ${{ inputs.tex }} && echo --latex=${{ inputs.output-basename }}.tex )
