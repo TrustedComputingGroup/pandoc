@@ -569,7 +569,8 @@ do_latex() {
 	local output=$2
 	mkdir -p "$(dirname ${output})"
 
-	# Issue: highlighting breaks diffing due to the \xxxxTok commands generated during highlighting being fragile.
+	# TODO: https://github.com/TrustedComputingGroup/pandoc/issues/164
+	# highlighting breaks diffing due to the \xxxxTok commands generated during highlighting being fragile.
 	echo "Generating LaTeX Output"
 	local start=$(date +%s)
 	local cmd=(pandoc
