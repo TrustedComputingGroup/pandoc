@@ -61,4 +61,4 @@ runs:
         ${{ inputs.input-md }}
       shell: sh
       env:
-        diff_file_name: "${{ inputs.output-basename }}.$(echo ${{ inputs.diffbase }} | cut -c1-20).diff"
+        diff_file_name: ${{ inputs.output-basename }}.$(echo ${{ inputs.diffbase }} | cut -c1-20).diff
