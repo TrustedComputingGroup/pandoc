@@ -794,7 +794,7 @@ readonly TEMP_DIFFBASE_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.diffbase.tex"
 readonly TEMP_DIFF_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.diff.tex"
 readonly TEMP_LATEXDIFF_LOG="${BUILD_DIR}/latexdiff.log"
 export MERMAID_FILTER_FORMAT="pdf"
-if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}"]; then
+if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 	git fetch --unshallow --quiet && git reset --hard ${DIFFBASE}
 	if [ $? -ne 0 ]; then
 		FAILED=true
