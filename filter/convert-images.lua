@@ -86,7 +86,10 @@ function Image (img)
         elseif converter(img.src, new_filename) then
             print(string.format("    converted %s to %s", img.src, new_filename))
             -- Delete stale copies of this file. This makes it easier to cache only the latest converted pdfs
-            deleteFilesExcept(img.src .. ".*.convert.pdf", new_filename)
+            -- Don't do this if the "keepstaleimages" variable is set.
+            if not PANDOC_WRITER_OPTIONS.variables["keepstaleimages"] then
+                deleteFilesExcept(img.src .. ".*.convert.pdf", new_filename)
+            end
             img.src = new_filename
         end
     else

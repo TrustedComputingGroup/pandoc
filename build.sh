@@ -483,10 +483,14 @@ do_md_fixups() {
 }
 do_tex_fixups() {
 	local input=$1
-	# We have a "code" enviroment that displays everything, including comments.
-	# Sometimes latexdiff injects comments that it thinks won't be displayed.
-	# Delete those latexdiff comments.
-	sed -i.bak 's/%DIFDELCMD.*//g' "${input}"
+	# latexdiff is appending its own generated preamble to our custom one
+	# (in apparent contradiction of the documentation). Strip it out.
+	sed -i.bak '/^% End Custom TCG/,/^%DIF END PREAMBLE EXTENSION/d' "${input}"
+
+	# latexdiff uses %DIF < and %DIF > to prefix changed lines in code environments
+	# prefix these lines with + and -
+	sed -i.bak 's/^%DIF < /%DIF <- /g' "${input}"
+	sed -i.bak 's/^%DIF > /%DIF >+ /g' "${input}"
 }
 
 if test "${DO_GITVERSION}" == "yes"; then
@@ -567,6 +571,7 @@ analyze_latex_logs() {
 do_latex() {
 	local input=$1
 	local output=$2
+	local extra_pandoc_options=$3
 	mkdir -p "$(dirname ${output})"
 
 	# TODO: https://github.com/TrustedComputingGroup/pandoc/issues/164
@@ -605,7 +610,7 @@ do_latex() {
 		--metadata=colorlinks:true
 		--metadata=contact:admin@trustedcomputinggroup.org
 		--from=${FROM}
-		${EXTRA_PANDOC_OPTIONS}
+		${extra_pandoc_options}
 		--to=latex
 		--output="'${output}'"
 		"'${input}'")
@@ -762,7 +767,7 @@ do_html() {
 readonly TEMP_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.tex"
 if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" -o -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 	do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
-	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TEX_FILE}"
+	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TEX_FILE}" "${EXTRA_PANDOC_OPTIONS}"
 fi
 if [ -n "${LATEX_OUTPUT}" ]; then
 	cp "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
@@ -798,14 +803,15 @@ readonly TEMP_DIFF_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.diff.tex"
 readonly TEMP_LATEXDIFF_LOG="${BUILD_DIR}/latexdiff.log"
 export MERMAID_FILTER_FORMAT="pdf"
 if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
-	git fetch --unshallow --quiet && git reset --hard ${DIFFBASE}
+	git fetch --unshallow --quiet 2>/dev/null
+	git reset --hard ${DIFFBASE}
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "diff output failed"
 	else
 		do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
-		do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}"
-		latexdiff --type PDFCOMMENT --driver "${PDF_ENGINE}" "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
+		do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}" "${EXTRA_PANDOC_OPTIONS} -V keepstaleimages=true"
+		latexdiff --preamble /resources/templates/latexdiff.tex --config /resources/templates/latexdiff.cfg --append-safecmd /resources/templates/latexdiff.safe "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
 		do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
 		if [ -n "${DIFFTEX_OUTPUT}" ]; then
 			mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFTEX_OUTPUT})"
