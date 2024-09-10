@@ -1,0 +1,78 @@
+# Reusable workflow to render the spec for pushes.
+# https://docs.github.com/en/actions/using-workflows/reusing-workflows
+
+# Build on pushes, because if you push to cache on builds for tags,
+# the cache can't be read by builds for other tags:
+# https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#restrictions-for-accessing-a-cache
+
+name: Render
+
+on:
+  workflow_call:
+    inputs:
+      container:
+        required: false
+        type: string
+        default: ghcr.io/trustedcomputinggroup/pandoc
+      container-version:
+        required: true
+        type: string
+      input:
+        required: true
+        type: string
+      output:
+        required: true
+        type: string
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.container }}:${{ inputs.container-version }}
+    name: Render
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Cache LaTeX files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-latex-${{ inputs.input }}-files
+        with:
+          path: |
+            *.aux
+            *.fdb_latexmk
+            *.lof
+            *.lot
+            *.toc
+            *.upa
+            *.upb
+            media/*.convert.pdf
+          key: latex-${{ inputs.input }}-${{ github.run_id }}
+          restore-keys: latex-${{ inputs.input }}
+
+      - name: Render
+        uses: ./.github/actions/render
+        with:
+          input-md: ${{ inputs.input }}
+          output-basename: ${{ inputs.output }}
+          pdf: true
+
+      - name: Upload pdfs
+        uses: actions/upload-artifact@master
+        with:
+          name: PDF
+          path: |
+            ${{ inputs.output }}.*.pdf
+        if: always()
+
+      - name: Upload logs
+        uses: actions/upload-artifact@master
+        with:
+          name: Logs
+          path: |
+            ${{ inputs.output }}.*.log
+        if: always()

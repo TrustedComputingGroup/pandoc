@@ -1,12 +1,6 @@
 name: build and publish
 
 on:
-  # Populate the cache on pushes to main, because if you push to cache on builds for tags,
-  # the cache can't be read by builds for other tags:
-  # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#restrictions-for-accessing-a-cache
-  push:
-    branches:
-      - main
   release:
     types: [published]
 
@@ -67,109 +61,13 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  # (In case of push only)
-  # Use the container we just built to build the guide and upload it to the actions artifacts.
-  render-samples-push:
+  # Use the fresh container to render the samples.
+  render-samples:
     needs: build-container
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/trustedcomputinggroup/pandoc:main
-    permissions:
-      contents: write
-    if: ${{ github.event_name == 'push' }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.1.1
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Cache LaTeX files
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-latex-files
-        with:
-          path: |
-            *.aux
-            *.fdb_latexmk
-            *.lof
-            *.lot
-            *.toc
-            *.convert.pdf
-          key: latex-${{ github.run_id }}
-          restore-keys: latex
-
-      - name: Run the action on guide
-        uses: trustedcomputinggroup/markdown@latest
-        with:
-          input-md: guide.tcg
-          extra-build-options: "--versioned_filenames"
-          output-pdf: guide.pdf
-          output-tex: guide.tex
-          output-docx: guide.docx
-
-      - name: Upload PDF
-        uses: actions/upload-artifact@master
-        with:
-          name: PDF
-          path: guide.*.pdf
-
-  # (In case of release only)
-  # Use the container we just built to build the guide and attach it to the release
-  render-samples-release:
-    needs: build-container
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/trustedcomputinggroup/pandoc:latest
-    permissions:
-      contents: write
-    if: ${{ github.event_name == 'release' }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.1.1
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Cache LaTeX files
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-latex-files
-        with:
-          path: |
-            *.aux
-            *.fdb_latexmk
-            *.lof
-            *.lot
-            *.toc
-            *.convert.pdf
-          key: latex-${{ github.run_id }}
-          restore-keys: latex
-
-      - name: Render for release
-        uses: trustedcomputinggroup/markdown@latest
-        with:
-          input-md: guide.tcg
-          extra-build-options: "--versioned_filenames"
-          output-pdf: guide.pdf
-          output-docx: guide.docx
-
-      - name: Upload to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: guide.*.pdf
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
-          body: "Guide (PDF)"
-
-      - name: Upload to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: guide.*.docx
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
-          body: "Guide (Word)"
+    uses: ./.github/workflows/release.yml
+    with:
+      container: ghcr.io/trustedcomputinggroup/pandoc
+      container-version: latest
+      input: guide.tcg
+      output: guide
+      github-token: ${{ secrets.GITHUB_TOKEN }}
