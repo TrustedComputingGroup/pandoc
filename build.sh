@@ -814,7 +814,8 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 		latexdiff --preamble /resources/templates/latexdiff.tex --config /resources/templates/latexdiff.cfg --append-safecmd /resources/templates/latexdiff.safe "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
 		if [ $? -ne 0 ]; then
 			FAILED=true
-			echo "diff output failed"
+			>&2 cat "${TEMP_LATEXDIFF_LOG}"
+			echo "latexdiff failed"
 		else
 			do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
 			if [ -n "${DIFFTEX_OUTPUT}" ]; then
