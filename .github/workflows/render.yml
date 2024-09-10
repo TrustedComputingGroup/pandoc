@@ -15,6 +15,7 @@ on:
         description: the released version of the Docker container to use
         required: true
         type: string
+      input:
         description: the Markdown file to render
         required: true
         type: string
