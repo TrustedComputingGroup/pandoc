@@ -1,0 +1,70 @@
+# Reusable workflow to render the spec for releases.
+# https://docs.github.com/en/actions/using-workflows/reusing-workflows
+
+name: Render
+
+on:
+  workflow_call:
+    inputs:
+      container:
+        required: false
+        type: string
+        default: ghcr.io/trustedcomputinggroup/pandoc
+      container-version:
+        required: true
+        type: string
+      input:
+        required: true
+        type: string
+      output:
+        required: true
+        type: string
+      github-token:
+        required: true
+        type: string
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.container }}:${{ inputs.container-version }}
+    name: Render
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Cache LaTeX files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-latex-${{ inputs.input }}-files
+        with:
+          path: |
+            *.aux
+            *.fdb_latexmk
+            *.lof
+            *.lot
+            *.toc
+            *.upa
+            *.upb
+            media/*.convert.pdf
+          key: latex-${{ inputs.input }}-${{ github.run_id }}
+          restore-keys: latex-${{ inputs.input }}
+
+      - name: Render
+        uses: ./.github/actions/render
+        with:
+          input-md: ${{ inputs.input }}
+          output-basename: ${{ inputs.output }}
+          pdf: true
+
+      - name: Upload to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ inputs.github-token }}
+          file: ${{ inputs.output }}.*.pdf
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true

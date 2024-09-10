@@ -64,10 +64,9 @@ jobs:
   # Use the fresh container to render the samples.
   render-samples:
     needs: build-container
-    uses: ./.github/workflows/release.yml
+    uses: ./.github/workflows/push.yml
     with:
       container: ghcr.io/trustedcomputinggroup/pandoc
       container-version: latest
       input: guide.tcg
       output: guide
-      github-token: ${{ secrets.GITHUB_TOKEN }}
