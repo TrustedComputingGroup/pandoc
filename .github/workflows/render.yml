@@ -1,0 +1,108 @@
+# Reusable workflow to render the spec for a variety of purposes.
+# https://docs.github.com/en/actions/using-workflows/reusing-workflows
+
+name: Render Markdown
+
+on:
+  workflow_call:
+    inputs:
+      container:
+        description: the Docker container to use (default is trustedcomputinggroup/pandoc)
+        required: false
+        type: string
+        default: ghcr.io/trustedcomputinggroup/pandoc
+      container-version:
+        description: the released version of the Docker container to use
+        required: true
+        type: string
+      input:
+        description: the Markdown file to render
+        required: true
+        type: string
+      workflow:
+        description: the workflow to run ('pr', 'push', 'release')
+        required: true
+        type: string
+      output:
+        description: the base name for output files
+        required: true
+        type: string
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ inputs.container }}:${{ inputs.container-version }}
+    name: Render
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      # Cache the LaTeX files. Use input file and container version in the cache
+      # key so that the cache is invalidated upon file change or container
+      # version change.
+      - name: Cache LaTeX files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-latex-${{ inputs.input }}-files
+        with:
+          path: |
+            *.aux
+            *.fdb_latexmk
+            *.lof
+            *.lot
+            *.toc
+            *.upa
+            *.upb
+            media/*.convert.pdf
+          key: latex-${{ inputs.input }}-${{ inputs.container-version }}-${{ github.run_id }}
+          restore-keys: latex-${{ inputs.input }}-${{ inputs.container-version }}
+
+      # Render the document with diffs in the 'pr' mode.
+      - name: Render
+        if: inputs.workflow == 'pr'
+        uses: ./.github/actions/render
+        with:
+          input-md: ${{ inputs.input }}
+          output-basename: ${{ inputs.output }}
+          pdf: true
+          diffbase: "${{ github.event.pull_request.base.sha }}"
+          pr-number: "${{ github.event.number }}"
+          pr-repo: "${{ github.repository }}"
+      # Render the document without diffs in other modes.
+      - name: Render
+        if: inputs.workflow != 'pr'
+        uses: ./.github/actions/render
+        with:
+          input-md: ${{ inputs.input }}
+          output-basename: ${{ inputs.output }}
+          pdf: true
+
+      # Upload the PDF to the release in 'release' mode
+      - name: Upload to release
+        if: inputs.workflow == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ inputs.output }}.*.pdf
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+      # Always upload all PDF and log files to the workflow artifacts
+      - name: Upload pdfs
+        uses: actions/upload-artifact@master
+        with:
+          name: PDF
+          path: |
+            ${{ inputs.output }}.*.pdf
+        if: always()
+      - name: Upload logs
+        uses: actions/upload-artifact@master
+        with:
+          name: Logs
+          path: |
+            ${{ inputs.output }}.*.log
+        if: always()
