@@ -31,13 +31,7 @@ jobs:
       image: ${{ inputs.container }}:${{ inputs.container-version }}
     name: Render
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      # Use the input file name as the base filename for the output
+      # Use the input file name (no extension) as the base filename for the output
       - name: Calculate output file name
         id: gen_output_name
         run: |
@@ -45,6 +39,12 @@ jobs:
           filename="${filename%.*}"
           echo OUTPUT_FILENAME="${filename}" >> "$GITHUB_OUTPUT"
           echo output filename: ${filename}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       # Cache the LaTeX files. Use input file and container version in the cache
       # key so that the cache is invalidated upon file change or container
@@ -102,12 +102,12 @@ jobs:
         with:
           name: PDF
           path: |
-            ${{ inputs.output }}.*.pdf
+            ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.*.pdf
         if: always()
       - name: Upload logs
         uses: actions/upload-artifact@master
         with:
           name: Logs
           path: |
-            ${{ inputs.output }}.*.log
+            ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.*.log
         if: always()
