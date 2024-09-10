@@ -21,11 +21,4 @@ jobs:
       container-version: latest
       input: guide.tcg
       workflow: pr
-  render-samples:
-    needs: build-container
-    uses: ./.github/workflows/render.yml
-    with:
-      container-version: latest
-      input: guide.tcg
-      workflow: pr
       manual_diffbase: ${{ inputs.diffbase }}
