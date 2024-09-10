@@ -1,0 +1,110 @@
+% Custom preamble based on --type=pdfcomment --driver xetex
+
+% Mark up added text with a blue underline, and removed text with a red strikethrough.
+% Choose blue/red instead of green/red for accessibility (red-green colorblindness modes constitute the most common forms).
+\RequirePackage{pdfcomment}
+% pdfmarkupcomment is pretty cool but has some issues:
+% 1. Doesn't work in xltabular environment (just doesn't show anything)
+% 2. Not every PDF viewer displays the comment thread (e.g., Chrome shows only the markup)
+% 3. You get one comment per line:
+%    https://tex.stackexchange.com/questions/474947/highlighting-text-that-spans-multiple-lines-with-pdfmarkupcomment-from-pdfcomme
+% \providecommand{\DIFadd}[1]{\pdfmarkupcomment[author=Inserted,markup=Underline,color=blue]{#1}{#1}}
+% \providecommand{\DIFdel}[1]{\pdfmarkupcomment[author=Deleted,markup=StrikeOut,color=red]{#1}{#1}}
+% hspaces are here to ensure that on all PDF readers, the comment indicator does not cover up the text.
+\providecommand{\DIFadd}[1]{{\color{blue} \uline{#1}}}
+\providecommand{\DIFdel}[1]{{\color{red} \sout{#1}}}
+% Basic add/del/mod environments.
+\providecommand{\DIFaddbegin}{\pdfcomment[author=Inserted,icon=Note,color=blue]{Text} \hspace{16pt}}
+\providecommand{\DIFaddend}{}
+\providecommand{\DIFdelbegin}{\pdfcomment[author=Deleted,icon=Note,color=red]{Text} \hspace{16pt}}
+\providecommand{\DIFdelend}{}
+\providecommand{\DIFmodbegin}{}
+\providecommand{\DIFmodend}{}
+
+% For floats, we use the graphics macros below.
+\providecommand{\DIFaddFL}[1]{#1}
+\providecommand{\DIFdelFL}[1]{#1}
+\providecommand{\DIFaddbeginFL}{\pdfcomment[author=Inserted,icon=Note,color=blue]{Image}}
+\providecommand{\DIFaddendFL}{}
+\providecommand{\DIFdelbeginFL}{\pdfcomment[author=Deleted,icon=Note,color=red]{Image}}
+\providecommand{\DIFdelendFL}{}
+
+% % Latexdiff by default wants to shrink deleted figures. Let's try not doing that,
+% % but if we want to change this later, here's what was here once.
+% \newcommand{\DIFscaledelfig}{1.0}
+% \RequirePackage{settobox}
+% \RequirePackage{letltxmacro}
+% \newsavebox{\DIFdelgraphicsbox}
+% \newlength{\DIFdelgraphicswidth}
+% \newlength{\DIFdelgraphicsheight}
+% % store original definition of \includegraphics %DIF PREAMBLE
+% \LetLtxMacro{\DIFOincludegraphics}{\includegraphics} %DIF PREAMBLE
+% \newcommand{\DIFaddincludegraphics}[2][]{{\color{blue}\fbox{\DIFOincludegraphics[#1]{#2}}}} %DIF PREAMBLE
+% \newcommand{\DIFdelincludegraphics}[2][]{% %DIF PREAMBLE
+% \sbox{\DIFdelgraphicsbox}{\DIFOincludegraphics[#1]{#2}}% %DIF PREAMBLE
+% \settoboxwidth{\DIFdelgraphicswidth}{\DIFdelgraphicsbox} %DIF PREAMBLE
+% \settoboxtotalheight{\DIFdelgraphicsheight}{\DIFdelgraphicsbox} %DIF PREAMBLE
+% \scalebox{\DIFscaledelfig}{% %DIF PREAMBLE
+% \parbox[b]{\DIFdelgraphicswidth}{\usebox{\DIFdelgraphicsbox}\\[-\baselineskip] \rule{\DIFdelgraphicswidth}{0em}}\llap{\resizebox{\DIFdelgraphicswidth}{\DIFdelgraphicsheight}{% %DIF PREAMBLE
+% \setlength{\unitlength}{\DIFdelgraphicswidth}% %DIF PREAMBLE
+% \begin{picture}(1,1)% %DIF PREAMBLE
+% \thicklines\linethickness{2pt} %DIF PREAMBLE
+% {\color[rgb]{1,0,0}\put(0,0){\framebox(1,1){}}}% %DIF PREAMBLE
+% {\color[rgb]{1,0,0}\put(0,0){\line( 1,1){1}}}% %DIF PREAMBLE
+% {\color[rgb]{1,0,0}\put(0,1){\line(1,-1){1}}}% %DIF PREAMBLE
+% \end{picture}% %DIF PREAMBLE
+% }\hspace*{3pt}}} %DIF PREAMBLE
+% } %DIF PREAMBLE
+
+% Add a PDF comment and put a box around the added and removed graphics.
+% store original definition of \includegraphics so we can wrap it.
+\LetLtxMacro{\DIFOincludegraphics}{\includegraphics}
+\newcommand{\DIFaddincludegraphics}[2][]{
+	{\color{blue}\fbox{\DIFOincludegraphics[#1]{#2}}}
+} %DIF PREAMBLE
+\newcommand{\DIFdelincludegraphics}[2][]{
+	{\color{red}\fbox{\DIFOincludegraphics[#1]{#2}}}
+} %DIF PREAMBLE
+
+\LetLtxMacro{\DIFOaddbegin}{\DIFaddbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddend}{\DIFaddend} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbegin}{\DIFdelbegin} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelend}{\DIFdelend} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbegin}{\DIFOaddbegin \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbegin}{\DIFOdelbegin \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelend}{\DIFOaddend \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddbeginFL}{\DIFaddbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOaddendFL}{\DIFaddendFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelbeginFL}{\DIFdelbeginFL} %DIF PREAMBLE
+\LetLtxMacro{\DIFOdelendFL}{\DIFdelendFL} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddbeginFL}{\DIFOaddbeginFL \let\includegraphics\DIFaddincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFaddendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelbeginFL}{\DIFOdelbeginFL \let\includegraphics\DIFdelincludegraphics} %DIF PREAMBLE
+\DeclareRobustCommand{\DIFdelendFL}{\DIFOaddendFL \let\includegraphics\DIFOincludegraphics} %DIF PREAMBLE
+
+% Use a code-diff style for diffs in code
+\RequirePackage{listings}
+\lstdefinelanguage{DIFcode}{
+  moredelim=[il][\color{red}]{\%DIF\ <},
+  moredelim=[il][\color{blue}]{\%DIF\ >}
+}
+\lstdefinestyle{DIFverbatimstyle}{
+	basicstyle=\linespread{1.0}\small\ttfamily{},
+	language=DIFcode,
+	basicstyle=\ttfamily,
+	columns=fullflexible,
+	keepspaces=true
+}
+\lstnewenvironment{DIFverbatim}{
+	\pdfcomment[author=Changed,color=blue,icon=Note]{- Deleted, + Inserted}
+	\lstset{style=DIFverbatimstyle}
+}{}
+\lstnewenvironment{DIFverbatim*}{
+	\pdfcomment[author=Changed,color=blue,icon=Note]{- Deleted, + Inserted}
+	\lstset{style=DIFverbatimstyle,showspaces=true}
+}{}
+\lstset{extendedchars=\true,inputencoding=utf8}
+
+% N.B. a sed script in build.sh may look for the following line. Use caution when changing it.
+% End Custom TCG extension for latexdiff

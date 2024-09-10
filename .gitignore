@@ -1,7 +1,7 @@
 *.pdf
 *.docx
 *.html
-*.tex
+/*.tex
 *.log
 *.aux
 *.lof
