@@ -19,8 +19,8 @@ on:
         description: the 'github' context object
         required: true
       github-token:
-        description: the 'secrets.GITHUB_TOKEN' token
-        required: true
+        description: the 'secrets.GITHUB_TOKEN' token (required for 'release')
+        required: false
         type: string
       input:
         description: the Markdown file to render
