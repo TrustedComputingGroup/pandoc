@@ -53,7 +53,7 @@ jobs:
       - name: Render
         uses: ./.github/actions/render
         with:
-          input: ${{ inputs.input }}
+          input-md: ${{ inputs.input }}
           output-basename: ${{ inputs.output }}
           pdf: true
           diffbase: "${{ github.event.pull_request.base.sha }}"
