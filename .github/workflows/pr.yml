@@ -51,7 +51,7 @@ jobs:
           restore-keys: latex-${{ inputs.input }}
 
       - name: Render
-        uses: trustedcomputinggroup/pandoc/actions/render@${{ inputs.action-version }}
+        uses: "trustedcomputinggroup/pandoc/.github/actions/render/action.yml@${{ inputs.action-version }}"
         with:
           input: ${{ inputs.input }}
           output-basename: ${{ inputs.input }}
