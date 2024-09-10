@@ -83,7 +83,7 @@ jobs:
         uses: ./.github/actions/render
         with:
           input-md: ${{ inputs.input }}
-          output-basename: ${{ inputs.output }}
+          output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
           pdf: true
 
       # Upload the PDF to the release in 'release' mode
@@ -92,7 +92,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ inputs.output }}.*.pdf
+          file: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.*.pdf
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
