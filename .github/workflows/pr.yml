@@ -51,4 +51,3 @@ jobs:
       container-version: latest
       input: guide.tcg
       workflow: pr
-      output: guide

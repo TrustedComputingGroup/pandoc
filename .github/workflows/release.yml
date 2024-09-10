@@ -70,4 +70,3 @@ jobs:
       container-version: latest
       input: guide.tcg
       workflow: release
-      output: guide

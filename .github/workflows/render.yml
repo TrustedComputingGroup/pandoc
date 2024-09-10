@@ -23,10 +23,6 @@ on:
         description: the workflow to run ('pr', 'push', 'release')
         required: true
         type: string
-      output:
-        description: the base name for output files
-        required: true
-        type: string
 
 jobs:
   render:
@@ -40,6 +36,13 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+
+      # Use the input file name as the base filename for the output
+      - name: Calculate output file name
+        id: gen_output_name
+        run: |
+          filename=$(basename ${{ inputs.input }})
+          echo OUTPUT_FILENAME="${filename%.*}" >> $GITHUB_OUTPUT"
 
       # Cache the LaTeX files. Use input file and container version in the cache
       # key so that the cache is invalidated upon file change or container
@@ -67,7 +70,7 @@ jobs:
         uses: ./.github/actions/render
         with:
           input-md: ${{ inputs.input }}
-          output-basename: ${{ inputs.output }}
+          output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
           pdf: true
           diffbase: "${{ github.event.pull_request.base.sha }}"
           pr-number: "${{ github.event.number }}"
