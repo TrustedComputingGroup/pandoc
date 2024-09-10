@@ -1,77 +1,54 @@
-# Reusable workflow to render the spec for PRs.
-# https://docs.github.com/en/actions/using-workflows/reusing-workflows
-
-name: Render
+name: PR
 
 on:
-  workflow_call:
-    inputs:
-      container:
-        required: false
-        type: string
-        default: ghcr.io/trustedcomputinggroup/pandoc
-      container-version:
-        required: true
-        type: string
-      input:
-        required: true
-        type: string
-      output:
-        required: true
-        type: string
+  pull_request:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  render:
+  # Build a fresh container for the PR.
+  build-container:
     runs-on: ubuntu-latest
-    container:
-      image: ${{ inputs.container }}:${{ inputs.container-version }}
-    name: Render
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      # Login against a Docker registry
+      # https://github.com/docker/login-action
+      - name: Log into registry
+        uses: docker/login-action@v3
         with:
-          fetch-depth: 0
-          fetch-tags: true
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Cache LaTeX files
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-latex-${{ inputs.input }}-files
-        with:
-          path: |
-            *.aux
-            *.fdb_latexmk
-            *.lof
-            *.lot
-            *.toc
-            *.upa
-            *.upb
-            media/*.convert.pdf
-          key: latex-${{ inputs.input }}-${{ github.run_id }}
-          restore-keys: latex-${{ inputs.input }}
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Render
-        uses: ./.github/actions/render
+      # Build and push Docker image as "pandoc_test"
+      # Only amd64, since we're just building a container
+      # to be used below in the GH action runner.
+      - name: Build and publish Docker image
+        uses: docker/build-push-action@v5
         with:
-          input-md: ${{ inputs.input }}
-          output-basename: ${{ inputs.output }}
-          pdf: true
-          diffbase: "${{ github.event.pull_request.base.sha }}"
-          pr-number: "${{ github.event.number }}"
-          pr-repo: "${{ github.repository }}"
+          # Cache layers from the container repo.
+          # This minimizes the amount of times we have to rebuild pandoc.
+          # Read-only: Avoid cluttering up the cache on pull requests.
+          cache-from: type=gha
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/trustedcomputinggroup/pandoc_test
 
-      - name: Upload pdfs
-        uses: actions/upload-artifact@master
-        with:
-          name: PDF
-          path: |
-            ${{ inputs.output }}.*.pdf
-        if: always()
-
-      - name: Upload logs
-        uses: actions/upload-artifact@master
-        with:
-          name: Logs
-          path: |
-            ${{ inputs.output }}.*.log
-        if: always()
+  # Use the fresh container to render the samples.
+  render-samples:
+    needs: build-container
+    uses: ./.github/workflows/render.yml
+    with:
+      container: ghcr.io/trustedcomputinggroup/pandoc_test
+      container-version: latest
+      input: guide.tcg
+      workflow: pr
+      output: guide
