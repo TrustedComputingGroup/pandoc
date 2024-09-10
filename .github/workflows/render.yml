@@ -27,6 +27,10 @@ on:
         description: diffbase for manual workflow
         required: false
         type: string
+      revision:
+        description: version to render (defaults is default branch)
+        required: false
+        type: string
 
 jobs:
   render:
@@ -47,6 +51,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.revision }}
           fetch-depth: 0
           fetch-tags: true
 
