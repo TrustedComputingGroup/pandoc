@@ -1,7 +1,7 @@
 # Reusable workflow to render the spec for a variety of purposes.
 # https://docs.github.com/en/actions/using-workflows/reusing-workflows
 
-name: Render Markdown
+name: render
 
 on:
   workflow_call:
@@ -23,10 +23,6 @@ on:
         description: the workflow to run ('pr', 'push', 'release')
         required: true
         type: string
-      output:
-        description: the base name for output files
-        required: true
-        type: string
 
 jobs:
   render:
@@ -35,6 +31,15 @@ jobs:
       image: ${{ inputs.container }}:${{ inputs.container-version }}
     name: Render
     steps:
+      # Use the input file name (no extension) as the base filename for the output
+      - name: Calculate output file name
+        id: gen_output_name
+        run: |
+          filename=$(basename ${{ inputs.input }})
+          filename="${filename%.*}"
+          echo OUTPUT_FILENAME="${filename}" >> "$GITHUB_OUTPUT"
+          echo output filename: ${filename}
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -67,7 +72,7 @@ jobs:
         uses: ./.github/actions/render
         with:
           input-md: ${{ inputs.input }}
-          output-basename: ${{ inputs.output }}
+          output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
           pdf: true
           diffbase: "${{ github.event.pull_request.base.sha }}"
           pr-number: "${{ github.event.number }}"
@@ -78,7 +83,7 @@ jobs:
         uses: ./.github/actions/render
         with:
           input-md: ${{ inputs.input }}
-          output-basename: ${{ inputs.output }}
+          output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
           pdf: true
 
       # Upload the PDF to the release in 'release' mode
@@ -87,7 +92,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ inputs.output }}.*.pdf
+          file: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.*.pdf
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
@@ -97,12 +102,12 @@ jobs:
         with:
           name: PDF
           path: |
-            ${{ inputs.output }}.*.pdf
+            ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.*.pdf
         if: always()
       - name: Upload logs
         uses: actions/upload-artifact@master
         with:
           name: Logs
           path: |
-            ${{ inputs.output }}.*.log
+            ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.*.log
         if: always()

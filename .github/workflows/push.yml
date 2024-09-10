@@ -1,5 +1,5 @@
 # Build and publish the container and use it to render the PDF for pushes to main.
-name: Push
+name: push
 
 on:
   push:
@@ -70,4 +70,3 @@ jobs:
       container-version: latest
       input: guide.tcg
       workflow: push
-      output: guide

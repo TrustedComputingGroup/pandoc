@@ -1,4 +1,4 @@
-name: PR
+name: pull_request
 
 on:
   pull_request:
@@ -51,4 +51,3 @@ jobs:
       container-version: latest
       input: guide.tcg
       workflow: pr
-      output: guide
