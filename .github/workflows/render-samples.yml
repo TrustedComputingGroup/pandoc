@@ -45,7 +45,7 @@ jobs:
   # Use the fresh container to render the samples.
   render-samples:
     needs: build-container
-    uses: .
+    uses: ./workflow.yml
     with:
       container: ghcr.io/trustedcomputinggroup/pandoc_test
       container-version: latest
