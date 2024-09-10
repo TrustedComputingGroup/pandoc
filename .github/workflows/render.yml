@@ -20,8 +20,12 @@ on:
         required: true
         type: string
       workflow:
-        description: the workflow to run ('pr', 'push', 'release')
+        description: the workflow to run ('pr', 'push', 'release', 'manual')
         required: true
+        type: string
+      manual_diffbase:
+        description: diffbase for manual workflow
+        required: false
         type: string
 
 jobs:
@@ -77,9 +81,18 @@ jobs:
           diffbase: "${{ github.event.pull_request.base.sha }}"
           pr-number: "${{ github.event.number }}"
           pr-repo: "${{ github.repository }}"
+      # Render the document with diffs in the 'manual' mode.
+      - name: Render
+        if: inputs.workflow == 'manual'
+        uses: ./.github/actions/render
+        with:
+          input-md: ${{ inputs.input }}
+          output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
+          pdf: true
+          diffbase: "${{ inputs.manual_diffbase }}"
       # Render the document without diffs in other modes.
       - name: Render
-        if: inputs.workflow != 'pr'
+        if: inputs.workflow != 'pr' && inputs.workflow != 'manual'
         uses: ./.github/actions/render
         with:
           input-md: ${{ inputs.input }}
