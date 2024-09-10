@@ -41,7 +41,7 @@ jobs:
           echo output filename: ${filename}
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -50,7 +50,7 @@ jobs:
       # key so that the cache is invalidated upon file change or container
       # version change.
       - name: Cache LaTeX files
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-latex-${{ inputs.input }}-files
         with:
