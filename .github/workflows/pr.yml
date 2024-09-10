@@ -13,9 +13,6 @@ on:
       container-version:
         required: true
         type: string
-      action-version:
-        required: true
-        type: string
       input:
         required: true
         type: string
@@ -51,7 +48,7 @@ jobs:
           restore-keys: latex-${{ inputs.input }}
 
       - name: Render
-        uses: "trustedcomputinggroup/pandoc/.github/actions/render/action.yml@${{ inputs.action-version }}"
+        uses: ./.github/actions/render
         with:
           input: ${{ inputs.input }}
           output-basename: ${{ inputs.input }}
