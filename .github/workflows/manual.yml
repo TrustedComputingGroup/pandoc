@@ -15,7 +15,6 @@ env:
 jobs:
   # Use the latest container to render the samples with the given diff
   render-samples:
-    needs: build-container
     uses: ./.github/workflows/render.yml
     with:
       container-version: latest
