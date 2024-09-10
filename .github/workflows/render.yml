@@ -15,14 +15,6 @@ on:
         description: the released version of the Docker container to use
         required: true
         type: string
-      github:
-        description: the 'github' context object
-        required: true
-      github-token:
-        description: the 'secrets.GITHUB_TOKEN' token (required for 'release')
-        required: false
-        type: string
-      input:
         description: the Markdown file to render
         required: true
         type: string
@@ -65,7 +57,7 @@ jobs:
             *.upa
             *.upb
             media/*.convert.pdf
-          key: latex-${{ inputs.input }}-${{ inputs.container-version }}-${{ inputs.github.run_id }}
+          key: latex-${{ inputs.input }}-${{ inputs.container-version }}-${{ github.run_id }}
           restore-keys: latex-${{ inputs.input }}-${{ inputs.container-version }}
 
       # Render the document with diffs in the 'pr' mode.
@@ -76,9 +68,9 @@ jobs:
           input-md: ${{ inputs.input }}
           output-basename: ${{ inputs.output }}
           pdf: true
-          diffbase: "${{ inputs.github.event.pull_request.base.sha }}"
-          pr-number: "${{ inputs.github.event.number }}"
-          pr-repo: "${{ inputs.github.repository }}"
+          diffbase: "${{ github.event.pull_request.base.sha }}"
+          pr-number: "${{ github.event.number }}"
+          pr-repo: "${{ github.repository }}"
       # Render the document without diffs in other modes.
       - name: Render
         if: inputs.workflow != 'pr'
@@ -93,9 +85,9 @@ jobs:
         if: inputs.workflow == 'release'
         uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: ${{ inputs.github-token }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ inputs.output }}.*.pdf
-          tag: ${{ inputs.github.ref }}
+          tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
       # Always upload all PDF and log files to the workflow artifacts

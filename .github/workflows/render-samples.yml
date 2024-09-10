@@ -49,7 +49,6 @@ jobs:
     with:
       container: ghcr.io/trustedcomputinggroup/pandoc_test
       container-version: latest
-      github: ${{ github }}
       input: guide.tcg
       workflow: pr
       output: guide
