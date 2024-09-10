@@ -28,7 +28,7 @@ jobs:
 
       # Set up QEMU for cross-platform builds below
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3.2.0
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
