@@ -812,10 +812,15 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 		do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
 		do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}" "${EXTRA_PANDOC_OPTIONS} -V keepstaleimages=true"
 		latexdiff --preamble /resources/templates/latexdiff.tex --config /resources/templates/latexdiff.cfg --append-safecmd /resources/templates/latexdiff.safe "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
-		do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
-		if [ -n "${DIFFTEX_OUTPUT}" ]; then
-			mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFTEX_OUTPUT})"
-			cp "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFTEX_OUTPUT}"
+		if [ $? -ne 0 ]; then
+			FAILED=true
+			echo "diff output failed"
+		else
+			do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
+			if [ -n "${DIFFTEX_OUTPUT}" ]; then
+				mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFTEX_OUTPUT})"
+				cp "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFTEX_OUTPUT}"
+			fi
 		fi
 	fi
 fi
