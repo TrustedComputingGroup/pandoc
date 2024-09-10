@@ -152,7 +152,7 @@ ENV PATH="/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-lin
 # Packages that are needed despite not being used explicitly by the template:
 # bigfoot, catchfile, fancyvrb, footmisc, hardwrap, lineno, ltablex, latexmk, needspace, pgf, zref
 # Package dependencies introduced by latexdiff:
-# changebar, datetime2, latexdiff, listings, marginnote, pdfcomment, soulpos, ulem
+# changebar, datetime2, latexdiff, listings, marginnote, pdfcomment, soulpos
 RUN tlmgr update --self && tlmgr install \
     accsupp \
     adjustbox \

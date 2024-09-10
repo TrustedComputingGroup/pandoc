@@ -482,13 +482,13 @@ This is the only informative text block in this document.
 
 These blocks can contain multiple paragraphs.
 
-These blocks can even contain tables! However, be wary of providing tables that are
-too large in an Informative Text block.
+These blocks can even contain tables! However, be wary of providing tables that
+are too large in an Informative Text block.
 
 | Document Type     | Informative Blocks     |
 | ----------------- | ---------------------- |
 | SPECIFICATION     | Usually                |
-| GUIDANCE          | Rarely                 |
+| GUIDANCE          | Sometimes              |
 | REFERENCE         | Rarely                 |
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ```
@@ -498,14 +498,15 @@ The above Markdown code becomes:
 ::: Informative ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 This is the only informative text block in this document.
 
-These blocks can contain multiple paragraphs, bulleted lists, etc.
+These blocks can contain multiple paragraphs.
 
-These blocks can even contain tables!
+These blocks can even contain tables! However, be wary of providing tables that
+are too large in an Informative Text block.
 
 | Document Type     | Informative Blocks     |
 | ----------------- | ---------------------- |
 | SPECIFICATION     | Usually                |
-| GUIDANCE          | Rarely                 |
+| GUIDANCE          | Sometimes              |
 | REFERENCE         | Rarely                 |
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -672,18 +673,20 @@ Table: Shapes {#tbl:shapes}
 
 | Shape        | Number of sides |
 | ------------ | --------------- |
+| Pentagon     | 5               |
 | Square       | 4               |
 | Triangle     | 3               |
-| Möbius strip | 1               |
+| Mobius strip | 1               |
 ```
 
 Table: Shapes {#tbl:shapes}
 
 | Shape        | Number of sides |
 | ------------ | --------------- |
+| Pentagon     | 5               |
 | Square       | 4               |
 | Triangle     | 3               |
-| Möbius strip | 1               |
+| Mobius strip | 1               |
 
 Note the table caption and cross-reference in curly braces above the table.
 
@@ -697,18 +700,16 @@ Table: Shapes {#tbl:simple-shapes}
 
 Shape        Number of sides
 ------------ ---------------
-Square       4
 Triangle     3
-Möbius strip 1
+Mobius strip 1
 ```
 
 Table: Shapes {#tbl:simple-shapes}
 
 Shape        Number of sides
 ------------ ---------------
-Square       4
 Triangle     3
-Möbius strip 1
+Mobius strip 1
 
 ### Multiline Markdown Tables {#sec:multiline-markdown-tables}
 
@@ -1013,14 +1014,14 @@ Sometimes, you just need a little inline math in the middle of a sentence, like 
 ## Words in equations
 
 To typeset complex equations with multi-character identifiers (such as the function "HMAC" or the word "OPAD") in @eq:hmac-iso,
-we recommend using the functions `\mathbf` (for functions) and `\mathit` (for identifiers).
+we recommend using the functions `\mathbf` (for functions) and `\mathit` (for variables). For constants, we recommend `\mathrm`.
 This avoids strange kerning issues where a string is treated as a product of single-character symbols, like in @eq:hmac-iso-bad-kerning:
 
 ```md
-$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq H((\bar{K} \oplus \mathit{OPAD}) \parallel H((\bar{K} \oplus \mathit{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-iso}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq \mathbf{H}((\bar{K} \oplus \mathrm{OPAD}) \parallel \mathbf{H}((\bar{K} \oplus \mathrm{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-iso}
 ```
 
-$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq H((\bar{K} \oplus \mathit{OPAD}) \parallel H((\bar{K} \oplus \mathit{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-iso}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq \mathbf{H}((\bar{K} \oplus \mathrm{OPAD}) \parallel \mathbf{H}((\bar{K} \oplus \mathrm{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-iso}
 
 ```md
 $$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \parallel H((\bar{K} \oplus IPAD) \parallel someTEXT)) $$ {#eq:hmac-iso-bad-kerning}
@@ -1031,10 +1032,10 @@ $$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \parallel H((\bar{K} \oplu
 You can use Unicode characters to make equations a little more readable in plain-text:
 
 ```md
-$$ \mathbf{HMAC}(K, \mathit{someTEXT}) := H((\bar{K} ⊕ \mathit{OPAD}) \parallel H((\bar{K} ⊕ \mathit{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-unicode}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) := H((\bar{K} ⊕ \mathrm{OPAD}) \parallel H((\bar{K} ⊕ \mathrm{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-unicode}
 ```
 
-$$ \mathbf{HMAC}(K, \mathit{someTEXT}) := H((\bar{K} ⊕ \mathit{OPAD}) \parallel H((\bar{K} ⊕ \mathit{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-unicode}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) := \mathbf{H}((\bar{K} ⊕ \mathrm{OPAD}) \parallel \mathbf{H}((\bar{K} ⊕ \mathrm{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-unicode}
 
 # Advanced Features
 

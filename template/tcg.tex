@@ -66,6 +66,7 @@
 \usepackage[space,spacefont="Arial"]{accsupp}
 \usepackage{pdflscape}
 \usepackage[none]{hyphenat}
+\usepackage[normalem]{ulem}
 
 % Use accessibility features to provide alt text for "informative" blocks that
 % also adds an invisible (but usable with screen readers) "end of informative"
@@ -144,32 +145,30 @@ $if(logo)$
 $endif$
 
 % https://github.com/Wandmalfarbe/pandoc-latex-template/issues/391
+% We don't care to scale images.
+\newcommand*\pandocbounded[1]{#1}
+% For reference, here is how Eisvogel defines this macro:
+% \makeatletter
+% \newsavebox\pandoc@box
+% \newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+%   \sbox\pandoc@box{#1}%
+%   \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+%   \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+%   \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+%   \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+%   \else\usebox{\pandoc@box}%
+%   \fi%
+% }
+% \makeatother
+
+% Make all verbatim environments use \small font.
+\usepackage{etoolbox}
 \makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-  \sbox\pandoc@box{#1}%
-  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}%
-  \fi%
-}
+\patchcmd{\@verbatim}
+  {\verbatim@font}
+  {\verbatim@font\small}
+  {}{}
 \makeatother
-
-$if(highlighting-macros)$
-$highlighting-macros$
-
-% Workaround/bugfix from jannick0.
-% See https://github.com/jgm/pandoc/issues/4302#issuecomment-360669013)
-% or https://github.com/Wandmalfarbe/pandoc-latex-template/issues/2
-%
-% Redefine the verbatim environment 'Highlighting' to break long lines (with
-% the help of fvextra). Redefinition is necessary because it is unlikely that
-% pandoc includes fvextra in the default template.
-\usepackage{fvextra}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,fontsize=$if(code-block-font-size)$$code-block-font-size$$else$\small$endif$,commandchars=\\\{\}}
-$endif$
 
 % Left-justify the document.
 \usepackage[document]{ragged2e}
@@ -406,16 +405,10 @@ $if(listings)$
 
 \lstdefinestyle{eisvogel_listing_style}{
   language         = java,
-$if(listings-disable-line-numbers)$
   xleftmargin      = 0.6em,
   framexleftmargin = 0.4em,
-$else$
-  numbers          = left,
-  xleftmargin      = 2.7em,
-  framexleftmargin = 2.5em,
-$endif$
   backgroundcolor  = \color{listing-background},
-  basicstyle       = \color{listing-text-color}\linespread{1.0}$if(code-block-font-size)$$code-block-font-size$$else$\small$endif$\ttfamily{},
+  basicstyle       = \color{listing-text-color}\linespread{1.0}\small\ttfamily{},
   breaklines       = true,
   frame            = single,
   framesep         = 0.19em,
