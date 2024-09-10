@@ -49,5 +49,5 @@ jobs:
     with:
       container: ghcr.io/trustedcomputinggroup/pandoc_test
       container-version: latest
-      action-version: ${{ github.event.pull_request.head.ref }}
       input: guide.tcg
+      output: guide
