@@ -1,5 +1,5 @@
 # Build, publish, and tag the container and use it to render the PDF for releases.
-name: build and publish
+name: release
 
 on:
   release:

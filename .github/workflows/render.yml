@@ -1,7 +1,7 @@
 # Reusable workflow to render the spec for a variety of purposes.
 # https://docs.github.com/en/actions/using-workflows/reusing-workflows
 
-name: Render Markdown
+name: render
 
 on:
   workflow_call:
@@ -42,7 +42,7 @@ jobs:
         id: gen_output_name
         run: |
           filename=$(basename ${{ inputs.input }})
-          echo OUTPUT_FILENAME="${filename%.*}" >> $GITHUB_OUTPUT"
+          echo OUTPUT_FILENAME="${filename%.*}" >> "$GITHUB_OUTPUT"
 
       # Cache the LaTeX files. Use input file and container version in the cache
       # key so that the cache is invalidated upon file change or container
