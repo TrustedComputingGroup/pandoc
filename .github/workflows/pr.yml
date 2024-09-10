@@ -65,7 +65,7 @@ jobs:
         with:
           name: PDF
           path: |
-            *.pdf
+            ${{ inputs.output }}.*.pdf
         if: always()
 
       - name: Upload logs
@@ -73,5 +73,5 @@ jobs:
         with:
           name: Logs
           path: |
-            *.log
+            ${{ inputs.output }}.*.log
         if: always()
