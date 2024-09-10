@@ -796,6 +796,9 @@ if [ -n "${HTML_OUTPUT}" ]; then
 	do_html "${BUILD_DIR}/${INPUT_FILE}" "${SOURCE_DIR}/${HTML_OUTPUT}"
 fi
 
+# Diffs may fail in some circumstances. Do not fail the entire workflow here.
+PRE_DIFFING_FAILED="${FAILED}"
+
 # Generate the diff output
 # Do this last so we can do whatever we want to the build directory
 readonly TEMP_DIFFBASE_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.diffbase.tex"
@@ -826,6 +829,7 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 	fi
 fi
 if [ "${FAILED}" != "true" -a -n "${DIFFPDF_OUTPUT}" ]; then
+	echo "Rendering diff PDF..."
 	do_pdf "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${LATEX_LOG}"
 
 	# Copy the logs, if requested. Note that this file gets the latexdiff and PDF driver output.
@@ -839,7 +843,7 @@ if [ "${FAILED}" != "true" -a -n "${DIFFPDF_OUTPUT}" ]; then
 	fi
 fi
 
-if [ "${FAILED}" == "true" ]; then
+if [ "${PRE_DIFFING_FAILED}" == "true" ]; then
 	echo "Overall workflow failed"
 	exit 1
 fi
