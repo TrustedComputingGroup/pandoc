@@ -3,8 +3,12 @@ name: manual
 on:
   workflow_dispatch:
     inputs:
+      revision:
+        description: the version or commit to render (if left empty, uses default branch)
+        required: false
+        type: string
       diffbase:
-        description: the version or commit to diff against
+        description: the version or commit to diff against (if left empty, no diff is generated)
         required: false
         type: string
 
@@ -21,3 +25,4 @@ jobs:
       input: guide.tcg
       workflow: manual
       manual_diffbase: ${{ inputs.diffbase }}
+      revision: ${{ inputs.revision }}
