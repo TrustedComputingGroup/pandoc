@@ -1,0 +1,31 @@
+name: manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      diffbase:
+        description: the version or commit to diff against
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Use the latest container to render the samples with the given diff
+  render-samples:
+    needs: build-container
+    uses: ./.github/workflows/render.yml
+    with:
+      container-version: latest
+      input: guide.tcg
+      workflow: pr
+  render-samples:
+    needs: build-container
+    uses: ./.github/workflows/render.yml
+    with:
+      container-version: latest
+      input: guide.tcg
+      workflow: pr
+      manual_diffbase: ${{ inputs.diffbase }}
