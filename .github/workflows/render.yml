@@ -84,7 +84,7 @@ jobs:
       # Render the document with diffs in the 'pr' mode.
       - name: Render
         if: inputs.workflow == 'pr'
-        uses: trustedcomputinggroup/pandoc/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
+        uses: trustedcomputinggroup/pandoc/.github/actions/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
         with:
           input-md: ${{ inputs.input }}
           output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
@@ -95,7 +95,7 @@ jobs:
       # Render the document with diffs in the 'manual' mode.
       - name: Render
         if: inputs.workflow == 'manual'
-        uses: trustedcomputinggroup/pandoc/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
+        uses: trustedcomputinggroup/pandoc/.github/actions/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
         with:
           input-md: ${{ inputs.input }}
           output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
@@ -104,7 +104,7 @@ jobs:
       # Render the document without diffs in other modes.
       - name: Render
         if: inputs.workflow != 'pr' && inputs.workflow != 'manual'
-        uses: trustedcomputinggroup/pandoc/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
+        uses: trustedcomputinggroup/pandoc/.github/actions/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
         with:
           input-md: ${{ inputs.input }}
           output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
