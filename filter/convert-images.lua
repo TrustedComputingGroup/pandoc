@@ -43,7 +43,7 @@ end
 -- https://github.com/jgraph/drawio-desktop/issues/249
 function drawio(source, dest)
     print(string.format('converting %s using drawio...', source))
-    if not runCommandSuppressOutput(string.format("xvfb-run -a drawio -x -f pdf -o %s %s --no-sandbox 2>&1", dest, source)) then
+    if not runCommandSuppressOutput(string.format("xvfb-run -a drawio -x -f pdf --crop -o %s %s --no-sandbox 2>&1", dest, source)) then
         print(string.format('failed to convert %s to %s using drawio, falling back to letting latex try to pick it up', source, dest))
         return false
     end
