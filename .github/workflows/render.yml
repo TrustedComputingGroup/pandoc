@@ -81,10 +81,15 @@ jobs:
       # that call to this one.
       # The unfortunate workaround is for this file to be updated to point at specific commits
       # and reference that version of the action file in this reusable workflow.
+      # Note: It appears that we can't pass variables into 'uses:' below to allow callers to
+      # request a version of the action. Referencing it by local path breaks external workflows
+      # that call to this one.
+      # The unfortunate workaround is for this file to be updated to point at specific commits
+      # and reference that version of the action file in this reusable workflow.
       # Render the document with diffs in the 'pr' mode.
       - name: Render
         if: inputs.workflow == 'pr'
-        uses: trustedcomputinggroup/pandoc/.github/actions/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
+        uses: trustedcomputinggroup/pandoc/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
         with:
           input-md: ${{ inputs.input }}
           output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
@@ -95,7 +100,7 @@ jobs:
       # Render the document with diffs in the 'manual' mode.
       - name: Render
         if: inputs.workflow == 'manual'
-        uses: trustedcomputinggroup/pandoc/.github/actions/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
+        uses: trustedcomputinggroup/pandoc/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
         with:
           input-md: ${{ inputs.input }}
           output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
@@ -104,7 +109,7 @@ jobs:
       # Render the document without diffs in other modes.
       - name: Render
         if: inputs.workflow != 'pr' && inputs.workflow != 'manual'
-        uses: trustedcomputinggroup/pandoc/.github/actions/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
+        uses: trustedcomputinggroup/pandoc/render@8f79b567c9dc6b15afba5d83d61e0d37f9508c47
         with:
           input-md: ${{ inputs.input }}
           output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
