@@ -71,7 +71,8 @@ jobs:
             *.toc
             *.upa
             *.upb
-            media/*.convert.pdf
+            *.convert.pdf
+            *.mermaid.pdf
           key: latex-${{ inputs.input }}-${{ inputs.container-version }}-${{ github.run_id }}
           restore-keys: latex-${{ inputs.input }}-${{ inputs.container-version }}
 

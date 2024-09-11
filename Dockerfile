@@ -143,7 +143,7 @@ RUN apt install -y \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN npm install --global --unsafe-perm puppeteer@23.2.1 imgur@2.4.2 mermaid-filter@1.4.7 typescript@5.5.4 pandiff@0.6.0
+RUN npm install --global --unsafe-perm puppeteer@23.2.1 imgur@2.4.2 @mermaid-js/mermaid-cli@11.1.1 typescript@5.5.4 pandiff@0.6.0
 
 # Important: /usr/local/texlive/bin/ paths come before other paths. We want to use the texlive we
 # built above, not any that happen to have come along with our base image.
