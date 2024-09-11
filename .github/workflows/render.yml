@@ -81,6 +81,11 @@ jobs:
       # that call to this one.
       # The unfortunate workaround is for this file to be updated to point at specific commits
       # and reference that version of the action file in this reusable workflow.
+      # Note: It appears that we can't pass variables into 'uses:' below to allow callers to
+      # request a version of the action. Referencing it by local path breaks external workflows
+      # that call to this one.
+      # The unfortunate workaround is for this file to be updated to point at specific commits
+      # and reference that version of the action file in this reusable workflow.
       # Render the document with diffs in the 'pr' mode.
       - name: Render
         if: inputs.workflow == 'pr'
@@ -118,20 +123,21 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.*.pdf
           tag: ${{ github.ref }}
+          asset_name: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.pdf
           overwrite: true
           file_glob: true
       # Always upload all PDF and log files to the workflow artifacts
       - name: Upload pdfs
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
-          name: PDF
+          name: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.pdf
           path: |
             ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.*.pdf
         if: always()
       - name: Upload logs
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
-          name: Logs
+          name: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.log
           path: |
             ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.*.log
         if: always()
