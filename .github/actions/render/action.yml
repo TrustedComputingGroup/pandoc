@@ -1,3 +1,8 @@
+# Reminder: Due to the way GitHub Actions treats reusable workflows that use reusable actions from local paths,
+# we have to update .github/workflows/render.yml to point to a particular commit of this file.
+# This means that when updating this file, we have to first send a PR that updates the action,
+# then second send a PR send that uses the action in the reusable workflow.
+
 name: 'Render'
 description: 'Render a TCG Markdown document'
 inputs:
