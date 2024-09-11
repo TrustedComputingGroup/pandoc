@@ -519,8 +519,6 @@ echo "Date (English): ${DATE_ENGLISH}"
 FROM="markdown+gfm_auto_identifiers+fenced_divs+implicit_figures+multiline_tables+grid_tables+table_captions-markdown_in_html_blocks"
 
 cp /resources/filters/mermaid-config.json .mermaid-config.json
-export MERMAID_FILTER_FORMAT="pdf"
-export MERMAID_FILTER_BACKGROUND="transparent"
 
 # The Mermaid filter loses track of the web browser it uses to render diagrams
 # sometimes (maybe 5% of the time or so).
@@ -582,8 +580,7 @@ do_latex() {
 		--standalone
 		--no-highlight
 		--template=tcg.tex
-		--lua-filter=mermaid-code-class-pre.lua
-		--filter=mermaid-filter
+		--lua-filter=mermaid-filter.lua
 		--lua-filter=informative-sections.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=center-images.lua
@@ -655,6 +652,7 @@ do_pdf() {
 	cp *.upb "${SOURCE_DIR}" 2>/dev/null
 	# Copy converted images so they can be cached as well.
 	cp *.convert.pdf "${SOURCE_DIR}" 2>/dev/null
+	cp *.mermaid.pdf "${SOURCE_DIR}" 2>/dev/null
 	echo "Elapsed time: $(($end-$start)) seconds"
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "! " "${logfile}"
@@ -688,8 +686,7 @@ do_docx() {
 	cmd=(pandoc
 		--embed-resources
 		--standalone
-		--lua-filter=mermaid-code-class-pre.lua
-		--filter=mermaid-filter
+		--lua-filter=mermaid-filter.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
@@ -728,8 +725,7 @@ do_html() {
 		-V toccolor=blue
 		--embed-resources
 		--standalone
-		--lua-filter=mermaid-code-class-pre.lua
-		--filter=mermaid-filter
+		--lua-filter=mermaid-filter.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
 		--lua-filter=landscape-pages.lua
@@ -790,12 +786,6 @@ if [ -n "${DOCX_OUTPUT}" ]; then
 	do_docx "${BUILD_DIR}/${INPUT_FILE}" "${SOURCE_DIR}/${DOCX_OUTPUT}"
 fi
 
-# Generate the html output
-export MERMAID_FILTER_FORMAT="svg"
-if [ -n "${HTML_OUTPUT}" ]; then
-	do_html "${BUILD_DIR}/${INPUT_FILE}" "${SOURCE_DIR}/${HTML_OUTPUT}"
-fi
-
 # Diffs may fail in some circumstances. Do not fail the entire workflow here.
 PRE_DIFFING_FAILED="${FAILED}"
 
@@ -804,7 +794,6 @@ PRE_DIFFING_FAILED="${FAILED}"
 readonly TEMP_DIFFBASE_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.diffbase.tex"
 readonly TEMP_DIFF_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.diff.tex"
 readonly TEMP_LATEXDIFF_LOG="${BUILD_DIR}/latexdiff.log"
-export MERMAID_FILTER_FORMAT="pdf"
 if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 	git fetch --unshallow --quiet 2>/dev/null
 	git reset --hard ${DIFFBASE}
