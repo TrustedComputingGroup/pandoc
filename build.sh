@@ -173,8 +173,6 @@ readonly PR_NUMBER
 readonly PR_REPO
 readonly DIFFBASE
 readonly PDF_ENGINE
-readonly PDFLOG_OUTPUT
-readonly DIFFPDFLOG_OUTPUT
 
 shift "$(( OPTIND - 1 ))"
 
@@ -408,6 +406,8 @@ readonly DIFFTEX_OUTPUT
 readonly DOCX_OUTPUT
 readonly HTML_OUTPUT
 readonly LATEX_OUTPUT
+readonly PDFLOG_OUTPUT
+readonly DIFFPDFLOG_OUTPUT
 
 echo "Starting Build with"
 echo "file: ${INPUT_FILE}"
