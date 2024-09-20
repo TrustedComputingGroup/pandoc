@@ -531,6 +531,32 @@ This is an "Example" block.
 
 The behavior of blocks with labels not specified above may change meaningfully in future versions of this toolkit, so use them at your own risk.
 
+### Deprecation Notices
+
+Specifications occasionally need to deprecate features or commands. Use the
+"Deprecated" block to create a visually distinctive notice of the deprecation.
+
+Minimal example:
+
+::: Deprecated :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+TDES was deprecated in version 123.
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+Best practices for deprecation:
+
+1. Explain which version of the document introduced the deprecation.
+2. If applicable, explain why the feature was deprecated.
+3. Explain what users should use instead.
+
+Better example:
+
+::: Deprecated :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+TDES was deprecated in version 123. It was withdrawn by NIST at the end of 2023:
+<https://csrc.nist.gov/News/2023/nist-to-withdraw-sp-800-67-rev-2>
+
+Users are encouraged to use AES instead.
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 # Figures {#sec:figures}
 
 There are two ways to include a figure in a document: as an image file checked into the repository, and as a [Mermaid](http://mermaid.js.org) diagram.

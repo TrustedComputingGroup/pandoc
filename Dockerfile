@@ -217,6 +217,7 @@ RUN tlmgr update --self && tlmgr install \
     unicode-math \
     upquote \
     varwidth \
+    wrapfig \
     xcolor \
     xetex \
     xltabular \

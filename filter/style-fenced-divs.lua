@@ -12,21 +12,33 @@ div_classes =
   ["example"] = {
     ["label"] = "Example",
   },
+  ["deprecated"] = {
+    ["label"] = "Deprecation Notice",
+  },
 }
 
 function Div(el)
   local class = el.classes[1]
   if(class) then
-    local class_spec = div_classes[string.lower(class)]
+    class = string.lower(class)
+    local class_spec = div_classes[class]
     if(class_spec) then
       local label = class_spec["label"]
 
       if FORMAT == 'latex' then
-        return{
-          pandoc.RawBlock('latex', string.format('\\BeginInformative{%s}\n', label)),
-          el,
-          pandoc.RawBlock('latex', string.format('\\EndInformative{%s}', label)),
-        }
+        if class == 'deprecated' then
+          return {
+            pandoc.RawBlock('latex', '\\BeginDeprecated\n'),
+            el,
+            pandoc.RawBlock('latex', '\\EndDeprecated'),
+          }
+        else
+          return {
+            pandoc.RawBlock('latex', string.format('\\BeginInformative{%s}\n', label)),
+            el,
+            pandoc.RawBlock('latex', string.format('\\EndInformative{%s}', label)),
+          }
+        end
       end
 
       if FORMAT == 'docx' then
