@@ -683,6 +683,15 @@ $endif$
   beforeskip=.5\baselineskip,
   afterskip=0em]{subparagraph}
 
+% Color the link text black in tables of contents.
+\let\OldTableOfContents\tableofcontents
+\renewcommand{\tableofcontents}{
+  {
+    \hypersetup{linkcolor=black}
+    \OldTableOfContents
+  }
+}
+
 % Allow TCG documents to use '\beginappendices' to easily mark the transition to appendices.
 \usepackage{appendix}
 \newcommand{\beginappendices}{
