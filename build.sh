@@ -803,7 +803,11 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 	else
 		do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
 		do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}" "${EXTRA_PANDOC_OPTIONS} -V keepstaleimages=true"
-		latexdiff --preamble /resources/templates/latexdiff.tex --config /resources/templates/latexdiff.cfg --append-safecmd /resources/templates/latexdiff.safe "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
+		echo "Running latexdiff... (this may take a while for complex changes)"
+		start=$(date +%s)
+		latexdiff --preamble /resources/templates/latexdiff.tex --config /resources/templates/latexdiff.cfg --append-safecmd /resources/templates/latexdiff.safe --exclude-safecmd /resources/templates/latexdiff.unsafe "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
+		end=$(date +%s)
+		echo "Elapsed time: $(($end-$start)) seconds"
 		if [ $? -ne 0 ]; then
 			FAILED=true
 			>&2 cat "${TEMP_LATEXDIFF_LOG}"
