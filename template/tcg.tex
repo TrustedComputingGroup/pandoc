@@ -338,18 +338,17 @@ $endif$
   % This manual skip is here in case a section begins with a an informative block.
   \vskip 3pt%
   \begin{informative}
+  \textbf{\textit{\textcolor{informative-header}{\small \BeginDemarcated{Deprecated}}}}
   % The size of the triangle is calculated so that it doesn't overflow the box
   % at its minimum height (one line of text)
-  \begin{wrapfigure}{R}{0.08\textwidth}
-    % Position the triangle a little higher in the box.
-    \vskip -1em%
-    \includegraphics[width=0.07\textwidth]{img/deprecated.pdf}
+  \begin{wrapfigure}{R}{2.6em}
+    \vskip -2.5em%
+    \includegraphics[width=2.5em]{/resources/img/deprecated.pdf}
   \end{wrapfigure}
-  \textbf{\textit{\textcolor{informative-header}{\small \BeginDemarcated{Deprecation Notice}}}}
   \color{informative-foreground}
 }
 \newcommand{\EndDeprecated}{
-  \textbf{\textit{\textcolor{informative-header}{\small \EndDemarcated{Deprecation Notice}}}}
+  \textbf{\textit{\textcolor{informative-header}{\small \EndDemarcated{Deprecated}}}}
   \end{informative}%
   \vskip -7pt%
   \renewcommand{\hlineifmdframed}{}
@@ -689,6 +688,22 @@ $endif$
   {
     \hypersetup{linkcolor=black}
     \OldTableOfContents
+  }
+}
+% Color the link text black in lists of tables.
+\let\OldListOfTables\listoftables
+\renewcommand{\listoftables}{
+  {
+    \hypersetup{linkcolor=black}
+    \OldListOfTables
+  }
+}
+% Color the link text black in lists of figures.
+\let\OldListOfFigures\listoffigures
+\renewcommand{\listoffigures}{
+  {
+    \hypersetup{linkcolor=black}
+    \OldListOfFigures
   }
 }
 
