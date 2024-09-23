@@ -48,7 +48,18 @@ jobs:
           echo OUTPUT_FILENAME="${filename}" >> "$GITHUB_OUTPUT"
           echo output filename: ${filename}
 
+      # For pull requests, check out the head ref of the source branch.
       - name: Checkout
+        if: inputs.workflow == 'pr'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          fetch-tags: true
+      # For other workflows, check out the requested revision (which defaults to
+      # head of the default branch).
+      - name: Checkout
+        if: inputs.workflow != 'pr'
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.revision }}
