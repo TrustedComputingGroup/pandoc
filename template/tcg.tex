@@ -268,9 +268,14 @@ $if(titlepage)$
 $endif$
 
 %
-% break urls
+% break urls...
 %
 \PassOptionsToPackage{hyphens}{url}
+%
+% ...but not on colons or dots
+%
+\appto\UrlNoBreaks{\do\:}
+\appto\UrlNoBreaks{\do\.}
 
 %
 % captions
