@@ -2,3 +2,8 @@ figPrefix: "Figure"
 eqnPrefix: "Equation"
 tblPrefix: "Table"
 secPrefix: "Clause"
+refIndexTemplate:
+  sec: $$i$$$$suf$$ ($$t$$)
+  tbl: $$i$$$$suf$$ ($$t$$)
+  fig: $$i$$$$suf$$ ($$t$$)
+  default: $$i$$$$suf$$
