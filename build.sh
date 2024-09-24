@@ -245,6 +245,16 @@ fi
 # figure out git version and revision if needed.
 EXTRA_PANDOC_OPTIONS=""
 if test "${DO_GITVERSION}" == "yes"; then
+	if [ ! -z "${PR_NUMBER}" ] && $(git rev-parse HEAD^2 >/dev/null 2>/dev/null); then
+		# For PR workflows, base the version info on the right parent.
+		# In the context of a GitHub pull request, HEAD is a merge commit where
+		# parent1 (HEAD^1) is the target branch and parent2 (HEAD~2) is the source
+		GIT_COMMIT=$(git rev-parse --short HEAD^2)
+	else
+		# Otherwise, base the version info on HEAD.
+		GIT_COMMIT=$(git rev-parse --short HEAD)
+	fi
+
 	# TODO: Should we fail if dirty?
 	raw_version="$(git describe --always --tags)"
 	echo "Git version: ${raw_version}"
@@ -263,7 +273,6 @@ if test "${DO_GITVERSION}" == "yes"; then
 	#   Where $REVISION is the number of commits since the last tag (e.g., 54)
 	# $VERSION-$REVISION-g$COMMIT --> version without prerelease tag at a particular commit (len 3)
 	# $VERSION-$PRERELEASE-$REVISION-g$COMMIT --> version with  (len 4)
-	GIT_COMMIT=$(git rev-parse --short HEAD)
 	len=${#dash_hunks[@]}
 	case $len in
 		1)
