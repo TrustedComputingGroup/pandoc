@@ -245,6 +245,17 @@ fi
 # figure out git version and revision if needed.
 EXTRA_PANDOC_OPTIONS=""
 if test "${DO_GITVERSION}" == "yes"; then
+	# If HEAD is a merge commit, go to the first parent.
+	if $(git rev-parse HEAD^2 >/dev/null 2>/dev/null); then
+		parent1=$(git rev-parse HEAD^1 2>/dev/null)
+		parent2=$(git rev-parse HEAD^2 2>/dev/null)
+		echo "Merge commit detected:"
+		echo "1: $parent1"
+		echo "2: $parent2"
+		echo "Checking out $parent1."
+		git checkout $parent1
+	fi
+
 	# TODO: Should we fail if dirty?
 	raw_version="$(git describe --always --tags)"
 	echo "Git version: ${raw_version}"
