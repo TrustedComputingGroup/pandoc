@@ -246,17 +246,13 @@ fi
 EXTRA_PANDOC_OPTIONS=""
 if test "${DO_GITVERSION}" == "yes"; then
 	if [ ! -z "${PR_NUMBER}" ] && $(git rev-parse HEAD^2 >/dev/null 2>/dev/null); then
-		# For PR workflows, check out the right parent so that filenames etc.
-		# are based on the most recent commit on the source branch.
+		# For PR workflows, base the version info on the right parent.
 		# In the context of a GitHub pull request, HEAD is a merge commit where
 		# parent1 (HEAD^1) is the target branch and parent2 (HEAD~2) is the source
-		parent1=$(git rev-parse HEAD^1 2>/dev/null)
-		parent2=$(git rev-parse HEAD^2 2>/dev/null)
-		echo "Merge commit detected:"
-		echo "1: $parent1"
-		echo "2: $parent2"
-		echo "Checking out $parent2."
-		git checkout $parent2
+		GIT_COMMIT=$(git rev-parse --short HEAD^2)
+	else
+		# Otherwise, base the version info on HEAD.
+		GIT_COMMIT=$(git rev-parse --short HEAD)
 	fi
 
 	# TODO: Should we fail if dirty?
@@ -277,7 +273,6 @@ if test "${DO_GITVERSION}" == "yes"; then
 	#   Where $REVISION is the number of commits since the last tag (e.g., 54)
 	# $VERSION-$REVISION-g$COMMIT --> version without prerelease tag at a particular commit (len 3)
 	# $VERSION-$PRERELEASE-$REVISION-g$COMMIT --> version with  (len 4)
-	GIT_COMMIT=$(git rev-parse --short HEAD)
 	len=${#dash_hunks[@]}
 	case $len in
 		1)
