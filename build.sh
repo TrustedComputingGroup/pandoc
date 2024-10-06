@@ -500,6 +500,11 @@ do_tex_fixups() {
 	# prefix these lines with + and -
 	sed -i.bak 's/^%DIF < /%DIF <- /g' "${input}"
 	sed -i.bak 's/^%DIF > /%DIF >+ /g' "${input}"
+
+	# latexdiff' \DIFaddbegin absorbs a space before it.
+	# This is fairly common (e.g., in the case of an added sentence)
+	# Preserve them by inserting a space after.
+	sed -i.bak 's/ \\DIFaddbegin/ \\DIFaddbegin ~/g' "${input}"
 }
 
 if test "${DO_GITVERSION}" == "yes"; then

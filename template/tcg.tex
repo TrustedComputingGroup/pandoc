@@ -132,7 +132,9 @@ $endif$
 
 \urlstyle{same} % disable monospaced font for URLs
 
-\usepackage[top=0.5in,left=0.5in,right=0.5in,bottom=0.8in,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
+% An explicit marginparwidth allows pdfmargincomment to place the icon in the right margin (for diffs).
+% 0in is fine because we don't put actual contents into the margin.
+\usepackage[top=0.5in,left=0.5in,right=0.5in,marginparwidth=0in,bottom=0.8in,$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
 
 \setlength{\paperheight}{11in}
 \setlength{\paperwidth}{8.5in}
@@ -287,6 +289,8 @@ $endif$
 %
 % Define some colors that we'll use from style-fenced-divs.lua and informative-quote-blocks.lua.
 %
+
+\definecolor{tcg-template-neon-green}{RGB}{153, 196, 84}
 
 % Informative text color, also used for notes and examples.
 \definecolor{informative-background}{RGB}{224, 224, 224}

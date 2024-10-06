@@ -1,4 +1,4 @@
-% Custom preamble based on --type=pdfcomment --driver xetex
+% Custom preamble based on --type=pdfmargincomment --driver xetex
 
 % Mark up added text with a blue underline, and removed text with a red strikethrough.
 % Choose blue/red instead of green/red for accessibility (red-green colorblindness modes constitute the most common forms).
@@ -10,13 +10,13 @@
 %    https://tex.stackexchange.com/questions/474947/highlighting-text-that-spans-multiple-lines-with-pdfmarkupcomment-from-pdfcomme
 % \providecommand{\DIFadd}[1]{\pdfmarkupcomment[author=Inserted,markup=Underline,color=blue]{#1}{#1}}
 % \providecommand{\DIFdel}[1]{\pdfmarkupcomment[author=Deleted,markup=StrikeOut,color=red]{#1}{#1}}
-% hspaces are here to ensure that on all PDF readers, the comment indicator does not cover up the text.
 \providecommand{\DIFadd}[1]{{\color{blue} \uline{#1}}}
 \providecommand{\DIFdel}[1]{{\color{red} \sout{#1}}}
 % Basic add/del/mod environments.
-\providecommand{\DIFaddbegin}{\pdfcomment[author=Inserted,icon=Note,color=blue]{Text} \hspace{16pt}}
+% \providecommand{\DIFaddbegin}{\pdfmargincomment[author=Inserted,icon=Note,color=blue]{Text}}
+\providecommand{\DIFaddbegin}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Inserted text}}
 \providecommand{\DIFaddend}{}
-\providecommand{\DIFdelbegin}{\pdfcomment[author=Deleted,icon=Note,color=red]{Text} \hspace{16pt}}
+\providecommand{\DIFdelbegin}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Removed text}}
 \providecommand{\DIFdelend}{}
 \providecommand{\DIFmodbegin}{}
 \providecommand{\DIFmodend}{}
@@ -24,9 +24,9 @@
 % For floats, we use the graphics macros below.
 \providecommand{\DIFaddFL}[1]{#1}
 \providecommand{\DIFdelFL}[1]{#1}
-\providecommand{\DIFaddbeginFL}{\pdfcomment[author=Inserted,icon=Note,color=blue]{Image}}
+\providecommand{\DIFaddbeginFL}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Inserted image}}
 \providecommand{\DIFaddendFL}{}
-\providecommand{\DIFdelbeginFL}{\pdfcomment[author=Deleted,icon=Note,color=red]{Image}}
+\providecommand{\DIFdelbeginFL}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Removed image}}
 \providecommand{\DIFdelendFL}{}
 
 % % Latexdiff by default wants to shrink deleted figures. Let's try not doing that,
@@ -97,11 +97,11 @@
 	keepspaces=true
 }
 \lstnewenvironment{DIFverbatim}{
-	\pdfcomment[author=Changed,color=blue,icon=Note]{- Deleted, + Inserted}
+	\pdfmargincomment[author=DIFF,color=tcg-template-neon-green,icon=Note]{- Deleted, + Inserted}
 	\lstset{style=DIFverbatimstyle}
 }{}
 \lstnewenvironment{DIFverbatim*}{
-	\pdfcomment[author=Changed,color=blue,icon=Note]{- Deleted, + Inserted}
+	\pdfmargincomment[author=DIFF,color=tcg-template-neon-green,icon=Note]{- Deleted, + Inserted}
 	\lstset{style=DIFverbatimstyle,showspaces=true}
 }{}
 \lstset{extendedchars=\true,inputencoding=utf8}
