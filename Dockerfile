@@ -110,6 +110,20 @@ RUN wget https://github.com/alerque/libertinus/releases/download/v7.040/Libertin
     mkdir -p /usr/share/fonts/OTF/ && \
     cp Libertinus-7.040/static/OTF/*.otf /usr/share/fonts/OTF/
 
+FROM ${BASE} as build-latexdiff
+
+RUN apt update && apt install -y \
+    build-essential \    
+    wget \
+    xz-utils
+
+# Install latexdiff
+# The CTAN package doesn't let us customize the install (e.g., support latexdiff-fast), so we build it here.
+RUN wget https://github.com/ftilmann/latexdiff/releases/download/1.3.4/latexdiff-1.3.4.tar.gz && \
+    tar -xzf latexdiff-1.3.4.tar.gz && \
+    cd latexdiff-1.3.4 && \
+    make install-fast
+
 # Build's done. Copy what we need into the actual container for running.
 FROM ${BASE} as run
 
@@ -185,7 +199,6 @@ RUN tlmgr update --self && tlmgr install \
     hyperref \
     hyphenat \
     koma-script \
-    latexdiff \
     latexmk \
     lineno \
     listings \
@@ -239,6 +252,9 @@ RUN export DRAWIO_DEB=drawio-${TARGETPLATFORM#linux/}-${DRAWIO_RELEASE}.deb && \
     wget https://github.com/jgraph/drawio-desktop/releases/download/v${DRAWIO_RELEASE}/${DRAWIO_DEB} && \
     dpkg -i ${DRAWIO_DEB} && \
     rm ${DRAWIO_DEB}
+
+# Grab latexdiff
+COPY --from=build-latexdiff /usr/local/bin/latexdiff* /usr/local/bin
 
 # https://stackoverflow.com/questions/52998331/imagemagick-security-policy-pdf-blocking-conversion
 RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
