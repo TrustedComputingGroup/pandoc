@@ -490,7 +490,7 @@ do_md_fixups() {
 	# TODO: Turn this into a Pandoc filter.
 	sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${input}"
 }
-do_tex_fixups() {
+do_diff_tex_fixups() {
 	local input=$1
 	# latexdiff is appending its own generated preamble to our custom one
 	# (in apparent contradiction of the documentation). Strip it out.
@@ -509,6 +509,10 @@ do_tex_fixups() {
 
 	# latexdiff puts \DIFaddend at the beginning of a table row instead of the end of the previous row.
 	sed -z -i.bak 's/ \\\\\n\n\\hline\s*\\DIFaddend/\\DIFaddend \\\\\n\n\\hline/g' "${input}"
+
+	# latexdiff puts \DIFaddbegin and \DIFaddend around the beginning of a new xltabular environment.
+	sed -i.bak 's/\\DIFaddbegin\s*\\begin{xltabular}/\\begin{xltabular}/g' "${input}"
+	sed -i.bak 's/\\DIFaddend\s*\\caption/\\caption/g' "${input}"
 
 	# Remove \DIFaddbegin that contain nothing but a \multicolumn spec.
 	# This is inserted if the number of columns was detected to change.
@@ -533,13 +537,29 @@ do_tex_fixups() {
 	# Swap the order of any \DIF stuff and \multicolumn invocation inside a cell.
 	sed -i.bak 's/\(\\DIF[^&]*\)\(\\multicolumn{[^{}]*}\({[^{}]*}\|{[^{}]*{[^{}]*}}\)\)/\2\1/g' "${input}"
 
+	# latexdiff inserts its markers before \hline sometimes.
+	# The \hline needs to be the first thing before the cell.
+	# Swap the order of any \DIF stuff and \hline invocation inside a cell.
+	sed -i.bak 's/\(\\DIF[^&]*\)\(\\hline \)/\2\1/g' "${input}"
+	sed -i.bak 's/\(\\DIF[^&]*\)\(\\hlineifmdframed \)/\2\1/g' "${input}"
+
+	# latexdiff puts \DIFaddbegin and \DIFaddend around a caption.
+	sed -i.bak 's/\\DIFaddbegin\s*\(\\caption.*\)\\DIFaddend/\1/g' "${input}"
+
+	# latexdiff inside of \texttt breaks. Prefer \ttfamily.
+	sed -i.bak 's/\\texttt{/{\\ttfamily /g' "${input}"
+
+	# latexdiff inserts its markers inside the enumeration environment's labelenumi redefinition.
+	sed -i.bak 's/\\def\\DIFdelbegin//g' "${input}"
+	sed -i.bak 's/\\DIFdelend\s*\\DIFaddbegin\s*\\labelenumi/\\def\\labelenumi/g' "${input}"
+
+	# latexdiff inserts DIFaddend and DIFdelend before \item.
+	sed -i.bak 's/\\DIF.*\\item/\\item/g' "${input}"
+
 	# latexdiff's \DIFaddbegin absorbs a space before it.
 	# This is fairly common (e.g., in the case of an added sentence)
 	# Preserve them by inserting a space after.
 	sed -i.bak 's/ \\DIFaddbegin/ \\DIFaddbegin ~/g' "${input}"
-
-	# latexdiff inside of \texttt breaks. Prefer \ttfamily.
-	sed -i.bak 's/\\texttt{/{\\ttfamily /g' "${input}"
 }
 
 if test "${DO_GITVERSION}" == "yes"; then
@@ -854,7 +874,7 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 		do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}" "${EXTRA_PANDOC_OPTIONS} -V keepstaleimages=true"
 		echo "Running latexdiff... (this may take a while for complex changes)"
 		start=$(date +%s)
-		latexdiff-fast --preamble /resources/templates/latexdiff.tex --config /resources/templates/latexdiff.cfg --append-safecmd /resources/templates/latexdiff.safe --exclude-safecmd /resources/templates/latexdiff.unsafe "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
+		latexdiff-fast --math-markup=whole --preamble /resources/templates/latexdiff.tex --config /resources/templates/latexdiff.cfg --append-safecmd /resources/templates/latexdiff.safe --exclude-safecmd /resources/templates/latexdiff.unsafe "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
 		end=$(date +%s)
 		echo "Elapsed time: $(($end-$start)) seconds"
 		if [ $? -ne 0 ]; then
@@ -862,7 +882,7 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 			>&2 cat "${TEMP_LATEXDIFF_LOG}"
 			echo "latexdiff failed"
 		else
-			do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
+			do_diff_tex_fixups "${TEMP_DIFF_TEX_FILE}"
 			if [ -n "${DIFFTEX_OUTPUT}" ]; then
 				mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFTEX_OUTPUT})"
 				cp "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFTEX_OUTPUT}"
