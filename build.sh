@@ -501,10 +501,16 @@ do_tex_fixups() {
 	sed -i.bak 's/^%DIF < /%DIF <- /g' "${input}"
 	sed -i.bak 's/^%DIF > /%DIF >+ /g' "${input}"
 
-	# latexdiff' \DIFaddbegin absorbs a space before it.
+	# latexdiff's \DIFaddbegin absorbs a space before it.
 	# This is fairly common (e.g., in the case of an added sentence)
 	# Preserve them by inserting a space after.
 	sed -i.bak 's/ \\DIFaddbegin/ \\DIFaddbegin ~/g' "${input}"
+
+	# latexdiff erroneously puts \DIFadd inside the second argument to \multicolumn.
+	sed -i.bak 's/\\multicolumn{\([^}]*\)}{\\DIFadd{\([^}]*\)}}/\\multicolumn{\1}{\2}/g' "${input}"
+
+	# latexdiff puts \DIFaddend at the beginning of a table row instead of the end of the previous row
+	sed -z -i.bak 's/ \\\\\n\n\\hline\s*\\DIFaddend/\\DIFaddend \\\\\n\n\\hline/g' "${input}"
 }
 
 if test "${DO_GITVERSION}" == "yes"; then

@@ -99,7 +99,7 @@ in
 [trustedcomputinggroup/pandoc](https://github.com/trustedcomputinggroup/pandoc)'s
 .github/workflows directory.
 
-Another project's `.github/workflows/actions.yml` might look a bit like this:
+Another project's `.github/workflows/render.yml` might look a bit like this:
 
 ```yaml
 name: Render
