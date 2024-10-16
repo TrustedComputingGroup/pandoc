@@ -863,38 +863,48 @@ Table: Fruits (Grid) {#tbl:fruits-grid}
 +-------------+--------+----------------------------+
 
 A grid table can be divided into sections using `===` in a full-span row,
-as in @tbl:some-command:
+as in @tbl:subsections:
 
 ```md
-Table: Some Command {#tbl:some-command}
+Table: Complex Table With Subsections {#tbl:subsections}
 
 +-------------+--------+----------------------------+
-| Type        | Name   | Description                |
+| Fruit       | Color  | Description                |
 +=============+========+============================+
-| ================= Header ======================== |
+| =============== Tree Fruits ===================== |
 +-------------+--------+----------------------------+
-| UINT32      | Siz    | The size of the following  |
-|             |        | contents.                  |
+| Apple       | Red    | Useful for pie.            |
 +-------------+--------+----------------------------+
-| ================ Contents ======================= |
+| Pear        | Green  | Useful for pie?            |
 +-------------+--------+----------------------------+
-| BYTE\[Siz\] | Items  | `Size` many items.         |
+| ================= Berries ======================= |
++-------------+--------+----------------------------+
+| Cherry      | Red    | Useful for pie.            |
++-------------+--------+----------------------------+
+| Banana      | Yellow | Useful for pie.            |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Not useful for pie.        |
 +-------------+--------+----------------------------+
 ```
 
-Table: Some Command {#tbl:some-command}
+Table: Complex Table With Subsections {#tbl:subsections}
 
 +-------------+--------+----------------------------+
-| Type        | Name   | Description                |
+| Fruit       | Color  | Description                |
 +=============+========+============================+
-| ================= Header ======================== |
+| =============== Tree Fruits ===================== |
 +-------------+--------+----------------------------+
-| UINT32      | Siz    | The size of the following  |
-|             |        | contents.                  |
+| Apple       | Red    | Useful for pie.            |
 +-------------+--------+----------------------------+
-| ================ Contents ======================= |
+| Pear        | Green  | Useful for pie?            |
 +-------------+--------+----------------------------+
-| BYTE\[Siz\] | Items  | `Siz` many items.          |
+| ================= Berries ======================= |
++-------------+--------+----------------------------+
+| Cherry      | Red    | Useful for pie.            |
++-------------+--------+----------------------------+
+| Banana      | Yellow | Useful for pie.            |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Not useful for pie.        |
 +-------------+--------+----------------------------+
 
 * The row must span the entire table
@@ -904,16 +914,21 @@ Table: Some Command {#tbl:some-command}
 Below is a table with full-span rows that do not use this feature:
 
 +-------------+--------+----------------------------+
-| Type        | Name   | Description                |
+| Fruit       | Color  | Description                |
 +=============+========+============================+
-| Header                                            |
+| Tree Fruits                                       |
 +-------------+--------+----------------------------+
-| UINT32      | Siz    | The size of the following  |
-|             |        | contents.                  |
+| Apple       | Red    | Useful for pie.            |
 +-------------+--------+----------------------------+
-| Contents                                          |
+| Pear        | Green  | Useful for pie?            |
 +-------------+--------+----------------------------+
-| BYTE\[Siz\] | Items  | `Siz` many items.          |
+| Berries                                           |
++-------------+--------+----------------------------+
+| Cherry      | Red    | Useful for pie.            |
++-------------+--------+----------------------------+
+| Banana      | Yellow | Useful for pie.            |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Not useful for pie.        |
 +-------------+--------+----------------------------+
 
 ### Styling Markdown Tables

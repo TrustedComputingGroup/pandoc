@@ -29,33 +29,6 @@
 \providecommand{\DIFdelbeginFL}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Removed image}}
 \providecommand{\DIFdelendFL}{}
 
-% % Latexdiff by default wants to shrink deleted figures. Let's try not doing that,
-% % but if we want to change this later, here's what was here once.
-% \newcommand{\DIFscaledelfig}{1.0}
-% \RequirePackage{settobox}
-% \RequirePackage{letltxmacro}
-% \newsavebox{\DIFdelgraphicsbox}
-% \newlength{\DIFdelgraphicswidth}
-% \newlength{\DIFdelgraphicsheight}
-% % store original definition of \includegraphics %DIF PREAMBLE
-% \LetLtxMacro{\DIFOincludegraphics}{\includegraphics} %DIF PREAMBLE
-% \newcommand{\DIFaddincludegraphics}[2][]{{\color{blue}\fbox{\DIFOincludegraphics[#1]{#2}}}} %DIF PREAMBLE
-% \newcommand{\DIFdelincludegraphics}[2][]{% %DIF PREAMBLE
-% \sbox{\DIFdelgraphicsbox}{\DIFOincludegraphics[#1]{#2}}% %DIF PREAMBLE
-% \settoboxwidth{\DIFdelgraphicswidth}{\DIFdelgraphicsbox} %DIF PREAMBLE
-% \settoboxtotalheight{\DIFdelgraphicsheight}{\DIFdelgraphicsbox} %DIF PREAMBLE
-% \scalebox{\DIFscaledelfig}{% %DIF PREAMBLE
-% \parbox[b]{\DIFdelgraphicswidth}{\usebox{\DIFdelgraphicsbox}\\[-\baselineskip] \rule{\DIFdelgraphicswidth}{0em}}\llap{\resizebox{\DIFdelgraphicswidth}{\DIFdelgraphicsheight}{% %DIF PREAMBLE
-% \setlength{\unitlength}{\DIFdelgraphicswidth}% %DIF PREAMBLE
-% \begin{picture}(1,1)% %DIF PREAMBLE
-% \thicklines\linethickness{2pt} %DIF PREAMBLE
-% {\color[rgb]{1,0,0}\put(0,0){\framebox(1,1){}}}% %DIF PREAMBLE
-% {\color[rgb]{1,0,0}\put(0,0){\line( 1,1){1}}}% %DIF PREAMBLE
-% {\color[rgb]{1,0,0}\put(0,1){\line(1,-1){1}}}% %DIF PREAMBLE
-% \end{picture}% %DIF PREAMBLE
-% }\hspace*{3pt}}} %DIF PREAMBLE
-% } %DIF PREAMBLE
-
 % Add a PDF comment and put a box around the added and removed graphics.
 % store original definition of \includegraphics so we can wrap it.
 \LetLtxMacro{\DIFOincludegraphics}{\includegraphics}
