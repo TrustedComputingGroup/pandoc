@@ -501,16 +501,45 @@ do_tex_fixups() {
 	sed -i.bak 's/^%DIF < /%DIF <- /g' "${input}"
 	sed -i.bak 's/^%DIF > /%DIF >+ /g' "${input}"
 
+	# latexdiff erroneously puts \DIFadd inside the second argument to \multicolumn.
+	sed -i.bak 's/\\multicolumn{\([^{}]*\)}{\\DIFadd{\([^{}]*\|[^{}]*{[^{}]*}\)}}/\\multicolumn{\1}{\2}/g' "${input}"
+
+	# latexdiff erroneously puts \DIFaddend inside the second argument to \multicolumn.
+	sed -i.bak 's/\\multicolumn{\([^{}]*\)}{\\DIFaddend \([^{}]*\|[^{}]*{[^{}]*}\)}/\\multicolumn{\1}{\2} \\DIFaddend/g' "${input}"
+
+	# latexdiff puts \DIFaddend at the beginning of a table row instead of the end of the previous row.
+	sed -z -i.bak 's/ \\\\\n\n\\hline\s*\\DIFaddend/\\DIFaddend \\\\\n\n\\hline/g' "${input}"
+
+	# Remove \DIFaddbegin that contain nothing but a \multicolumn spec.
+	# This is inserted if the number of columns was detected to change.
+	# diff markers will be inserted in the actual new contents, so we don't
+	# need these ones.
+	sed -i.bak 's/\\DIFaddbegin\s*\(\\multicolumn{[^{}]*}\({[^{}]*}\|{[^{}]*{[^{}]*}}\)\)\s*\\DIFaddend/\1/g' "${input}"
+
+	# Strip comments (everything after unescaped percent signs) to make the below steps easier.
+	sed -i.bak 's/\([^\\]\)%.*$/\1/g' "${input}"
+	sed -i.bak 's/^%.*$//g' "${input}"
+
+	# Combine lines inside of the xltabular environment so that (non-empty) lines all end in \\ or \\*
+	perl -ne 's/\n/ / if $s = /\\begin{xltabular}/ .. ($e = /\\end{xltabular}/)
+                                    and $s > 1 and !$e and !/.*\\\\$/ and !/.*\\\\\*$/;
+                  print' < "${input}" > "${input}".bak && mv "${input}".bak "${input}"
+
+	# Remove \DIFdelbegin that contain nothing.
+	sed -i.bak 's/\\DIFdelbegin\s*\\DIFdelend//g' "${input}"
+
+	# latexdiff inserts its markers before \multicolumn sometimes.
+	# The \multicolumn needs to be the first thing in the cell.
+	# Swap the order of any \DIF stuff and \multicolumn invocation inside a cell.
+	sed -i.bak 's/\(\\DIF[^&]*\)\(\\multicolumn{[^{}]*}\({[^{}]*}\|{[^{}]*{[^{}]*}}\)\)/\2\1/g' "${input}"
+
 	# latexdiff's \DIFaddbegin absorbs a space before it.
 	# This is fairly common (e.g., in the case of an added sentence)
 	# Preserve them by inserting a space after.
 	sed -i.bak 's/ \\DIFaddbegin/ \\DIFaddbegin ~/g' "${input}"
 
-	# latexdiff erroneously puts \DIFadd inside the second argument to \multicolumn.
-	sed -i.bak 's/\\multicolumn{\([^}]*\)}{\\DIFadd{\([^}]*\)}}/\\multicolumn{\1}{\2}/g' "${input}"
-
-	# latexdiff puts \DIFaddend at the beginning of a table row instead of the end of the previous row
-	sed -z -i.bak 's/ \\\\\n\n\\hline\s*\\DIFaddend/\\DIFaddend \\\\\n\n\\hline/g' "${input}"
+	# latexdiff inside of \texttt breaks. Prefer \ttfamily.
+	sed -i.bak 's/\\texttt{/{\\ttfamily /g' "${input}"
 }
 
 if test "${DO_GITVERSION}" == "yes"; then
