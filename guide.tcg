@@ -93,66 +93,69 @@ A typical GitHub Markdown repo will:
 * Cache the LaTex intermediate files to the GitHub actions cache. This allows
   small changes to the doc to render faster.
 
-`.github/workflows/actions.yml` might look a bit like this:
+The recommended way to do this is to use the
+[reusable GitHub workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows)
+in
+[trustedcomputinggroup/pandoc](https://github.com/trustedcomputinggroup/pandoc)'s
+.github/workflows directory.
+
+Another project's `.github/workflows/actions.yml` might look a bit like this:
 
 ```yaml
-name: Render spec
+name: Render
+
 on:
-  pull_request:
-  release:
-    types: [published]
+  workflow_call:
+    inputs:
+      workflow:
+        description: the workflow to run ('pr', 'push', 'release', 'manual')
+        required: true
+        type: string
+      revision:
+        description: version to render (default is default branch)
+        required: false
+        type: string
+      manual_diffbase:
+        description: diffbase for manual workflow
+        required: false
+        type: string
 
 jobs:
   render:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/trustedcomputinggroup/pandoc:0.9.10
-    name: Render PDF and Word
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Cache LaTeX files
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-latex-files
-        with:
-          path: |
-            *.aux
-            *.fdb_latexmk
-            *.lof
-            *.lot
-            *.toc
-          key: latex-${{ github.run_id }}
-          restore-keys: latex
-
-      - name: Render
-        uses: trustedcomputinggroup/markdown@v0.4.2
-        with:
-          input-md: spec.md
-          output-pdf: spec.pdf
-          output-docx: spec.docx
-
-      - name: Upload PDF to PR
-        uses: actions/upload-artifact@master
-        if: ${{ github.event_name == 'pull_request' }}
-        with:
-          name: spec.pdf
-          path: spec.pdf
-
-      - name: Upload PDF and docx to release
-        uses: svenstaro/upload-release-action@v2
-        if: ${{ github.event_name == 'release' }}
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: spec.*
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
+    uses: trustedcomputinggroup/pandoc/.github/workflows/render.yml@v0.15.4
+    with:
+      container-version: 0.15.4
+      input: spec.tcg
+      workflow: ${{ inputs.workflow }}
+      revision: ${{ inputs.revision }}
+      manual_diffbase: ${{ inputs.manual_diffbase }}
 ```
+
+The reusable workflows provided by this repository support four different operations:
+
+Table: Reusable Workflow Operations {#tbl:reusable-workflows}
+
++----------------------+----------------------------+
+| Workflow             | Description                |
++======================+============================+
+| pr                   | Render the spec and diff   |
+|                      | the change in the PR,      |
+|                      | attaching both to the      |
+|                      | "Artifacts" tab of the PR. |
++----------------------+----------------------------+
+| push                 | Render the spec and attach |
+|                      | it to the action's         |
+|                      | "Artifacts" tab.           |
++----------------------+----------------------------+
+| release              | Render the spec and attach |
+|                      | it to the release.         |
++----------------------+----------------------------+
+| manual               | (Triggered manually)       |
+|                      | Render the spec at the     |
+|                      | revision `revision` with   |
+|                      | optional diffing to        |
+|                      | `manual_diffbase`.         |
++----------------------+----------------------------+
 
 ## Local Testing
 
