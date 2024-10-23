@@ -10,13 +10,23 @@
 %    https://tex.stackexchange.com/questions/474947/highlighting-text-that-spans-multiple-lines-with-pdfmarkupcomment-from-pdfcomme
 % \providecommand{\DIFadd}[1]{\pdfmarkupcomment[author=Inserted,markup=Underline,color=blue]{#1}{#1}}
 % \providecommand{\DIFdel}[1]{\pdfmarkupcomment[author=Deleted,markup=StrikeOut,color=red]{#1}{#1}}
-\providecommand{\DIFadd}[1]{{\color{blue} \uline{#1}}}
-\providecommand{\DIFdel}[1]{{\color{red} \sout{#1}}}
-% Basic add/del/mod environments.
-% \providecommand{\DIFaddbegin}{\pdfmargincomment[author=Inserted,icon=Note,color=blue]{Text}}
-\providecommand{\DIFaddbegin}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Inserted text}}
+\providecommand{\DIFadd}[1]{%
+	\pdfmargincomment[author=DIFF]{Inserted: \detokenize{#1}}%
+	{\color{blue} \uline{#1}}%
+}
+\providecommand{\DIFdel}[1]{%
+	\pdfmargincomment[author=DIFF]{Removed: \detokenize{#1}}%
+	{\color{red} \sout{#1}}%
+}
+% \providecommand{\DIFaddbegin}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Inserted text}}
+% \providecommand{\DIFdelbegin}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Removed text}}
+
+% latexdiff provides granular diff markers for text \DIF(add|del) as well as "block" markers \DIF(add|del)(begin|end).
+% The block markers are unnecessary and tend to get inserted into incorrect places in the LaTex.
+% These all need to be stripped out in post-processing (e.g., with sed).
+\providecommand{\DIFaddbegin}{}
 \providecommand{\DIFaddend}{}
-\providecommand{\DIFdelbegin}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Removed text}}
+\providecommand{\DIFdelbegin}{}
 \providecommand{\DIFdelend}{}
 \providecommand{\DIFmodbegin}{}
 \providecommand{\DIFmodend}{}
