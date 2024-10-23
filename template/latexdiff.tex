@@ -48,14 +48,6 @@
 \providecommand{\DIFmodbegin}{}
 \providecommand{\DIFmodend}{}
 
-% For floats, we use the graphics macros below.
-\providecommand{\DIFaddFL}[1]{#1}
-\providecommand{\DIFdelFL}[1]{#1}
-\providecommand{\DIFaddbeginFL}{\MarkDiffPage}
-\providecommand{\DIFaddendFL}{}
-\providecommand{\DIFdelbeginFL}{\MarkDiffPage}
-\providecommand{\DIFdelendFL}{}
-
 % Add a PDF comment and put a box around the added and removed graphics.
 % store original definition of \includegraphics so we can wrap it.
 \LetLtxMacro{\DIFOincludegraphics}{\includegraphics}
@@ -65,6 +57,14 @@
 \newcommand{\DIFdelincludegraphics}[2][]{
 	{\color{red}\fbox{\DIFOincludegraphics[#1]{#2}}}
 } %DIF PREAMBLE
+
+% For floats, we use the graphics macros below.
+\providecommand{\DIFaddFL}[1]{\let\includegraphics\DIFaddincludegraphics #1 \let\includegraphics\DIFOincludegraphics}
+\providecommand{\DIFdelFL}[1]{\let\includegraphics\DIFdelincludegraphics #1 \let\includegraphics\DIFOincludegraphics}
+\providecommand{\DIFaddbeginFL}{\MarkDiffPage}
+\providecommand{\DIFaddendFL}{}
+\providecommand{\DIFdelbeginFL}{\MarkDiffPage}
+\providecommand{\DIFdelendFL}{}
 
 \LetLtxMacro{\DIFOaddbegin}{\DIFaddbegin} %DIF PREAMBLE
 \LetLtxMacro{\DIFOaddend}{\DIFaddend} %DIF PREAMBLE

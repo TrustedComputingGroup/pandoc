@@ -490,21 +490,29 @@ do_md_fixups() {
 	# TODO: Turn this into a Pandoc filter.
 	sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${input}"
 }
-do_tex_fixups() {
+
+# latexdiff is pretty great, but it has some incompatibilities with our template, so we
+# unfortunately have to do a lot of massaging of the diff .tex file here.
+# In the future, we should explore whether latexdiff can be further configured, our
+# our custom extensions can be redesigned to avoid some of these problems.
+do_diff_tex_fixups() {
 	local input=$1
 	# latexdiff is appending its own generated preamble to our custom one
 	# (in apparent contradiction of the documentation). Strip it out.
 	sed -i.bak '/^% End Custom TCG/,/^%DIF END PREAMBLE EXTENSION/d' "${input}"
 
 	# latexdiff uses %DIF < and %DIF > to prefix changed lines in code environments
-	# prefix these lines with + and - and replace %DIF with DIFDIFDIFDIF
-	sed -i.bak 's/^%DIF < /DIFDIFDIFDIF <- /g' "${input}"
-	sed -i.bak 's/^%DIF > /DIFDIFDIFDIF >+ /g' "${input}"
+	# prefix these lines with + and - and replace %DIF with DIFDIFDIFDIF (inside DIFverbatim) so that
+	# we don't delete the verbatim diff markers when we delete comments below.
+	sed -i.bak '/\\begin{DIFverbatim}/,/\\end{DIFverbatim}/s/^%DIF < /DIFDIFDIFDIF <- /g' "${input}"
+	sed -i.bak '/\\begin{DIFverbatim}/,/\\end{DIFverbatim}/s/^%DIF > /DIFDIFDIFDIF >+ /g' "${input}"
 
 	# Remove all block begin and end markers after the beginning of the document. See latexdiff.tex for some discussion on this.
+	# TL;DR: the begin and end markers get put into tricky places, and we don't need to do anything inside those commands.
 	sed -i.bak '/^\\begin{document}/,$s/\\DIF\(add\|del\|mod\)\(begin\|end\)\(FL\|\) //g ' "${input}"
 
 	# latexdiff erroneously puts \DIFadd inside the second argument to \multicolumn.
+	# Move it out.
 	sed -i.bak 's/\\multicolumn{\([^{}]*\)}{\\DIFadd{\([^{}]*\|[^{}]*{[^{}]*}\)}}/\\multicolumn{\1}{\2}/g' "${input}"
 
 	# Delete all lines containing only comments.
@@ -851,7 +859,7 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 		do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}" "${EXTRA_PANDOC_OPTIONS} -V keepstaleimages=true"
 		echo "Running latexdiff... (this may take a while for complex changes)"
 		start=$(date +%s)
-		latexdiff-fast --preamble /resources/templates/latexdiff.tex --config /resources/templates/latexdiff.cfg --append-safecmd /resources/templates/latexdiff.safe --exclude-safecmd /resources/templates/latexdiff.unsafe "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
+		latexdiff-fast --math-markup=whole --preamble /resources/templates/latexdiff.tex --config /resources/templates/latexdiff.cfg --append-safecmd /resources/templates/latexdiff.safe --exclude-safecmd /resources/templates/latexdiff.unsafe "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
 		end=$(date +%s)
 		echo "Elapsed time: $(($end-$start)) seconds"
 		if [ $? -ne 0 ]; then
@@ -859,7 +867,7 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 			>&2 cat "${TEMP_LATEXDIFF_LOG}"
 			echo "latexdiff failed"
 		else
-			do_tex_fixups "${TEMP_DIFF_TEX_FILE}"
+			do_diff_tex_fixups "${TEMP_DIFF_TEX_FILE}"
 			if [ -n "${DIFFTEX_OUTPUT}" ]; then
 				mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFTEX_OUTPUT})"
 				cp "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFTEX_OUTPUT}"
