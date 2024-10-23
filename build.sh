@@ -497,9 +497,9 @@ do_tex_fixups() {
 	sed -i.bak '/^% End Custom TCG/,/^%DIF END PREAMBLE EXTENSION/d' "${input}"
 
 	# latexdiff uses %DIF < and %DIF > to prefix changed lines in code environments
-	# prefix these lines with + and -
-	sed -i.bak 's/^%DIF < /%DIF <- /g' "${input}"
-	sed -i.bak 's/^%DIF > /%DIF >+ /g' "${input}"
+	# prefix these lines with + and - and replace %DIF with DIFDIFDIFDIF
+	sed -i.bak 's/^%DIF < /DIFDIFDIFDIF <- /g' "${input}"
+	sed -i.bak 's/^%DIF > /DIFDIFDIFDIF >+ /g' "${input}"
 
 	# Remove all block begin and end markers after the beginning of the document. See latexdiff.tex for some discussion on this.
 	sed -i.bak '/^\\begin{document}/,$s/\\DIF\(add\|del\|mod\)\(begin\|end\)\(FL\|\) //g ' "${input}"
@@ -508,16 +508,19 @@ do_tex_fixups() {
 	sed -i.bak 's/\\multicolumn{\([^{}]*\)}{\\DIFadd{\([^{}]*\|[^{}]*{[^{}]*}\)}}/\\multicolumn{\1}{\2}/g' "${input}"
 
 	# Delete all lines containing only comments.
-	sed -i.bak '/^%.*$/d' "${input}"
+	sed -i.bak '/^\s*%.*$/d' "${input}"
 
-	# Strip comments (everything after unescaped percent signs) to make the below steps easier.
-	sed -i.bak 's/\([^\\]\)%.*$/\1/g' "${input}"
+	# Strip comments (everything after unescaped percent signs) inside of xltabular to make the below steps easier.
+	sed -i.bak '/\\begin{xltabular}/,/\\end{xltabular}/s/\([^\\]\)%.*$/\1/g' "${input}"
 	sed -i.bak 's/^%.*$//g' "${input}"
 
 	# Combine lines inside of the xltabular environment so that (non-empty) lines all end in \\ or \\*
 	perl -ne 's/\n/ / if $s = /\\begin{xltabular}/ .. ($e = /\\end{xltabular}/)
                                     and $s > 1 and !$e and !/.*\\\\$/ and !/.*\\\\\*$/;
                   print' < "${input}" > "${input}".bak && mv "${input}".bak "${input}"
+
+	# Put newlines after \endhead, \endfirsthead, \endfoot, and \endlastfoot
+	sed -i.bak 's/\(\\end\(head\|firsthead\|foot\|lastfoot\)\)/\1\n/g' "${input}"
 
 	# latexdiff inserts its markers before \multicolumn sometimes.
 	# The \multicolumn needs to be the first thing in the cell.
@@ -530,6 +533,10 @@ do_tex_fixups() {
 
 	# latexdiff inside of \texttt breaks. Prefer \ttfamily.
 	sed -i.bak 's/\\texttt{/{\\ttfamily /g' "${input}"
+
+	# Delete all empty DIFadd/mod/del
+	sed -i.bak 's/\\DIF\(add\|del\|mod\){}\(FL\|\)//g' "${input}"
+
 }
 
 if test "${DO_GITVERSION}" == "yes"; then

@@ -1,5 +1,22 @@
 % Custom preamble based on --type=pdfmargincomment --driver xetex
 
+% Convenience macro for adding at most one PDF comment per page
+\newbool{newpage}
+\setbool{newpage}{true}
+\newcommand{\onceperpage}[1]{%
+  \ifbool{newpage}{%
+  \global\setbool{newpage}{false}%
+    #1%
+  }{}%
+}
+% Reset \newpage to true after shipping out each page.
+% https://ctan.math.washington.edu/tex-archive/macros/latex-dev/base/ltshipout-code.pdf
+\AddToHook {shipout/after} {\global\setbool{newpage}{true}}
+
+\providecommand{\MarkDiffPage}{%
+	\onceperpage{\pdfmargincomment[author=DIFF]{Page modified}}%
+}
+
 % Mark up added text with a blue underline, and removed text with a red strikethrough.
 % Choose blue/red instead of green/red for accessibility (red-green colorblindness modes constitute the most common forms).
 \RequirePackage{pdfcomment}
@@ -11,11 +28,11 @@
 % \providecommand{\DIFadd}[1]{\pdfmarkupcomment[author=Inserted,markup=Underline,color=blue]{#1}{#1}}
 % \providecommand{\DIFdel}[1]{\pdfmarkupcomment[author=Deleted,markup=StrikeOut,color=red]{#1}{#1}}
 \providecommand{\DIFadd}[1]{%
-	\pdfmargincomment[author=DIFF]{Inserted: \detokenize{#1}}%
+	\MarkDiffPage%
 	{\color{blue} \uline{#1}}%
 }
 \providecommand{\DIFdel}[1]{%
-	\pdfmargincomment[author=DIFF]{Removed: \detokenize{#1}}%
+	\MarkDiffPage%
 	{\color{red} \sout{#1}}%
 }
 % \providecommand{\DIFaddbegin}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Inserted text}}
@@ -34,9 +51,9 @@
 % For floats, we use the graphics macros below.
 \providecommand{\DIFaddFL}[1]{#1}
 \providecommand{\DIFdelFL}[1]{#1}
-\providecommand{\DIFaddbeginFL}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Inserted image}}
+\providecommand{\DIFaddbeginFL}{\MarkDiffPage}
 \providecommand{\DIFaddendFL}{}
-\providecommand{\DIFdelbeginFL}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Removed image}}
+\providecommand{\DIFdelbeginFL}{\MarkDiffPage}
 \providecommand{\DIFdelendFL}{}
 
 % Add a PDF comment and put a box around the added and removed graphics.
@@ -69,8 +86,8 @@
 % Use a code-diff style for diffs in code
 \RequirePackage{listings}
 \lstdefinelanguage{DIFcode}{
-  moredelim=[il][\color{red}]{\%DIF\ <},
-  moredelim=[il][\color{blue}]{\%DIF\ >}
+  moredelim=[il][\color{red}]{DIFDIFDIFDIF\ <},
+  moredelim=[il][\color{blue}]{DIFDIFDIFDIF\ >}
 }
 \lstdefinestyle{DIFverbatimstyle}{
 	basicstyle=\linespread{1.0}\small\ttfamily{},
@@ -80,11 +97,11 @@
 	keepspaces=true
 }
 \lstnewenvironment{DIFverbatim}{
-	\pdfmargincomment[author=DIFF,color=tcg-template-neon-green,icon=Note]{- Deleted, + Inserted}
+	\MarkDiffPage
 	\lstset{style=DIFverbatimstyle}
 }{}
 \lstnewenvironment{DIFverbatim*}{
-	\pdfmargincomment[author=DIFF,color=tcg-template-neon-green,icon=Note]{- Deleted, + Inserted}
+	\MarkDiffPage
 	\lstset{style=DIFverbatimstyle,showspaces=true}
 }{}
 \lstset{extendedchars=\true,inputencoding=utf8}
