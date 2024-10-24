@@ -93,66 +93,69 @@ A typical GitHub Markdown repo will:
 * Cache the LaTex intermediate files to the GitHub actions cache. This allows
   small changes to the doc to render faster.
 
-`.github/workflows/actions.yml` might look a bit like this:
+The recommended way to do this is to use the
+[reusable GitHub workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows)
+in
+[trustedcomputinggroup/pandoc](https://github.com/trustedcomputinggroup/pandoc)'s
+.github/workflows directory.
+
+Another project's `.github/workflows/render.yml` might look a bit like this:
 
 ```yaml
-name: Render spec
+name: Render
+
 on:
-  pull_request:
-  release:
-    types: [published]
+  workflow_call:
+    inputs:
+      workflow:
+        description: the workflow to run ('pr', 'push', 'release', 'manual')
+        required: true
+        type: string
+      revision:
+        description: version to render (default is default branch)
+        required: false
+        type: string
+      manual_diffbase:
+        description: diffbase for manual workflow
+        required: false
+        type: string
 
 jobs:
   render:
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/trustedcomputinggroup/pandoc:0.9.10
-    name: Render PDF and Word
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Cache LaTeX files
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-latex-files
-        with:
-          path: |
-            *.aux
-            *.fdb_latexmk
-            *.lof
-            *.lot
-            *.toc
-          key: latex-${{ github.run_id }}
-          restore-keys: latex
-
-      - name: Render
-        uses: trustedcomputinggroup/markdown@v0.4.2
-        with:
-          input-md: spec.md
-          output-pdf: spec.pdf
-          output-docx: spec.docx
-
-      - name: Upload PDF to PR
-        uses: actions/upload-artifact@master
-        if: ${{ github.event_name == 'pull_request' }}
-        with:
-          name: spec.pdf
-          path: spec.pdf
-
-      - name: Upload PDF and docx to release
-        uses: svenstaro/upload-release-action@v2
-        if: ${{ github.event_name == 'release' }}
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: spec.*
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
+    uses: trustedcomputinggroup/pandoc/.github/workflows/render.yml@v0.15.4
+    with:
+      container-version: 0.15.4
+      input: spec.tcg
+      workflow: ${{ inputs.workflow }}
+      revision: ${{ inputs.revision }}
+      manual_diffbase: ${{ inputs.manual_diffbase }}
 ```
+
+The reusable workflows provided by this repository support four different operations:
+
+Table: Reusable Workflow Operations {#tbl:reusable-workflows}
+
++----------------------+----------------------------+
+| Workflow             | Description                |
++======================+============================+
+| pr                   | Render the spec and diff   |
+|                      | the change in the PR,      |
+|                      | attaching both to the      |
+|                      | "Artifacts" tab of the PR. |
++----------------------+----------------------------+
+| push                 | Render the spec and attach |
+|                      | it to the action's         |
+|                      | "Artifacts" tab.           |
++----------------------+----------------------------+
+| release              | Render the spec and attach |
+|                      | it to the release.         |
++----------------------+----------------------------+
+| manual               | (Triggered manually)       |
+|                      | Render the spec at the     |
+|                      | revision `revision` with   |
+|                      | optional diffing to        |
+|                      | `manual_diffbase`.         |
++----------------------+----------------------------+
 
 ## Local Testing
 
@@ -863,38 +866,48 @@ Table: Fruits (Grid) {#tbl:fruits-grid}
 +-------------+--------+----------------------------+
 
 A grid table can be divided into sections using `===` in a full-span row,
-as in @tbl:some-command:
+as in @tbl:subsections:
 
 ```md
-Table: Some Command {#tbl:some-command}
+Table: Complex Table With Subsections {#tbl:subsections}
 
 +-------------+--------+----------------------------+
-| Type        | Name   | Description                |
+| Fruit       | Color  | Description                |
 +=============+========+============================+
-| ================= Header ======================== |
+| =============== Tree Fruits ===================== |
 +-------------+--------+----------------------------+
-| UINT32      | Siz    | The size of the following  |
-|             |        | contents.                  |
+| Apple       | Red    | Useful for pie.            |
 +-------------+--------+----------------------------+
-| ================ Contents ======================= |
+| Pear        | Green  | Useful for pie?            |
 +-------------+--------+----------------------------+
-| BYTE\[Siz\] | Items  | `Size` many items.         |
+| ================= Berries ======================= |
++-------------+--------+----------------------------+
+| Cherry      | Red    | Useful for pie.            |
++-------------+--------+----------------------------+
+| Banana      | Yellow | Useful for pie.            |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Not useful for pie.        |
 +-------------+--------+----------------------------+
 ```
 
-Table: Some Command {#tbl:some-command}
+Table: Complex Table With Subsections {#tbl:subsections}
 
 +-------------+--------+----------------------------+
-| Type        | Name   | Description                |
+| Fruit       | Color  | Description                |
 +=============+========+============================+
-| ================= Header ======================== |
+| =============== Tree Fruits ===================== |
 +-------------+--------+----------------------------+
-| UINT32      | Siz    | The size of the following  |
-|             |        | contents.                  |
+| Apple       | Red    | Useful for pie.            |
 +-------------+--------+----------------------------+
-| ================ Contents ======================= |
+| Pear        | Green  | Useful for pie?            |
 +-------------+--------+----------------------------+
-| BYTE\[Siz\] | Items  | `Siz` many items.          |
+| ================= Berries ======================= |
++-------------+--------+----------------------------+
+| Cherry      | Red    | Useful for pie.            |
++-------------+--------+----------------------------+
+| Banana      | Yellow | Useful for pie.            |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Not useful for pie.        |
 +-------------+--------+----------------------------+
 
 * The row must span the entire table
@@ -904,16 +917,21 @@ Table: Some Command {#tbl:some-command}
 Below is a table with full-span rows that do not use this feature:
 
 +-------------+--------+----------------------------+
-| Type        | Name   | Description                |
+| Fruit       | Color  | Description                |
 +=============+========+============================+
-| Header                                            |
+| Tree Fruits                                       |
 +-------------+--------+----------------------------+
-| UINT32      | Siz    | The size of the following  |
-|             |        | contents.                  |
+| Apple       | Red    | Useful for pie.            |
 +-------------+--------+----------------------------+
-| Contents                                          |
+| Pear        | Green  | Useful for pie?            |
 +-------------+--------+----------------------------+
-| BYTE\[Siz\] | Items  | `Siz` many items.          |
+| Berries                                           |
++-------------+--------+----------------------------+
+| Cherry      | Red    | Useful for pie.            |
++-------------+--------+----------------------------+
+| Banana      | Yellow | Useful for pie.            |
++-------------+--------+----------------------------+
+| Tomato      | Red    | Not useful for pie.        |
 +-------------+--------+----------------------------+
 
 ### Styling Markdown Tables
@@ -1817,129 +1835,6 @@ Table: Caption but Not Listed {#tbl:no-entry-grid .unnumbered .unlisted}
 </table>
 
 ---
-
-## Something
-
-Something something something, need to get the spacing on the table just right
-to reproduce a possible issue with page breaks, something  something  something
-something something something something something something something something
-something something something something something.
-
-<table id="stray-line">
-<caption>Definition of
-(UINT32) `TPM_PT_PCR` Constants <IN/OUT, S>
-</caption>
-<colgroup>
-<col style="width: 30%" />
-<col style="width: 13%" />
-<col style="width: 55%" />
-</colgroup>
-<thead>
-<tr>
-<th>Capability Name</th>
-<th>Value</th>
-<th>Comments</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>TPM_PT_PCR_FIRST</td>
-<td>0x00000000</td>
-<td>bottom of the range of TPM_PT_PCR properties</td>
-</tr>
-<tr>
-<td>TPM_PT_PCR_SAVE</td>
-<td>0x00000000</td>
-<td>a SET bit in the TPMS_PCR_SELECT indicates that the PCR is saved and
-restored by TPM_SU_STATE</td>
-</tr>
-<tr>
-<td>TPM_PT_PCR_EXTEND_L0</td>
-<td>0x00000001</td>
-<td><p>a SET bit in the TPMS_PCR_SELECT indicates that the PCR may be
-extended from locality 0</p>
-<p>This property is only present if a locality other than 0 is
-implemented.</p></td>
-</tr>
-<tr>
-<td>TPM_PT_PCR_RESET_L0</td>
-<td>0x00000002</td>
-<td>a SET bit in the TPMS_PCR_SELECT indicates that the PCR may be reset
-by TPM2_PCR_Reset() from locality 0</td>
-</tr>
-<tr>
-<td>TPM_PT_PCR_EXTEND_L1</td>
-<td>0x00000003</td>
-<td><p>a SET bit in the TPMS_PCR_SELECT indicates that the PCR may be
-extended from locality 1</p>
-<p>This property is only present if locality 1 is implemented.</p></td>
-</tr>
-<tr>
-<td>TPM_PT_PCR_RESET_L1</td>
-<td>0x00000004</td>
-<td><p>a SET bit in the TPMS_PCR_SELECT indicates that the PCR may be
-reset by TPM2_PCR_Reset() from locality 1</p>
-<p>This property is only present if locality 1 is implemented.</p></td>
-</tr>
-<tr>
-<td>TPM_PT_PCR_EXTEND_L2</td>
-<td>0x00000005</td>
-<td><p>a SET bit in the TPMS_PCR_SELECT indicates that the PCR may be
-extended from locality 2</p>
-<p>This property is only present if localities 1 and 2 are
-implemented.</p></td>
-</tr>
-<tr>
-<td>TPM_PT_PCR_RESET_L2</td>
-<td>0x00000006</td>
-<td><p>a SET bit in the TPMS_PCR_SELECT indicates that the PCR may be
-reset by TPM2_PCR_Reset() from locality 2</p>
-<p>This property is only present if localities 1 and 2 are
-implemented.</p></td>
-</tr>
-<tr>
-<td>TPM_PT_PCR_EXTEND_L3</td>
-<td>0x00000007</td>
-<td><p>a SET bit in the TPMS_PCR_SELECT indicates that the PCR may be
-extended from locality 3</p>
-<p>This property is only present if localities 1, 2, and 3 are
-implemented.</p></td>
-</tr>
-<tr>
-<td>TPM_PT_PCR_RESET_L3</td>
-<td>0x00000008</td>
-<td><p>a SET bit in the TPMS_PCR_SELECT indicates that the PCR may be
-reset by TPM2_PCR_Reset() from locality 3</p>
-<p>This property is only present if localities 1, 2, and 3 are
-implemented.</p></td>
-</tr>
-<tr>
-<td>TPM_PT_PCR_EXTEND_L4</td>
-<td>0x00000009</td>
-<td><p>a SET bit in the TPMS_PCR_SELECT indicates that the PCR may be
-extended from locality 4</p>
-<p>This property is only present if localities 1, 2, 3, and 4 are
-implemented.</p></td>
-</tr>
-<tr>
-<td>TPM_PT_PCR_RESET_L4</td>
-<td>0x0000000A</td>
-<td><p>a SET bit in the TPMS_PCR_SELECT indicates that the PCR may be
-reset by TPM2_PCR_Reset() from locality 4</p>
-<p>This property is only present if localities 1, 2, 3, and 4 are
-implemented.</p></td>
-</tr>
-<tr>
-<td>reserved</td>
-<td>0x0000000B - 0x00000010</td>
-<td><p>the values in this range are reserved</p>
-<p>They correspond to values that may be used to describe attributes
-associated with the extended localities (32-255).synthesize additional
-software localities. The meaning of these properties need not be the
-same as the meaning for the Extend and Reset properties above.</p></td>
-</tr>
-</tbody>
-</table>
 
 Verify that the table cross-references still work:
 

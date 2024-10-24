@@ -1,5 +1,22 @@
 % Custom preamble based on --type=pdfmargincomment --driver xetex
 
+% Convenience macro for adding at most one PDF comment per page
+\newbool{newpage}
+\setbool{newpage}{true}
+\newcommand{\onceperpage}[1]{%
+  \ifbool{newpage}{%
+  \global\setbool{newpage}{false}%
+    #1%
+  }{}%
+}
+% Reset \newpage to true after shipping out each page.
+% https://ctan.math.washington.edu/tex-archive/macros/latex-dev/base/ltshipout-code.pdf
+\AddToHook {shipout/after} {\global\setbool{newpage}{true}}
+
+\providecommand{\MarkDiffPage}{%
+	\onceperpage{\pdfmargincomment[author=DIFF]{Page modified}}%
+}
+
 % Mark up added text with a blue underline, and removed text with a red strikethrough.
 % Choose blue/red instead of green/red for accessibility (red-green colorblindness modes constitute the most common forms).
 \RequirePackage{pdfcomment}
@@ -10,51 +27,26 @@
 %    https://tex.stackexchange.com/questions/474947/highlighting-text-that-spans-multiple-lines-with-pdfmarkupcomment-from-pdfcomme
 % \providecommand{\DIFadd}[1]{\pdfmarkupcomment[author=Inserted,markup=Underline,color=blue]{#1}{#1}}
 % \providecommand{\DIFdel}[1]{\pdfmarkupcomment[author=Deleted,markup=StrikeOut,color=red]{#1}{#1}}
-\providecommand{\DIFadd}[1]{{\color{blue} \uline{#1}}}
-\providecommand{\DIFdel}[1]{{\color{red} \sout{#1}}}
-% Basic add/del/mod environments.
-% \providecommand{\DIFaddbegin}{\pdfmargincomment[author=Inserted,icon=Note,color=blue]{Text}}
-\providecommand{\DIFaddbegin}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Inserted text}}
+\providecommand{\DIFadd}[1]{%
+	\MarkDiffPage%
+	{\color{blue} \uline{#1}}%
+}
+\providecommand{\DIFdel}[1]{%
+	\MarkDiffPage%
+	{\color{red} \sout{#1}}%
+}
+% \providecommand{\DIFaddbegin}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Inserted text}}
+% \providecommand{\DIFdelbegin}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Removed text}}
+
+% latexdiff provides granular diff markers for text \DIF(add|del) as well as "block" markers \DIF(add|del)(begin|end).
+% The block markers are unnecessary and tend to get inserted into incorrect places in the LaTex.
+% These all need to be stripped out in post-processing (e.g., with sed).
+\providecommand{\DIFaddbegin}{}
 \providecommand{\DIFaddend}{}
-\providecommand{\DIFdelbegin}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Removed text}}
+\providecommand{\DIFdelbegin}{}
 \providecommand{\DIFdelend}{}
 \providecommand{\DIFmodbegin}{}
 \providecommand{\DIFmodend}{}
-
-% For floats, we use the graphics macros below.
-\providecommand{\DIFaddFL}[1]{#1}
-\providecommand{\DIFdelFL}[1]{#1}
-\providecommand{\DIFaddbeginFL}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Inserted image}}
-\providecommand{\DIFaddendFL}{}
-\providecommand{\DIFdelbeginFL}{\pdfmargincomment[author=DIFF,icon=Note,color=tcg-template-neon-green]{Removed image}}
-\providecommand{\DIFdelendFL}{}
-
-% % Latexdiff by default wants to shrink deleted figures. Let's try not doing that,
-% % but if we want to change this later, here's what was here once.
-% \newcommand{\DIFscaledelfig}{1.0}
-% \RequirePackage{settobox}
-% \RequirePackage{letltxmacro}
-% \newsavebox{\DIFdelgraphicsbox}
-% \newlength{\DIFdelgraphicswidth}
-% \newlength{\DIFdelgraphicsheight}
-% % store original definition of \includegraphics %DIF PREAMBLE
-% \LetLtxMacro{\DIFOincludegraphics}{\includegraphics} %DIF PREAMBLE
-% \newcommand{\DIFaddincludegraphics}[2][]{{\color{blue}\fbox{\DIFOincludegraphics[#1]{#2}}}} %DIF PREAMBLE
-% \newcommand{\DIFdelincludegraphics}[2][]{% %DIF PREAMBLE
-% \sbox{\DIFdelgraphicsbox}{\DIFOincludegraphics[#1]{#2}}% %DIF PREAMBLE
-% \settoboxwidth{\DIFdelgraphicswidth}{\DIFdelgraphicsbox} %DIF PREAMBLE
-% \settoboxtotalheight{\DIFdelgraphicsheight}{\DIFdelgraphicsbox} %DIF PREAMBLE
-% \scalebox{\DIFscaledelfig}{% %DIF PREAMBLE
-% \parbox[b]{\DIFdelgraphicswidth}{\usebox{\DIFdelgraphicsbox}\\[-\baselineskip] \rule{\DIFdelgraphicswidth}{0em}}\llap{\resizebox{\DIFdelgraphicswidth}{\DIFdelgraphicsheight}{% %DIF PREAMBLE
-% \setlength{\unitlength}{\DIFdelgraphicswidth}% %DIF PREAMBLE
-% \begin{picture}(1,1)% %DIF PREAMBLE
-% \thicklines\linethickness{2pt} %DIF PREAMBLE
-% {\color[rgb]{1,0,0}\put(0,0){\framebox(1,1){}}}% %DIF PREAMBLE
-% {\color[rgb]{1,0,0}\put(0,0){\line( 1,1){1}}}% %DIF PREAMBLE
-% {\color[rgb]{1,0,0}\put(0,1){\line(1,-1){1}}}% %DIF PREAMBLE
-% \end{picture}% %DIF PREAMBLE
-% }\hspace*{3pt}}} %DIF PREAMBLE
-% } %DIF PREAMBLE
 
 % Add a PDF comment and put a box around the added and removed graphics.
 % store original definition of \includegraphics so we can wrap it.
@@ -65,6 +57,14 @@
 \newcommand{\DIFdelincludegraphics}[2][]{
 	{\color{red}\fbox{\DIFOincludegraphics[#1]{#2}}}
 } %DIF PREAMBLE
+
+% For floats, we use the graphics macros below.
+\providecommand{\DIFaddFL}[1]{\let\includegraphics\DIFaddincludegraphics #1 \let\includegraphics\DIFOincludegraphics}
+\providecommand{\DIFdelFL}[1]{\let\includegraphics\DIFdelincludegraphics #1 \let\includegraphics\DIFOincludegraphics}
+\providecommand{\DIFaddbeginFL}{\MarkDiffPage}
+\providecommand{\DIFaddendFL}{}
+\providecommand{\DIFdelbeginFL}{\MarkDiffPage}
+\providecommand{\DIFdelendFL}{}
 
 \LetLtxMacro{\DIFOaddbegin}{\DIFaddbegin} %DIF PREAMBLE
 \LetLtxMacro{\DIFOaddend}{\DIFaddend} %DIF PREAMBLE
@@ -86,8 +86,8 @@
 % Use a code-diff style for diffs in code
 \RequirePackage{listings}
 \lstdefinelanguage{DIFcode}{
-  moredelim=[il][\color{red}]{\%DIF\ <},
-  moredelim=[il][\color{blue}]{\%DIF\ >}
+  moredelim=[il][\color{red}]{DIFDIFDIFDIF\ <},
+  moredelim=[il][\color{blue}]{DIFDIFDIFDIF\ >}
 }
 \lstdefinestyle{DIFverbatimstyle}{
 	basicstyle=\linespread{1.0}\small\ttfamily{},
@@ -97,11 +97,11 @@
 	keepspaces=true
 }
 \lstnewenvironment{DIFverbatim}{
-	\pdfmargincomment[author=DIFF,color=tcg-template-neon-green,icon=Note]{- Deleted, + Inserted}
+	\MarkDiffPage
 	\lstset{style=DIFverbatimstyle}
 }{}
 \lstnewenvironment{DIFverbatim*}{
-	\pdfmargincomment[author=DIFF,color=tcg-template-neon-green,icon=Note]{- Deleted, + Inserted}
+	\MarkDiffPage
 	\lstset{style=DIFverbatimstyle,showspaces=true}
 }{}
 \lstset{extendedchars=\true,inputencoding=utf8}
