@@ -254,9 +254,9 @@ function Table(tbl)
 
         -- .unnumbered .unlisted is the traditional pair of classes Pandoc uses
         -- to omit something from the TOC. Let's keep that tradition alive.
-        -- Also, omit tables with no caption or identifier as well.
+        -- Also, omit tables with no caption as well.
         if (tbl.classes:find('unnumbered') and tbl.classes:find('unlisted'))
-            or (caption == '' and tbl.identifier == '') then
+            or (caption == '') then
             numbered = false
         end
 
@@ -270,7 +270,7 @@ function Table(tbl)
         -- Undo this by decrementing the counter before starting the uncounted table.
         -- Decrementing the counter after the table can cause links in the list of tables to
         -- mistakenly point to the wrong table.
-        if not numbered and escaped_caption ~= '' then
+        if not numbered then
             latex_code = latex_code .. '\\addtocounter{table}{-1}\n'
         end
 
