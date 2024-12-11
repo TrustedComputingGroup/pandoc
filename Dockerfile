@@ -138,6 +138,7 @@ COPY --from=build-texlive /texlivebins /usr/local/texlive
 # Copy only the fonts we're using from the template.
 COPY --from=build-fonts \
     /usr/share/fonts/truetype/msttcorefonts/Arial* \
+    /usr/share/fonts/truetype/msttcorefonts/Courier* \
     /usr/share/fonts/TTF/ARIAL* \
     /usr/share/fonts/OTF/Libertinus* \
     /usr/share/fonts/truetype/noto/NotoSansMono* \

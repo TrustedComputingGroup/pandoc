@@ -1,0 +1,15 @@
+\newcommand{\MethodsOrUID}[1]{{\fontspec{Courier New} #1}} % Define UID in Courier New Font
+
+\definecolor{lightgray}{RGB}{230, 230, 230}
+\definecolor{darkgray}{RGB}{179, 179, 179}
+
+\newcommand{\ReadOnlyFixed}[1]{{\cellcolor{lightgray} \fontsize{9}{10} #1}}
+\newcommand{\ReadOnlyVU}[1]{{\cellcolor{lightgray} \fontsize{9}{10} \underline{\textbf{#1}}}}
+\newcommand{\WritableACFixed}[1]{{\cellcolor{darkgray} \fontsize{9}{10} #1}}
+\newcommand{\Writable}[1]{{\cellcolor{darkgray} \fontsize{9}{10} \underline{\textbf{#1}}}}
+\newcommand{\Narrow}[1]{{\fontsize{9}{10} #1}}
+
+\newcommand{\spheading}[2][20em]{% \spheading[<width>]{<stuff>} 
+	\rotatebox{90}{\parbox{#1}{\raggedright #2}}}
+
+
