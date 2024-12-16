@@ -1305,6 +1305,10 @@ Carl->>Bob: Goodbye
 Bob->>Alice: Goodbye
 ```
 
+## TCG Storage Workgroup Customizations
+
+TCG Storage committee uses command `MethodsOrUID` to render Names of methods and UIDs in \MethodsOrUID{Courier New font}.
+
 \beginappendices
 
 # Reporting Issues with the Tools
