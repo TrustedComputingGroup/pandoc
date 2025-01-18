@@ -240,6 +240,7 @@ RUN tlmgr update --self && tlmgr install \
 RUN apt install -y \
     dbus \
     imagemagick \
+    librsvg2-bin \
     libxss1 \
     openbox \
     wget \

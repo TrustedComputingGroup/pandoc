@@ -13,4 +13,4 @@ function BlockQuote(el)
         pandoc.RawBlock('latex', '\\end{mdframed}')
     }))
     return result
-  end
+end
