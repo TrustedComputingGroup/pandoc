@@ -51,7 +51,7 @@ print_usage() {
 	echo "Miscellaneous"
 	echo "  --resourcedir=dir: Set the resource directory, defaults to root for pandoc containers"
 	echo "  --gitversion: legacy flag, no effect (default starting with 0.9.0)"
-    echo "  --gitstatus: legacy flag, no effect (default starting with 0.9.0)"
+	echo "  --gitstatus: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --nogitversion: Do not use git to describe the generate document version and revision metadata."
 	echo "  --table_rules: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --plain_quotes: legacy flag, no effect (default starting with 0.9.0)"
@@ -628,6 +628,7 @@ do_latex() {
 
 	# TODO: https://github.com/TrustedComputingGroup/pandoc/issues/164
 	# highlighting breaks diffing due to the \xxxxTok commands generated during highlighting being fragile.
+	# Citations: https://pandoc.org/MANUAL.html#other-relevant-metadata-fields
 	echo "Generating LaTeX Output"
 	local start=$(date +%s)
 	local cmd=(pandoc
@@ -643,6 +644,7 @@ do_latex() {
 		--lua-filter=landscape-pages.lua
 		--lua-filter=style-fenced-divs.lua
 		--filter=pandoc-crossref
+		--citeproc
 		--lua-filter=tabularx.lua
 		--lua-filter=divide-code-blocks.lua
 		--resource-path=.:/resources
@@ -654,6 +656,8 @@ do_latex() {
 		--metadata=date-english:"'${DATE_ENGLISH}'"
 		--metadata=year:"'${YEAR}'"
 		--metadata=titlepage:true
+		--metadata=link-citations
+		--metadata=link-bibliography
 		--metadata=titlepage-background:/resources/img/cover.png
 		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml
 		--metadata=logo:/resources/img/tcg.png

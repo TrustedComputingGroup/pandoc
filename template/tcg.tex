@@ -209,6 +209,51 @@ $else$
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
 $endif$
 
+% For CSL citations/references (bibliography)
+% See: https://github.com/jgm/citeproc/issues/135
+$if(csl-refs)$
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+\begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+% allow citations to break across lines
+\let\@cite@ofmt\@firstofone
+% avoid brackets around text for \cite:
+\def\@biblabel#1{}
+\def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+{\begin{list}{}{%
+    \setlength{\itemindent}{0pt}
+    \setlength{\leftmargin}{0pt}
+    \setlength{\parsep}{0pt}
+    % turn on hanging indent if param 1 is 1
+    \ifodd #1
+    \setlength{\leftmargin}{\cslhangindent}
+    \setlength{\itemindent}{-1\cslhangindent}
+    \fi
+    % set entry spacing
+    \setlength{\itemsep}{#2\baselineskip}}}
+{\end{list}}
+% \usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+$endif$
+
+% Adjust \paragraph and \subparagraph behavior to be free-standing headings:
+% - By default, \paragraph and \subparagraph are run-in headings
+%   (appear inline with text).
+% - This block ensures they are treated as block-level headings,
+%   appearing on their own line.
+% - Only takes effect if the `block-headings` variable is enabled.
+% - Preserves original behavior for fallback if necessary.
 $if(block-headings)$
 % Make \paragraph and \subparagraph free-standing
 \ifx\paragraph\undefined\else
@@ -726,6 +771,26 @@ $endif$
   \appendix
   \appendixpage
   \addappheadtotoc
+}
+
+% Allow TCG documents to use '\beginbackmatter' to easily mark the transition to the back matter (after the appecndices).
+\newcommand{\beginbackmatter}{
+  \newpage
+  \let\oldsection\section
+  \renewcommand{\section}[1]{%
+    \oldsection*{##1}% Unnumbered section
+    \addcontentsline{toc}{section}{##1}% Add to the ToC
+  }
+  \let\oldsubsection\subsection
+  \renewcommand{\subsection}[1]{%
+    \oldsubsection*{##1}% Unnumbered subsection
+    \addcontentsline{toc}{subsection}{##1}% Add to the ToC
+  }
+  \let\oldsubsubsection\subsubsection
+  \renewcommand{\subsubsection}[1]{%
+    \oldsubsubsection*{##1}% Unnumbered subsubsection
+    \addcontentsline{toc}{subsubsection}{##1}% Add to the ToC
+  }
 }
 
 \newcommand{\coverbg}{/resources/img/bluetop.png}
