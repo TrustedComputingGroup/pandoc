@@ -28,7 +28,7 @@ jobs:
 
       # Set up QEMU for cross-platform builds below
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3.2.0
+        uses: docker/setup-qemu-action@v3
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
@@ -50,7 +50,7 @@ jobs:
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
       - name: Build and publish Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           # Cache layers from the container repo.
           # Update the cache only on pushes to main.
