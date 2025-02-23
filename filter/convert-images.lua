@@ -88,7 +88,7 @@ function Image (img)
             -- Delete stale copies of this file. This makes it easier to cache only the latest converted pdfs
             -- Don't do this if the "keepstaleimages" variable is set.
             if not PANDOC_WRITER_OPTIONS.variables["keepstaleimages"] then
-                deleteFilesExcept(img.src .. ".*.convert.pdf", new_filename)
+                deleteFilesExcept(img.src .. "*.convert.pdf", new_filename)
             end
             img.src = new_filename
         end
