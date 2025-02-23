@@ -113,7 +113,7 @@ RUN wget https://github.com/alerque/libertinus/releases/download/v7.040/Libertin
 FROM ${BASE} as build-latexdiff
 
 RUN apt update && apt install -y \
-    build-essential \    
+    build-essential \
     wget \
     xz-utils
 
@@ -269,7 +269,8 @@ RUN mkdir -m 0777 /home/user
 ENV HOME="/home/user"
 ENV DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/dbus/system_bus_socket"
 
-COPY ./filter/pandoc-crossref.yaml /home/user/.pandoc-crossref/config.yaml
+COPY ./filter/pandoc-crossref-iso.yaml /home/user/.pandoc-crossref/config.yaml
+COPY ./filter/pandoc-crossref-tcg.yaml /home/user/.pandoc-crossref/config-tcg.yaml
 
 COPY build.sh /usr/bin/build.sh
 
