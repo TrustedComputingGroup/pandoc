@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.3-labs
-ARG BASE=debian:bookworm-20240812-slim
+ARG BASE=debian:bookworm-20250203-slim
 FROM ${BASE} as build-pandoc
 
 WORKDIR /usr/src/pandoc
@@ -13,8 +13,8 @@ RUN apt update && apt install -y \
     zlib1g \
     zlib1g-dev
 
-ENV PANDOC_CLI_VERSION=3.3
-ENV PANDOC_CROSSREF_VERSION=0.3.17.1
+ENV PANDOC_CLI_VERSION=3.6.3
+ENV PANDOC_CROSSREF_VERSION=0.3.18.1
 
 RUN cabal update && \
     cabal install -j --only-dependencies \
