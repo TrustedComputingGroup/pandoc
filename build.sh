@@ -15,6 +15,7 @@ PR_NUMBER=""
 PR_REPO=""
 DIFFBASE=""
 PDF_ENGINE=xelatex
+DO_AUTO_BACKMATTER="yes"
 
 # Start up the dbus daemon (drawio will use it later)
 dbus-daemon --system || echo "Failed to start dbus daemon"
@@ -59,10 +60,11 @@ print_usage() {
 	echo "  --pr_number=number: mark the document as a pull-request draft if using Git versioning."
 	echo "  --pr_repo=url: provide the URL for the repository for pull-request drafts (has no effect if --PR_NUMBER is not passed)."
 	echo "  --pdf_engine=(xelatex|lualatex): use the given latex engine (default xelatex)"
+	echo "  --noautobackmatter: don't automatically insert back matter at the end of the document."
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir:,noautobackmatter --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -151,6 +153,10 @@ while true; do
 	--pr_repo)
 		PR_REPO="${2}"
 		shift 2
+		;;
+	--noautobackmatter)
+		DO_AUTO_BACKMATTER="no"
+		shift
 		;;
 	--help)
 		print_usage
@@ -489,6 +495,25 @@ do_md_fixups() {
 	# While we're doing this, transform the case to all-caps.
 	# TODO: Turn this into a Pandoc filter.
 	sed -i.bak '0,/\\tableofcontents/s/^# \(.*\)/\\section*\{\U\1\}/g' "${input}"
+
+	# Insert the back matter (if it's not already there)
+	if test "${DO_AUTO_BACKMATTER}" == "yes" && ! grep -q "<!--AUTO BACK MATTER-->" ${input}; then
+		cat <<- 'EOF' >> ${input}
+
+		<!--AUTO BACK MATTER-->
+		EOF
+
+		# Insert the "References" section if there's a bibliography in the front matter
+		if grep -q "^bibliography:" ${input}; then
+			cat <<- 'EOF' >> ${input}
+			\beginbackmatter
+			# References
+			<!--https://pandoc.org/MANUAL.html#placement-of-the-bibliography-->
+			::: {$refs}
+			:::
+			EOF
+		fi
+	fi
 }
 
 # latexdiff is pretty great, but it has some incompatibilities with our template, so we
