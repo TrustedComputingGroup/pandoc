@@ -59,16 +59,26 @@ function imagemagick(source, dest)
     return true
 end
 
+function svg(source, dest)
+    print(string.format('converting %s using rsvg-convert...', source))
+    if not runCommandSuppressOutput(string.format("rsvg-convert --format=pdf --dpi-x=300 --dpi-y=300 --keep-aspect-ratio --output %s %s 2>&1", dest, source)) then
+        print(string.format('failed to convert %s to %s using rsvg-convert, falling back to letting latex try to pick it up', source, dest))
+        return false
+    end
+    return true
+end
+
 function string:hassuffix(suffix)
-    return self:sub(-#suffix) == suffix
+    return self:sub(-#suffix):lower() == suffix:lower()
 end
 
 function converterFor(filename)
-    if filename:hassuffix('.drawio') or filename:hassuffix('.drawio.svg') then
+    if filename:hassuffix('.drawio') --[[or filename:hassuffix('.drawio.svg')--]] then
         return drawio
-    end
-    if filename:hassuffix('.jpg') or filename:hassuffix('.png') or filename:hassuffix('.svg') then
+    elseif filename:hassuffix('.jpg') or filename:hassuffix('.jpeg') or filename:hassuffix('.png') or filename:hassuffix('.webp') then
         return imagemagick
+    elseif filename:hassuffix('.svg') then
+        return svg
     end
     return nil
 end
