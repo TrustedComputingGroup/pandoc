@@ -33,7 +33,7 @@ https://github.com/trustedcomputinggroup/pandoc/pkgs/container/pandoc from this 
 ```sh
 docker pull ghcr.io/trustedcomputinggroup/pandoc:latest
 
-./docker_run --pdf=guide.pdf guide.md
+./docker_run --pdf=guide.pdf guide.tcg
 ```
 
 ## How to Build Locally
@@ -55,7 +55,7 @@ docker buildx install
 To build the container:
 
 ```sh
-docker build --tag WORKING .
+docker build --tag working .
 
-DOCKER_IMAGE=working:latest ./docker_run --pdf=guide.pdf guide.md
+DOCKER_IMAGE=working:latest ./docker_run --pdf=guide.pdf guide.tcg
 ```

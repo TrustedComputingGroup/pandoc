@@ -15,7 +15,9 @@ PR_NUMBER=""
 PR_REPO=""
 DIFFBASE=""
 PDF_ENGINE=xelatex
+CROSSREF_TYPE="iso"
 DO_AUTO_BACKMATTER="yes"
+
 
 # Start up the dbus daemon (drawio will use it later)
 dbus-daemon --system || echo "Failed to start dbus daemon"
@@ -40,6 +42,7 @@ print_usage() {
 	echo
 	echo "Output Control (note that output file names are always relative to the current directory)"
 	echo "  --docx=output: enable output of docx and specify the output file name."
+	echo "  --crossref=(iso|tcg): set cross-reference style."
 	echo "  --pdf=output: enable output of pdf and specify the output file name."
 	echo "  --latex=output: enable output of latex and specify the output file name."
 	echo "  --html=output: enable output of html and specify the output file name."
@@ -64,7 +67,7 @@ print_usage() {
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,pdflog:,pdf_engine:,docx:,html:,resourcedir:,noautobackmatter --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,pdflog:,pdf_engine:,docx:,crossref:,html:,resourcedir:,noautobackmatter --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -104,6 +107,10 @@ while true; do
 		;;
 	--docx)
 		DOCX_OUTPUT="${2}"
+		shift 2
+		;;
+	--crossref)
+		CROSSREF_TYPE="${2}"
 		shift 2
 		;;
 	--latex)
@@ -179,6 +186,7 @@ readonly PR_NUMBER
 readonly PR_REPO
 readonly DIFFBASE
 readonly PDF_ENGINE
+readonly CROSSREF_TYPE
 
 shift "$(( OPTIND - 1 ))"
 
@@ -559,7 +567,7 @@ do_diff_tex_fixups() {
 	# The \multicolumn needs to be the first thing in the cell.
 	# Swap the order of any \DIF stuff and \multicolumn invocation inside a cell.
 	sed -i.bak 's/\(\\DIF[^&]*\)\(\\multicolumn{[^{}]*}\({[^{}]*}\|{[^{}]*{[^{}]*}}\)\)/\2\1/g' "${input}"
-	
+
 	# latexdiff inserts its markers before \hline sometimes.
 	# After the transformations above, \hline needs to be the first thing in a line of text.
 	sed -i.bak 's/\(\s*\)\(.*\)\(\\hline \|\\hlineifmdframed \)\(.*\)/\1\3\2\4/g' "${input}"
@@ -648,7 +656,8 @@ analyze_latex_logs() {
 do_latex() {
 	local input=$1
 	local output=$2
-	local extra_pandoc_options=$3
+	local crossref=$3
+	local extra_pandoc_options=$4
 	mkdir -p "$(dirname ${output})"
 
 	# TODO: https://github.com/TrustedComputingGroup/pandoc/issues/164
@@ -684,7 +693,7 @@ do_latex() {
 		--metadata=link-citations
 		--metadata=link-bibliography
 		--metadata=titlepage-background:/resources/img/cover.png
-		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml
+		--metadata=crossrefYaml:/resources/filters/pandoc-crossref-${crossref}.yaml
 		--metadata=logo:/resources/img/tcg.png
 		--metadata=titlepage-rule-height:0
 		--metadata=colorlinks:true
@@ -798,6 +807,7 @@ do_docx() {
 do_html() {
 	local input=$1
 	local output=$2
+	local crossref=$3
 	mkdir -p "$(dirname ${output})"
 	echo "Generating HTML Output"
 	local cmd=(pandoc
@@ -822,7 +832,7 @@ do_html() {
 		--variable=numbersections
 		--metadata=titlepage:true
 		--metadata=titlepage-background:/resources/img/cover.png
-		--metadata=crossrefYaml:/resources/filters/pandoc-crossref.yaml
+		--metadata=crossrefYaml:/resources/filters/pandoc-crossref-${crossref}.yaml
 		--metadata=logo:/resources/img/tcg.png
 		--metadata=titlepage-rule-height:0
 		--metadata=colorlinks:true
@@ -846,7 +856,7 @@ do_html() {
 readonly TEMP_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.tex"
 if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" -o -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 	do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
-	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TEX_FILE}" "${EXTRA_PANDOC_OPTIONS}"
+	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TEX_FILE}" "${CROSSREF_TYPE}" "${EXTRA_PANDOC_OPTIONS}"
 fi
 if [ -n "${LATEX_OUTPUT}" ]; then
 	cp "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
@@ -862,7 +872,7 @@ if [ -n "${PDF_OUTPUT}" ]; then
 		mkdir -p "$(dirname ${SOURCE_DIR}/${PDFLOG_OUTPUT})"
 		cp "${LATEX_LOG}" "${SOURCE_DIR}/${PDFLOG_OUTPUT}"
 	fi
-fi	
+fi
 
 # Generate the docx output
 if [ -n "${DOCX_OUTPUT}" ]; then
@@ -885,7 +895,7 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 		echo "diff output failed"
 	else
 		do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
-		do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}" "${EXTRA_PANDOC_OPTIONS} -V keepstaleimages=true"
+		do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_DIFFBASE_TEX_FILE}" "${CROSSREF_TYPE}" "${EXTRA_PANDOC_OPTIONS} -V keepstaleimages=true"
 		echo "Running latexdiff... (this may take a while for complex changes)"
 		start=$(date +%s)
 		latexdiff-fast --math-markup=whole --preamble /resources/templates/latexdiff.tex --config /resources/templates/latexdiff.cfg --append-safecmd /resources/templates/latexdiff.safe --exclude-safecmd /resources/templates/latexdiff.unsafe "${TEMP_DIFFBASE_TEX_FILE}" "${TEMP_TEX_FILE}" > "${TEMP_DIFF_TEX_FILE}" 2>"${TEMP_LATEXDIFF_LOG}"
