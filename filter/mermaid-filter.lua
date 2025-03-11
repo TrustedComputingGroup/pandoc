@@ -30,10 +30,10 @@ function mermaidFigure(code, caption, attrs)
     if fileExists(filename) then
         print(string.format('%s already exists; not re-rendering it', filename))
     else
-        print(string.format('rendering %s using Mermaid...', filename))
+        print(string.format('rendering %s using Mermaid ...', filename))
         if not runCommandWithInput(string.format(
             "mmdc --configFile /resources/filters/mermaid-config.json --puppeteerConfigFile ./.puppeteer.json --width 2000 --height 2000 --backgroundColor transparent --pdfFit --input - --output %s 2>&1", filename), code) then
-            print(string.format('failed to convert %s to %s using drawio, falling back to letting latex try to pick it up', source, dest))
+            print(string.format('failed to convert Mermaid diagram to %s using mmdc, falling back to letting LaTeX try to pick it up', filename))
             return false
         end
     end

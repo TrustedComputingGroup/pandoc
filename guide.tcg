@@ -562,7 +562,7 @@ Users are encouraged to use AES instead.
 
 # Figures {#sec:figures}
 
-There are two ways to include a figure in a document: as an image file checked into the repository, and as a [Mermaid](http://mermaid.js.org) diagram.
+There are various ways to include a figure in a document: as an image file checked into the repository, as a [Mermaid](http://mermaid.js.org) diagram, and as an [aasvg](https://github.com/martinthomson/aasvg) diagram.
 
 ## Images
 
@@ -669,6 +669,59 @@ graph TD;
 
 Crossreferences to Mermaid diagrams are supported by providing both `caption`
 and `#fig:xxxxx` classes in curly braces.
+
+
+## aasvg diagrams
+
+[aasvg](https://github.com/martinthomson/aasvg) converts ASCII art diagrams into SVG.
+It is inspired by [goat](https://github.com/blampe/goat) but rather than a
+reimplementation, the code uses the original
+[markdeep](https://casual-effects.com/markdeep/) code.
+
+Here is an example aasvg diagram:
+
+````md
+```aasvg {caption="(v)TPM Key Management" #fig:tpm-key-management}
+ .---------------------.    .----.
+|  Virtual Environment  |  | vTPM +--------------.-----------------.----------------.
+ '---------------------'    '----'                |                 |                |
+                                       +----------)-----------------)----------------)--------+
+ .-------------------------------.    /|          |                 |                |        |
+|        Virtual Platform         |  / |          |handle           |handle          |handle  |
+ '-------------------------------'  /  |          v                 v                v        |
+                                   /   | +--------+--------+ +------+-------+ +------+------+ |
+ .---------------------.   +------+    | |      vTPM       | |    vTPM      | |    vTPM     | |
+| Virtualization System |  | pTPM |    | | Endorsement Key | | Platform Key | | Storage Key | |
+ '---------------------'   +------+    | +--------+--------+ +------+-------+ +------+------+ |
+                                   \   |           '-----------------'---------. .--'         |
++---------------------------------+ \  | +-----------------+ +--------------+ +-+-----------+ |
+|        Physical Machine         |  \ | |   Endorsement   | |   Platform   | | ◌ Storage   | |
++---------------------------------+   \| +-----------------+ +--------------+ +-------------+ |
+                                       +------------------------------------------------------+
+```
+````
+
+```aasvg {caption="(v)TPM Key Management" #fig:tpm-key-management}
+ .---------------------.    .----.
+|  Virtual Environment  |  | vTPM +--------------.-----------------.----------------.
+ '---------------------'    '----'                |                 |                |
+                                       +----------)-----------------)----------------)--------+
+ .-------------------------------.    /|          |                 |                |        |
+|        Virtual Platform         |  / |          |handle           |handle          |handle  |
+ '-------------------------------'  /  |          v                 v                v        |
+                                   /   | +--------+--------+ +------+-------+ +------+------+ |
+ .---------------------.   +------+    | |      vTPM       | |    vTPM      | |    vTPM     | |
+| Virtualization System |  | pTPM |    | | Endorsement Key | | Platform Key | | Storage Key | |
+ '---------------------'   +------+    | +--------+--------+ +------+-------+ +------+------+ |
+                                   \   |           '-----------------'---------. .--'         |
++---------------------------------+ \  | +-----------------+ +--------------+ +-+-----------+ |
+|        Physical Machine         |  \ | |   Endorsement   | |   Platform   | | ◌ Storage   | |
++---------------------------------+   \| +-----------------+ +--------------+ +-------------+ |
+                                       +------------------------------------------------------+
+```
+
+See the [aasvg website](https://github.com/martinthomson/aasvg) for more examples.
+
 
 ## DrawIO Diagrams
 

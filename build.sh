@@ -670,6 +670,7 @@ do_latex() {
 		--no-highlight
 		--template=tcg.tex
 		--lua-filter=mermaid-filter.lua
+		--lua-filter=aasvg-filter.lua
 		--lua-filter=informative-sections.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=center-images.lua
@@ -745,6 +746,7 @@ do_pdf() {
 	# Copy converted images so they can be cached as well.
 	cp *.convert.pdf "${SOURCE_DIR}" 2>/dev/null
 	cp *.mermaid.pdf "${SOURCE_DIR}" 2>/dev/null
+	cp *.aasvg.pdf "${SOURCE_DIR}" 2>/dev/null
 	echo "Elapsed time: $(($end-$start)) seconds"
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "! " "${logfile}"
@@ -779,6 +781,7 @@ do_docx() {
 		--embed-resources
 		--standalone
 		--lua-filter=mermaid-filter.lua
+		--lua-filter=aasvg-filter.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
@@ -819,6 +822,7 @@ do_html() {
 		--embed-resources
 		--standalone
 		--lua-filter=mermaid-filter.lua
+		--lua-filter=aasvg-filter.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
 		--lua-filter=landscape-pages.lua

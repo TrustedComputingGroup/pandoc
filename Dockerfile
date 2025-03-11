@@ -238,15 +238,17 @@ RUN tlmgr update --self && tlmgr install \
     zref
 
 RUN apt install -y \
+    aasvg \
     dbus \
     imagemagick \
+    librsvg2-bin \
     libxss1 \
     openbox \
     wget \
     xorg \
     xvfb
 
-ENV DRAWIO_RELEASE=24.7.8
+ENV DRAWIO_RELEASE=26.0.16
 
 # TARGETPLATFORM is linux/arm64 or linux/amd64. The release for amd64 is called drawio-amd64-23.1.5.deb.
 RUN export DRAWIO_DEB=drawio-${TARGETPLATFORM#linux/}-${DRAWIO_RELEASE}.deb && \
