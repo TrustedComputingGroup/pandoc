@@ -73,6 +73,7 @@ jobs:
             *.upb
             *.convert.pdf
             *.mermaid.pdf
+            *.aasvg.pdf
           key: latex-${{ inputs.input }}-${{ inputs.container-version }}-${{ github.run_id }}
           restore-keys: latex-${{ inputs.input }}-${{ inputs.container-version }}
 

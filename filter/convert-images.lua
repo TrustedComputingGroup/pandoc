@@ -42,41 +42,51 @@ end
 -- Wrap calls to drawio in xvfb-run. Note that --no-sandbox has to be the last argument.
 -- https://github.com/jgraph/drawio-desktop/issues/249
 function drawio(source, dest)
-    print(string.format('converting %s using drawio...', source))
+    print(string.format('converting %s using drawio ...', source))
     if not runCommandSuppressOutput(string.format("xvfb-run -a drawio -x -f pdf --crop -o %s %s --no-sandbox 2>&1", dest, source)) then
-        print(string.format('failed to convert %s to %s using drawio, falling back to letting latex try to pick it up', source, dest))
+        print(string.format('failed to convert %s to %s using drawio, falling back to letting LaTeX try to pick it up', source, dest))
         return false
     end
     return true
 end
 
 function imagemagick(source, dest)
-    print(string.format('converting %s using imagemagick...', source))
+    print(string.format('converting %s using ImageMagick ...', source))
     if not runCommandSuppressOutput(string.format("convert -density 300 %s %s 2>&1", source, dest)) then
-        print(string.format('failed to convert %s to %s using imagemagick, falling back to letting latex try to pick it up', source, dest))
+        print(string.format('failed to convert %s to %s using ImageMagick, falling back to letting LaTeX try to pick it up', source, dest))
+        return false
+    end
+    return true
+end
+
+function svg(source, dest)
+    print(string.format('converting %s using rsvg-convert...', source))
+    if not runCommandSuppressOutput(string.format("rsvg-convert --format=pdf --keep-aspect-ratio --output %s %s 2>&1", dest, source)) then
+        print(string.format('failed to convert %s to %s using rsvg-convert, falling back to letting LaTeX try to pick it up', source, dest))
         return false
     end
     return true
 end
 
 function string:hassuffix(suffix)
-    return self:sub(-#suffix) == suffix
+    return self:sub(-#suffix):lower() == suffix:lower()
 end
 
 function converterFor(filename)
     if filename:hassuffix('.drawio') or filename:hassuffix('.drawio.svg') then
         return drawio
-    end
-    if filename:hassuffix('.jpg') or filename:hassuffix('.png') or filename:hassuffix('.svg') then
+    elseif filename:hassuffix('.jpg') or filename:hassuffix('.png') or filename:hassuffix('.webp') then
         return imagemagick
+    elseif filename:hassuffix('.svg') then
+        return svg
     end
     return nil
 end
 
 function Image (img)
     -- Try to convert anything that is not a pdf, jpg, or png.
-    -- This allows us to support file types that latex doesn't (e.g., SVG),
-    -- as well as speed up the latex render iterations.
+    -- This allows us to support file types that LaTeX doesn't (e.g., SVG),
+    -- as well as speed up the LaTeX render iterations.
     local converter = converterFor(img.src)
     if converter then
         local new_filename = img.src .. '.' .. getFileHash(img.src) .. '.convert.pdf'

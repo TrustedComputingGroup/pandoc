@@ -16,6 +16,7 @@ The interesting dependencies are:
   (Pandoc/LaTeX template, with some TCG-specific modifications)
 * [Mermaid](https://mermaid-js.github.io/mermaid/#/) /
   [mermaid-filter](https://github.com/raghur/mermaid-filter) (for rendering diagrams)
+* [aasvg](https://github.com/martinthomson/aasvg) (for rendering ASCII art diagrams)
 
 # How to Use
 
