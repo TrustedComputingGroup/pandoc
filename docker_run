@@ -25,5 +25,36 @@ if test "${1}" == "--help"; then
 	exit 0
 fi
 
+EXTRA_RESOURCE_DIR=""
+
+declare -a pass_through_args=()
+
+while [[ $# -gt 0 ]]; do
+  arg="$1"
+  case "$arg" in
+    --extra_resource_dir)
+      if [[ -n "$2" ]]; then
+        EXTRA_RESOURCE_DIR="$2"
+        shift 2
+      else
+        echo "Error: Argument for $1 is missing" >&2
+        exit 1
+      fi
+      ;;
+
+    *)
+      docker_container_args+=("$arg")
+      shift
+      ;;
+  esac
+done
+
+declare -a docker_run_args=("--workdir=/workspace" "--volume=$(pwd):/workspace")
+
+if [[ -n "${EXTRA_RESOURCE_DIR}" && -d "${EXTRA_RESOURCE_DIR}" ]]; then
+  dir=$(basename "${EXTRA_RESOURCE_DIR}")
+  docker_run_args+=("--volume=${EXTRA_RESOURCE_DIR}:/extra_resources/${dir}")
+fi
+
 echo "Launching Container: ${docker_image}"
-docker run -v "$(pwd):/workspace" -w/workspace "${docker_image}" "$@"
+docker run "${docker_run_args[@]}" "${docker_image}" "${docker_container_args[@]}"

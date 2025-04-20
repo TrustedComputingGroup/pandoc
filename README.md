@@ -37,6 +37,8 @@ docker pull ghcr.io/trustedcomputinggroup/pandoc:latest
 ./docker_run --pdf=guide.pdf guide.tcg
 ```
 
+Note that the `.tcg` extension is a convention and is not required.
+
 ## How to Build Locally
 
 You may wish to send a PR to this repository, to add a feature or fix an issue with the tools.
@@ -59,4 +61,29 @@ To build the container:
 docker build --tag working .
 
 DOCKER_IMAGE=working:latest ./docker_run --pdf=guide.pdf guide.tcg
+```
+
+## How to customize the template
+
+You may wish to provide your own LaTeX template, as well as other resources like images or style documents.
+Suppose you have a directory `my_resource_dir` with the following contents:
+
+- `img/cover_page_background.png`
+- `reference_doc.docx`
+- `reference_style.csl`
+- `template.tex`
+
+`template.tex` and any input files can refer to files in `resource_dir`, for example
+by using `\includegraphics{extra/my_resource_dir/img/cover_page_background.png}`.
+
+You can then run the following:
+
+```sh
+./docker_run \
+  --extra_resource_dir path/to/resource_dir \
+  --template extra/my_resource_dir/template.tex \
+  --reference_doc extra/my_resource_dir/reference_doc.docx \
+  --csl extra/my_resource_dir/reference_style.csl \
+  --pdf output.pdf \
+  input.tcg
 ```
