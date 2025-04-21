@@ -17,6 +17,8 @@ DIFFBASE=""
 PDF_ENGINE=xelatex
 CROSSREF_TYPE="iso"
 DO_AUTO_BACKMATTER="yes"
+TEMPLATE="tcg.tex"
+CSL=""
 
 
 # Start up the dbus daemon (drawio will use it later)
@@ -35,12 +37,15 @@ print_usage() {
 	echo "Usage:"
 	echo "$(basename "${0}") [options] [input-file]"
 	echo
+	echo "If a volume is mapped to `/extra_resources/{dir}`, input files may reference its contents as `extra/{dir}`."
+	echo
 	echo "Arguments:"
 	echo "  This script takes a single markdown file input for rendering to docx/pdf/LaTeX."
 	echo
 	echo "Options:"
 	echo
 	echo "Output Control (note that output file names are always relative to the current directory)"
+	echo "  --template=template.tex: override the template."
 	echo "  --docx=output: enable output of docx and specify the output file name."
 	echo "  --crossref=(iso|tcg): set cross-reference style."
 	echo "  --pdf=output: enable output of pdf and specify the output file name."
@@ -53,6 +58,7 @@ print_usage() {
 	echo "  --diffpdflog=output: enable logging of pdf engine during diffing and specify the output file name."
 	echo
 	echo "Miscellaneous"
+	echo "  --reference_doc=path: Override the reference doc for building docx"
 	echo "  --resourcedir=dir: Set the resource directory, defaults to root for pandoc containers"
 	echo "  --gitversion: legacy flag, no effect (default starting with 0.9.0)"
 	echo "  --gitstatus: legacy flag, no effect (default starting with 0.9.0)"
@@ -64,10 +70,11 @@ print_usage() {
 	echo "  --pr_repo=url: provide the URL for the repository for pull-request drafts (has no effect if --PR_NUMBER is not passed)."
 	echo "  --pdf_engine=(xelatex|lualatex): use the given latex engine (default xelatex)"
 	echo "  --noautobackmatter: don't automatically insert back matter at the end of the document."
+	echo "  --csl: provide a csl file via the command line (instead of in YAML metadata)."
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,pdflog:,pdf_engine:,docx:,crossref:,html:,resourcedir:,noautobackmatter --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,pdflog:,pdf_engine:,template:,reference_doc:,docx:,crossref:,html:,resourcedir:,noautobackmatter,csl: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -145,6 +152,14 @@ while true; do
 		HTML_OUTPUT="${2}"
 		shift 2
 		;;
+	--template)
+		TEMPLATE="${2}"
+		shift 2
+		;;
+	--reference_doc)
+		REFERENCE_DOC="${2}"
+		shift 2
+		;;
 	--resourcedir)
 		RESOURCE_DIR="${2}"
 		shift 2
@@ -164,6 +179,10 @@ while true; do
 	--noautobackmatter)
 		DO_AUTO_BACKMATTER="no"
 		shift
+		;;
+	--csl)
+		CSL="${2}"
+		shift 2
 		;;
 	--help)
 		print_usage
@@ -187,6 +206,7 @@ readonly PR_REPO
 readonly DIFFBASE
 readonly PDF_ENGINE
 readonly CROSSREF_TYPE
+readonly CSL
 
 shift "$(( OPTIND - 1 ))"
 
@@ -226,6 +246,10 @@ mkdir -p "${BUILD_DIR}"
 # This will allow us to manipulate the Git state without side effects
 # to callers of docker_run.
 cp -r . "${BUILD_DIR}"
+if [[ -d /extra_resources ]]; then
+	mkdir -p "${BUILD_DIR}/extra"
+    cp -r /extra_resources/* "${BUILD_DIR}/extra"
+fi
 cd "${BUILD_DIR}"
 
 # Let git work
@@ -366,6 +390,10 @@ if test "${DO_GITVERSION}" == "yes"; then
 
 fi # Done with git version handling
 
+if [ -n "${CSL}" ]; then
+	EXTRA_PANDOC_OPTIONS+=" --csl=${CSL}"
+fi
+
 prefix_filename() {
 	local prefix=$1
 	local full_filename=$2
@@ -444,6 +472,7 @@ echo "resource dir: ${RESOURCE_DIR}"
 echo "build dir: ${BUILD_DIR}"
 echo "browser: ${browser}"
 echo "use git version: ${DO_GITVERSION}"
+echo "default csl: ${CSL}"
 if [ ! -z "${DIFFBASE}" ]; then
 	echo "diff against: ${DIFFBASE} ($(git rev-parse --verify ${DIFFBASE}))"
 fi
@@ -668,7 +697,7 @@ do_latex() {
 	local cmd=(pandoc
 		--standalone
 		--no-highlight
-		--template=tcg.tex
+		--template=${TEMPLATE}
 		--lua-filter=mermaid-filter.lua
 		--lua-filter=aasvg-filter.lua
 		--lua-filter=informative-sections.lua
@@ -682,7 +711,7 @@ do_latex() {
 		--citeproc
 		--lua-filter=tabularx.lua
 		--lua-filter=divide-code-blocks.lua
-		--resource-path=.:/resources
+		--resource-path=.:/resources:${RESOURCE_DIR}
 		--data-dir=/resources
 		--top-level-division=section
 		--variable=block-headings
@@ -788,11 +817,11 @@ do_docx() {
 		--lua-filter=landscape-pages.lua
 		--lua-filter=style-fenced-divs.lua
 		--filter=pandoc-crossref
-		--resource-path=.:/resources
+		--resource-path=.:/resources:${RESOURCE_DIR}
 		--data-dir=/resources
 		--from='${FROM}+raw_attribute'
 		--metadata=subtitle:"'${subtitle}'"
-		--reference-doc=/resources/templates/tcg.docx
+		--reference-doc=${REFERENCE_DOC}
 		${EXTRA_PANDOC_OPTIONS}
 		--to=docx
 		--output="'${output}'"
@@ -829,7 +858,7 @@ do_html() {
 		--filter=pandoc-crossref
 		--lua-filter=divide-code-blocks.lua
 		--lua-filter=style-fenced-divs.lua
-		--resource-path=.:/resources
+		--resource-path=.:/resources:${RESOURCE_DIR}
 		--data-dir=/resources
 		--top-level-division=section
 		--variable=block-headings
