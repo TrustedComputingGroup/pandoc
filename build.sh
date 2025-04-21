@@ -765,17 +765,18 @@ do_pdf() {
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "] ! " "${logfile}"
 
-	# Copy aux, lof, lot, toc, upa, and upb files (if any) back to the source directory so they can be cached and speed up future runs.
-	cp *.aux "${SOURCE_DIR}" 2>/dev/null
-	cp *.lof "${SOURCE_DIR}" 2>/dev/null
-	cp *.lot "${SOURCE_DIR}" 2>/dev/null
-	cp *.toc "${SOURCE_DIR}" 2>/dev/null
-	cp *.upa "${SOURCE_DIR}" 2>/dev/null
-	cp *.upb "${SOURCE_DIR}" 2>/dev/null
-	# Copy converted images so they can be cached as well.
-	cp *.convert.pdf "${SOURCE_DIR}" 2>/dev/null
-	cp *.mermaid.pdf "${SOURCE_DIR}" 2>/dev/null
-	cp *.aasvg.pdf "${SOURCE_DIR}" 2>/dev/null
+	# Copy generated files (if any) back to the source directory so they can be cached and speed up future runs.
+	find . -type f \( \
+		-name "*.aux" -o \  
+		-name "*.lof" -o \
+		-name "*.lot" -o \
+		-name "*.toc" -o \
+		-name "*.upa" -o \
+		-name "*.upb" -o \
+		-name "*.convert.pdf" -o \
+		-name "*.mermaid.pdf" -o \
+		-name "*.aasvg.pdf" \
+	\) -exec cp --parents {} "${SOURCE_DIR}" \; 2>/dev/null
 	echo "Elapsed time: $(($end-$start)) seconds"
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "! " "${logfile}"
@@ -905,6 +906,11 @@ if [ -n "${PDF_OUTPUT}" ]; then
 		mkdir -p "$(dirname ${SOURCE_DIR}/${PDFLOG_OUTPUT})"
 		cp "${LATEX_LOG}" "${SOURCE_DIR}/${PDFLOG_OUTPUT}"
 	fi
+fi
+
+# Generate the html output
+if [ -n "${HTML_OUTPUT}" ]; then
+	do_html "${BUILD_DIR}/${INPUT_FILE}" "${SOURCE_DIR}/${HTML_OUTPUT}" "${CROSSREF_TYPE}"
 fi
 
 # Generate the docx output
