@@ -767,7 +767,7 @@ do_pdf() {
 
 	# Copy generated files (if any) back to the source directory so they can be cached and speed up future runs.
 	find . -type f \( \
-		-name "*.aux" -o \  
+		-name "*.aux" -o \
 		-name "*.lof" -o \
 		-name "*.lot" -o \
 		-name "*.toc" -o \
