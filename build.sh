@@ -17,7 +17,9 @@ DIFFBASE=""
 PDF_ENGINE=xelatex
 CROSSREF_TYPE="iso"
 DO_AUTO_BACKMATTER="yes"
-TEMPLATE="tcg.tex"
+TEMPLATE_PDF="tcg.tex"
+TEMPLATE_HTML=""
+HTML_STYLESHEET_ARGS=""
 CSL=""
 
 
@@ -45,7 +47,9 @@ print_usage() {
 	echo "Options:"
 	echo
 	echo "Output Control (note that output file names are always relative to the current directory)"
-	echo "  --template=template.tex: override the template."
+	echo "  --template=template.tex: override the PDF template."
+	echo "  --template_html=template.html: override the HTML template."
+	echo "  --html_stylesheet=style.css: pass additional CSS (may be invoked multiple times)."
 	echo "  --docx=output: enable output of docx and specify the output file name."
 	echo "  --crossref=(iso|tcg): set cross-reference style."
 	echo "  --pdf=output: enable output of pdf and specify the output file name."
@@ -74,7 +78,7 @@ print_usage() {
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,pdflog:,pdf_engine:,template:,reference_doc:,docx:,crossref:,html:,resourcedir:,noautobackmatter,csl: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,pdflog:,pdf_engine:,template:,template_html:,html_stylesheet:,reference_doc:,docx:,crossref:,html:,resourcedir:,noautobackmatter,csl: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -153,7 +157,15 @@ while true; do
 		shift 2
 		;;
 	--template)
-		TEMPLATE="${2}"
+		TEMPLATE_PDF="${2}"
+		shift 2
+		;;
+	--template_html)
+		TEMPLATE_HTML="${2}"
+		shift 2
+		;;
+	--html_stylesheet)
+		HTML_STYLESHEET_ARGS+=" --css ${2}"
 		shift 2
 		;;
 	--reference_doc)
@@ -697,7 +709,7 @@ do_latex() {
 	local cmd=(pandoc
 		--standalone
 		--no-highlight
-		--template=${TEMPLATE}
+		--template=${TEMPLATE_PDF}
 		--lua-filter=mermaid-filter.lua
 		--lua-filter=aasvg-filter.lua
 		--lua-filter=informative-sections.lua
@@ -851,6 +863,8 @@ do_html() {
 		-V toccolor=blue
 		--embed-resources
 		--standalone
+		--template=${TEMPLATE_HTML}
+		${HTML_STYLESHEET_ARGS}
 		--lua-filter=mermaid-filter.lua
 		--lua-filter=aasvg-filter.lua
 		--lua-filter=parse-html.lua
