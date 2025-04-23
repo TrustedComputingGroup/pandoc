@@ -428,6 +428,49 @@ The result looks like this:
 int i = 42;
 ```
 
+You can customize the font size, in case code runs off the edge of the page and can't be word-wrapped:
+
+````md
+``` {.small}
+{
+  "Foo": {
+    "Bar": {
+      "Baz":
+        "/some/very/long/string/that/can't/be/word/wrapped/e.g./because/it's/encoded/in/json",
+    }
+  }
+}
+```
+````
+
+The result looks like this:
+
+``` {.small}
+{
+  "Foo": {
+    "Bar": {
+      "Baz":
+        "/some/very/long/string/that/can't/be/word/wrapped/e.g./because/it's/encoded/in/json",
+    }
+  }
+}
+```
+
+You can use `.normal`, `.small`, or `.tiny` (illustrated below):
+
+``` {.tiny}
+{
+  "Foo": {
+    "Bar": {
+      "Baz":
+        "/some/very/long/string/that/can't/be/word/wrapped/e.g./because/it's/encoded/in/json",
+    }
+  }
+}
+```
+
+The default case is `.normal`.
+
 ## Footnotes {#sec:footnotes}
 
 ```md

@@ -164,15 +164,6 @@ $endif$
 % }
 % \makeatother
 
-% Make all verbatim environments use \small font.
-\usepackage{etoolbox}
-\makeatletter
-\patchcmd{\@verbatim}
-  {\verbatim@font}
-  {\verbatim@font\small}
-  {}{}
-\makeatother
-
 % Left-justify the document.
 \usepackage[document]{ragged2e}
 \RaggedRight{}
