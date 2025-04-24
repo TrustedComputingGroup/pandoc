@@ -1,6 +1,22 @@
 -- Turn mermaid-classed code blocks into figures, retaining other classes on the
 -- code block as classes on the figure.
 
+output_classes =
+{
+    ["pdf"] = {
+        ["extension"] = ".mermaid.pdf",
+        ["image_attrs"] = {},
+    },
+    ["html"] = {
+        ["extension"] = ".mermaid.svg",
+        ["image_attrs"] = {
+            "", -- No identifier
+            {}, -- No classes
+            {width = "500px"}
+        },
+    }
+}
+
 function runCommandWithInput(command, input)
     local pipe = io.popen(command, "w")
     if not pipe then
@@ -26,7 +42,9 @@ function fileExists(file)
 end
 
 function mermaidFigure(code, caption, attrs)
-    local filename = getContentsHash('code=' .. code .. 'caption=' .. pandoc.utils.stringify(caption) .. 'attrs=' .. pandoc.utils.stringify(attrs)) .. '.mermaid.pdf'
+    output_class = output_classes[FORMAT] or output_classes["pdf"]
+
+    local filename = getContentsHash('code=' .. code .. 'caption=' .. pandoc.utils.stringify(caption) .. 'attrs=' .. pandoc.utils.stringify(attrs)) .. output_class["extension"]
     if fileExists(filename) then
         print(string.format('%s already exists; not re-rendering it', filename))
     else
@@ -38,7 +56,7 @@ function mermaidFigure(code, caption, attrs)
         end
     end
 
-    local img = pandoc.Image(caption, filename)
+    local img = pandoc.Image(caption, filename, "", output_class["image_attrs"])
     return pandoc.Figure(img, caption, attrs)
 end
 
