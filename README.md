@@ -80,10 +80,29 @@ You can then run the following:
 
 ```sh
 ./docker_run \
-  --extra_resource_dir path/to/resource_dir \
+  --extra_resource_dir path/to/my_resource_dir \
   --template extra/my_resource_dir/template.tex \
   --reference_doc extra/my_resource_dir/reference_doc.docx \
   --csl extra/my_resource_dir/reference_style.csl \
   --pdf output.pdf \
+  input.tcg
+```
+
+## Rendering HTML (experimental)
+
+HTML support is experimental. Known issues:
+
+- `\listoffigures` and `\listoftables` are not supported, as they render without clickable links.
+- Mermaid figures currently render as fixed-width.
+
+To render a document to HTML:
+
+```sh
+./docker_run \
+  --extra_resource_dir path/to/my_resource_dir \
+  --template_html extra/my_resource_dir/html.template \
+  --html_stylesheet extra/my_resource_dir/style1.css \
+  --html_stylesheet extra/my_resource_dir/style2.css \
+  --html output.html \
   input.tcg
 ```

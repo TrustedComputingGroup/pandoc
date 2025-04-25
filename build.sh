@@ -532,6 +532,9 @@ if [ "${BLOCK_QUOTES_ARE_INFORMATIVE_TEXT}" == "yes" ]; then
 fi
 
 # Use sed to perform some basic fixups on certain input files.
+#
+# If the second argument is provided and is "html", strip out `\listoffigures` and `\listoftables`,
+# as these don't render correctly in HTML.
 do_md_fixups() {
 	local input=$1
 	# \newpage is rendered as the string "\newpage" in GitHub markdown.
@@ -562,6 +565,15 @@ do_md_fixups() {
 			:::
 			EOF
 		fi
+	fi
+
+	# These don't render correctly:
+	#  - The lists are raw text and not clickable entries.
+	#  - The "List of Figures" and "List of Tables" headers show up in the toc
+	#    as raw text and not clickable entries.
+	if test "$2" == "html"; then
+		sed -i.bak 's/^\\listoffigures$//g' "${input}"
+		sed -i.bak 's/^\\listoftables$//g' "${input}"
 	fi
 }
 
@@ -693,6 +705,22 @@ analyze_latex_logs() {
 	fi
 }
 
+# Copy generated files (if any) back to the source directory so they can be cached and speed up future runs.
+cache_generated_files() {
+	find . -type f \( \
+		-name "*.aux" -o \
+		-name "*.lof" -o \
+		-name "*.lot" -o \
+		-name "*.toc" -o \
+		-name "*.upa" -o \
+		-name "*.upb" -o \
+		-name "*.convert.pdf" -o \
+		-name "*.mermaid.pdf" -o \
+		-name "*.mermaid.svg" -o \
+		-name "*.aasvg.pdf" \
+	\) -exec cp --parents {} "${SOURCE_DIR}" \; 2>/dev/null
+}
+
 # Takes Markdown input and writes LaTeX output using pandoc.
 do_latex() {
 	local input=$1
@@ -777,18 +805,7 @@ do_pdf() {
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "] ! " "${logfile}"
 
-	# Copy generated files (if any) back to the source directory so they can be cached and speed up future runs.
-	find . -type f \( \
-		-name "*.aux" -o \
-		-name "*.lof" -o \
-		-name "*.lot" -o \
-		-name "*.toc" -o \
-		-name "*.upa" -o \
-		-name "*.upb" -o \
-		-name "*.convert.pdf" -o \
-		-name "*.mermaid.pdf" -o \
-		-name "*.aasvg.pdf" \
-	\) -exec cp --parents {} "${SOURCE_DIR}" \; 2>/dev/null
+	cache_generated_files
 	echo "Elapsed time: $(($end-$start)) seconds"
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "! " "${logfile}"
@@ -846,6 +863,8 @@ do_docx() {
 	else
 		echo "DOCX output generated to file: ${output}"
 	fi
+
+	cache_generated_files
 }
 
 # Takes Markdown input and writes HTML output using pandoc.
@@ -884,6 +903,10 @@ do_html() {
 		--metadata=logo:/resources/img/tcg.png
 		--metadata=titlepage-rule-height:0
 		--metadata=colorlinks:true
+		--metadata=link-bibliography
+		--metadata=link-citations
+		--metadata=link-references
+		--citeproc
 		--metadata=contact:admin@trustedcomputinggroup.org
 		--from=${FROM}
 		${EXTRA_PANDOC_OPTIONS}
@@ -895,6 +918,7 @@ do_html() {
 		FAILED=true
 		echo "HTML output failed"
 	else
+		cache_generated_files
 		echo "HTML output generated to file: ${output}"
 	fi
 }
@@ -924,6 +948,7 @@ fi
 
 # Generate the html output
 if [ -n "${HTML_OUTPUT}" ]; then
+	do_md_fixups "${BUILD_DIR}/${INPUT_FILE}" "html"
 	do_html "${BUILD_DIR}/${INPUT_FILE}" "${SOURCE_DIR}/${HTML_OUTPUT}" "${CROSSREF_TYPE}"
 fi
 
