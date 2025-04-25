@@ -99,7 +99,7 @@ To render a document to HTML:
 
 ```sh
 ./docker_run \
-  --extra_resource_dir path/to/resource_dir \
+  --extra_resource_dir path/to/my_resource_dir \
   --template_html extra/my_resource_dir/html.template \
   --html_stylesheet extra/my_resource_dir/style1.css \
   --html_stylesheet extra/my_resource_dir/style2.css \
