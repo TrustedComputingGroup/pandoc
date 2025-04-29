@@ -918,7 +918,8 @@ do_html() {
 		--metadata=colorlinks:true
 		--metadata=link-bibliography
 		--metadata=link-citations
-		--metadata=link-references
+		--metadata=linkReferences
+		--metadata=nameInLink
 		--citeproc
 		--metadata=contact:admin@trustedcomputinggroup.org
 		--from=${FROM}
