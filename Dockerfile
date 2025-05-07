@@ -195,6 +195,7 @@ RUN apt install -y \
     dbus \
     imagemagick \
     librsvg2-bin \
+    libsecret-1-0 \
     libxss1 \
     openbox \
     wget \
