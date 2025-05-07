@@ -30,7 +30,7 @@ RUN apt update && apt install -y \
     wget \
     yarn
 
-ENV MIRROR=https://ctan.math.illinois.edu/systems/texlive/tlnet/
+ENV MIRROR=https://mirror.ctan.org/systems/texlive/tlnet/
 
 # install texlive ourselves instead of relying on the pandoc docker images,
 # so that we can control the cross-platform support (e.g., arm64 linux)
@@ -194,6 +194,7 @@ RUN apt install -y \
     aasvg \
     dbus \
     imagemagick \
+    libnss3 \
     librsvg2-bin \
     libsecret-1-0 \
     libxss1 \
