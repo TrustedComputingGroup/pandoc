@@ -713,6 +713,65 @@ graph TD;
 Crossreferences to Mermaid diagrams are supported by providing both `caption`
 and `#fig:xxxxx` classes in curly braces.
 
+## PlantUML diagrams
+
+[PlantUML](https://plantuml.com/) is a highly versatile tool that facilitates the rapid and straightforward creation of a wide array of
+diagrams. See the PlantUML website for a more exhaustive list of types of diagrams.
+
+````md
+```plantuml {caption="Startup Sequence (UML)" #fig:startup-uml}
+participant Host
+participant TPM
+
+Host -> TPM: TPM2_Startup
+loop Measurements
+    Host -> TPM: TPM2_PCR_Extend
+end
+Host -> TPM: TPM2_Quote
+TPM -> Host: <quoted PCRs>
+```
+````
+
+```plantuml {caption="Startup Sequence (UML)" #fig:startup-uml}
+participant Host
+participant TPM
+
+Host -> TPM: TPM2_Startup
+loop Measurements
+    Host -> TPM: TPM2_PCR_Extend
+end
+Host -> TPM: TPM2_Quote
+TPM -> Host: <quoted PCRs>
+```
+
+UML can include other files via the `!include` directive. All included files must
+be in the directory that holds the input Markdown file, or within a subdirectory.
+
+````md
+```plantuml {caption="Sample UML with include" #fig:sample-uml-with-include}
+!include sample.uml.inc
+
+Foo -> Foo1 : To actor
+Foo -> Foo2 : To boundary
+Foo -> Foo3 : To control
+Foo -> Foo4 : To entity
+Foo -> Foo5 : To database
+Foo -> Foo6 : To collections
+Foo -> Foo7 : To queue
+```
+````
+
+```plantuml {caption="Sample UML with include" #fig:sample-uml-with-include}
+!include sample.uml.inc
+
+Foo -> Foo1 : To actor
+Foo -> Foo2 : To boundary
+Foo -> Foo3 : To control
+Foo -> Foo4 : To entity
+Foo -> Foo5 : To database
+Foo -> Foo6 : To collections
+Foo -> Foo7 : To queue
+```
 
 ## aasvg diagrams
 

@@ -144,21 +144,33 @@ COPY --from=build-fonts \
     /usr/share/fonts/truetype/noto/NotoSansMono* \
     /usr/share/fonts/
 
-RUN apt update && apt install -y fontconfig && \
-    fc-cache -f
-
-RUN apt install -y \
+RUN apt update && apt install -y \
+    aasvg \
     bash \
     chromium \
+    dbus \
+    default-jre \
+    fontconfig \
+    imagemagick \
+    librsvg2-bin \
+    libxss1 \
     moreutils \
     nodejs \
     npm \
-    sed
+    openbox \
+    sed \
+    wget \
+    xorg \
+    xvfb
+
+RUN fc-cache -f
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 RUN npm install --global --unsafe-perm puppeteer@23.2.1 imgur@2.4.2 @mermaid-js/mermaid-cli@11.1.1 typescript@5.5.4 pandiff@0.6.0
+
+RUN wget -O /usr/share/plantuml.jar https://github.com/plantuml/plantuml/releases/download/v1.2025.2/plantuml-asl-1.2025.2.jar
 
 # Important: /usr/local/texlive/bin/ paths come before other paths. We want to use the texlive we
 # built above, not any that happen to have come along with our base image.
@@ -236,17 +248,6 @@ RUN tlmgr update --self && tlmgr install \
     xetex \
     xltabular \
     zref
-
-RUN apt install -y \
-    aasvg \
-    dbus \
-    imagemagick \
-    librsvg2-bin \
-    libxss1 \
-    openbox \
-    wget \
-    xorg \
-    xvfb
 
 ENV DRAWIO_RELEASE=26.0.16
 
