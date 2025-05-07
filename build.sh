@@ -264,6 +264,9 @@ if [[ -d /extra_resources ]]; then
 fi
 cd "${BUILD_DIR}"
 
+# Directory to hold rendered images and other cache files.
+mkdir -p ".cache/"
+
 # Let git work
 git config --global --add safe.directory "${BUILD_DIR}"
 
@@ -705,20 +708,10 @@ analyze_latex_logs() {
 	fi
 }
 
-# Copy generated files (if any) back to the source directory so they can be cached and speed up future runs.
+# Move generated files (if any) back to the source directory so they can be cached and speed up future runs.
 cache_generated_files() {
-	find . -type f \( \
-		-name "*.aux" -o \
-		-name "*.lof" -o \
-		-name "*.lot" -o \
-		-name "*.toc" -o \
-		-name "*.upa" -o \
-		-name "*.upb" -o \
-		-name "*.convert.pdf" -o \
-		-name "*.mermaid.pdf" -o \
-		-name "*.mermaid.svg" -o \
-		-name "*.aasvg.pdf" \
-	\) -exec cp --parents {} "${SOURCE_DIR}" \; 2>/dev/null
+	rm -rf "${SOURCE_DIR}/.cache"
+	mv .cache/ "${SOURCE_DIR}"
 }
 
 # Takes Markdown input and writes LaTeX output using pandoc.
@@ -738,11 +731,11 @@ do_latex() {
 		--standalone
 		--no-highlight
 		--template=${TEMPLATE_PDF}
-		--lua-filter=mermaid-filter.lua
-		--lua-filter=aasvg-filter.lua
-		--lua-filter=informative-sections.lua
+		--lua-filter=convert-diagrams.lua
+		--lua-filter=convert-aasvg.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=center-images.lua
+		--lua-filter=informative-sections.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
 		--lua-filter=landscape-pages.lua
@@ -796,7 +789,7 @@ do_pdf() {
 	local start=$(date +%s)
 	# latexmk takes care of repeatedly calling the PDF engine. A run may take multiple passes due to the need to
 	# update .toc and other files.
-	latexmk "${input}" -pdflatex="${PDF_ENGINE}" -pdf -diagnostics > "${logfile}"
+	latexmk "${input}" -pdflatex="${PDF_ENGINE}" -output-directory=.cache/ -pdf -diagnostics > "${logfile}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "PDF output failed"
@@ -805,12 +798,11 @@ do_pdf() {
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "] ! " "${logfile}"
 
-	cache_generated_files
 	echo "Elapsed time: $(($end-$start)) seconds"
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "! " "${logfile}"
 	if [[ ! "${FAILED}" = "true" ]]; then
-		mv "${temp_pdf_file}" "${output}"
+		mv ".cache/${temp_pdf_file}" "${output}"
 		analyze_latex_logs "${logfile}"
 	fi
 }
@@ -839,8 +831,8 @@ do_docx() {
 	cmd=(pandoc
 		--embed-resources
 		--standalone
-		--lua-filter=mermaid-filter.lua
-		--lua-filter=aasvg-filter.lua
+		--lua-filter=convert-diagrams.lua
+		--lua-filter=convert-aasvg.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
@@ -863,8 +855,6 @@ do_docx() {
 	else
 		echo "DOCX output generated to file: ${output}"
 	fi
-
-	cache_generated_files
 }
 
 # Takes Markdown input and writes HTML output using pandoc.
@@ -884,8 +874,8 @@ do_html() {
 		--standalone
 		--template=${TEMPLATE_HTML}
 		${HTML_STYLESHEET_ARGS}
-		--lua-filter=mermaid-filter.lua
-		--lua-filter=aasvg-filter.lua
+		--lua-filter=convert-diagrams.lua
+		--lua-filter=convert-aasvg.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
 		--lua-filter=landscape-pages.lua
@@ -918,7 +908,6 @@ do_html() {
 		FAILED=true
 		echo "HTML output failed"
 	else
-		cache_generated_files
 		echo "HTML output generated to file: ${output}"
 	fi
 }
@@ -1012,5 +1001,6 @@ if [ "${PRE_DIFFING_FAILED}" == "true" ]; then
 	exit 1
 fi
 
+cache_generated_files
 echo "Overall workflow succeeded"
 exit 0
