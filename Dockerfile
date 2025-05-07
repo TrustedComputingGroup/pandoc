@@ -102,11 +102,13 @@ RUN apt update && apt install -y fontconfig && \
 
 RUN apt install -y \
     bash \
-    chromium \
     moreutils \
     nodejs \
     npm \
     sed
+
+# Install Chromium via snap
+RUN snap install chromium
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
