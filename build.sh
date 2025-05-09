@@ -609,8 +609,9 @@ do_diff_tex_fixups() {
 	sed -i.bak 's/^%.*$//g' "${input}"
 
 	# Combine lines inside of the xltabular environment so that (non-empty) lines all end in \\ or \\*
+	# But don't do it if the line contains a % or this will comment out closing brackets.
 	perl -ne 's/\n/ / if $s = /\\begin{xltabular}/ .. ($e = /\\end{xltabular}/)
-                                    and $s > 1 and !$e and !/.*\\\\$/ and !/.*\\\\\*$/;
+                                    and $s > 1 and !$e and !/.*\\\\$/ and !/.*\\\\\*$/ and !/%/;
                   print' < "${input}" > "${input}".bak && mv "${input}".bak "${input}"
 
 	# Put newlines after \endhead, \endfirsthead, \endfoot, and \endlastfoot
@@ -631,6 +632,11 @@ do_diff_tex_fixups() {
 	# Delete all empty DIFadd/mod/del
 	sed -i.bak 's/\\DIF\(add\|del\|mod\){}\(FL\|\)//g' "${input}"
 
+	# latexdiff can sometimes move \end{itemize} before the last \item.
+	# Just comment out the stray \items. It'll be ugly but it will build.
+	# But, preserve the \items that are inside of enumerate environments.
+	sed -i.bak '/^\\begin{enumerate}/,/^\\end{enumerate}/s/^\\item/ \\item/g' "${input}"
+	sed -i.bak '/\\end{itemize}/,/\\begin{itemize}/s/^\\item/%\\item/g' "${input}"
 }
 
 if test "${DO_GITVERSION}" == "yes"; then
@@ -791,12 +797,17 @@ do_pdf() {
 	local logfile=$3
 	# LaTeX engines choose this filename based on TEMP_TEX_FILE's basename. It also emits a bunch of other files.
 	local temp_pdf_file="$(basename ${input%.*}).pdf"
+	local ignore_errors=$4
 
 	echo "Rendering PDF"
 	local start=$(date +%s)
 	# latexmk takes care of repeatedly calling the PDF engine. A run may take multiple passes due to the need to
 	# update .toc and other files.
-	latexmk "${input}" -pdflatex="${PDF_ENGINE}" -pdf -diagnostics > "${logfile}"
+	local pdflatex="${PDF_ENGINE}"
+	if [[ "${ignore_errors}" = "true" ]]; then
+		pdflatex="${pdflatex} -interaction=nonstopmode"
+	fi
+	latexmk "${input}" -pdflatex="${pdflatex}" -pdf -diagnostics > "${logfile}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "PDF output failed"
@@ -809,8 +820,10 @@ do_pdf() {
 	echo "Elapsed time: $(($end-$start)) seconds"
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "! " "${logfile}"
-	if [[ ! "${FAILED}" = "true" ]]; then
+	if [[ ! "${FAILED}" = "true" || "${ignore_errors}" = "true" ]]; then
 		mv "${temp_pdf_file}" "${output}"
+	fi
+	if [[ ! "${FAILED}" = "true" ]]; then
 		analyze_latex_logs "${logfile}"
 	fi
 }
@@ -937,7 +950,7 @@ fi
 # Generate the PDF output
 readonly LATEX_LOG="${BUILD_DIR}/latex.log"
 if [ -n "${PDF_OUTPUT}" ]; then
-	do_pdf "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${PDF_OUTPUT}" "${LATEX_LOG}"
+	do_pdf "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${PDF_OUTPUT}" "${LATEX_LOG}" false
 
 	# Copy the logs, if requested.
 	if [ -n "${PDFLOG_OUTPUT}" ]; then
@@ -994,7 +1007,10 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 fi
 if [ "${FAILED}" != "true" -a -n "${DIFFPDF_OUTPUT}" ]; then
 	echo "Rendering diff PDF..."
-	do_pdf "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${LATEX_LOG}"
+	# We do our best to fix up the latexdiff result so that it compiles without errors.
+	# In some cases, there are still errors. It is better to produce an ugly diff-document than to
+	# produce no diff-document at all.
+	do_pdf "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${LATEX_LOG}" true
 
 	# Copy the logs, if requested. Note that this file gets the latexdiff and PDF driver output.
 	if [ -n "${DIFFPDFLOG_OUTPUT}" ]; then
