@@ -29,12 +29,13 @@ end
 
 -- This function converts a Pandoc ColSpec object into a colspec for the xltabular environment.
 -- https://pandoc.org/lua-filters.html#type-colspec
+-- xltabular resets parskip, so override it here (https://tex.stackexchange.com/questions/279207/why-is-parskip-zero-inside-a-tabular)
 function TabularColspec(colspec, plain, numcols)
     local column_pre = {
-        ['AlignLeft'] = '>{\\RaggedRight}',
-        ['AlignCenter'] = '>{\\Centering}',
-        ['AlignDefault'] = '>{\\RaggedRight}',
-        ['AlignRight'] = '>{\\RaggedLeft}',
+        ['AlignLeft'] = '>{\\RaggedRight\\parskip=\\tabularparskip}',
+        ['AlignCenter'] = '>{\\Centering\\parskip=\\tabularparskip}',
+        ['AlignDefault'] = '>{\\RaggedRight\\parskip=\\tabularparskip}',
+        ['AlignRight'] = '>{\\RaggedLeft\\parskip=\\tabularparskip}',
     }
 
     local result = string.format('%sp{%s%s}', column_pre[colspec[1]], ColumnWidth(colspec), ColumnAdjustmentValue)
@@ -46,8 +47,8 @@ end
 
 function GetCellCode(cell)
     local cell_code = pandoc.write(pandoc.Pandoc(cell.contents),'latex')
-    -- \\ is not supported inside a cell. Replace it with a double-newline and a small skip.
-    cell_code = cell_code:gsub('\\\\', '\n\n\\smallskip')
+    -- \\ is not supported inside a cell. Replace it with a double-newline and a parskip.
+    cell_code = cell_code:gsub('\\\\', '\n\n\\tabularparskip')
     return cell_code
 end
 
@@ -282,7 +283,6 @@ function Table(tbl)
         -- doesn't get updated in the landscape environment.
         -- This will cause problems with tables inside of tables, but we don't support that.
         latex_code = latex_code .. '\\begin{xltabular}{\\linewidth}{'
-
         --
         -- Specify the columns
         --
