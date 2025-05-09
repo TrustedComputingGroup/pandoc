@@ -283,6 +283,7 @@ function Table(tbl)
         -- doesn't get updated in the landscape environment.
         -- This will cause problems with tables inside of tables, but we don't support that.
         latex_code = latex_code .. '\\begin{xltabular}{\\linewidth}{'
+
         --
         -- Specify the columns
         --
