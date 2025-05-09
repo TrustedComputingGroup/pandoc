@@ -105,10 +105,14 @@ RUN apt install -y \
     moreutils \
     nodejs \
     npm \
-    sed
+    sed \
+    software-properties-common
 
-# Install Chromium via snap
-RUN snap install chromium
+# Install Chromium via custom repo
+# https://askubuntu.com/questions/1204571/how-to-install-chromium-without-snap/1511695#1511695
+RUN add-apt-repository ppa:xtradeb/apps -y && \
+    apt update && \
+    apt install -y chromium
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
