@@ -192,8 +192,7 @@ $endif$
 \makeatother
 
 \setlength{\emergencystretch}{3em} % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\tightlist}{}
 $if(numbersections)$
 \setcounter{secnumdepth}{$if(secnumdepth)$$secnumdepth$$else$5$endif$}
 $else$
@@ -457,6 +456,8 @@ $endif$
 %
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{6pt plus 2pt minus 1pt}
+\newlength{\tabularparskip}
+\setlength{\tabularparskip}{\parskip}
 \setlength{\emergencystretch}{3em}  % prevent overfull lines
 
 %

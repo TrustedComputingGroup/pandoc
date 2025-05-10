@@ -1,52 +1,8 @@
 # syntax=docker/dockerfile:1.3-labs
-ARG BASE=debian:bookworm-20250203-slim
-FROM ${BASE} as build-pandoc
+ARG BUILDBASE=debian:bookworm-20250203-slim
+ARG RUNBASE=pandoc/core:3.6-ubuntu
 
-WORKDIR /usr/src/pandoc
-
-# Install pandoc and pandoc-crossref
-RUN apt update && apt install -y \
-    cabal-install \
-    g++ \
-    git \
-    pkg-config \
-    zlib1g \
-    zlib1g-dev
-
-ENV PANDOC_CLI_VERSION=3.6.3
-ENV PANDOC_CROSSREF_VERSION=0.3.18.1
-
-RUN cabal update && \
-    cabal install -j --only-dependencies \
-    pandoc-cli-${PANDOC_CLI_VERSION} \
-    pandoc-crossref-${PANDOC_CROSSREF_VERSION}
-
-# Clone the source code associated with the target version of pandoc.
-RUN git clone --branch=${PANDOC_CLI_VERSION} --depth=1 --quiet \
-    https://github.com/jgm/pandoc /usr/src/pandoc
-
-# Initialize a cabal.project file with the correct flags, and pin pandoc-crossref to its target.
-RUN cat <<EOF > /usr/src/pandoc/cabal.project
-packages: .
-          pandoc-cli
-extra-packages: pandoc-crossref == ${PANDOC_CROSSREF_VERSION}
-flags: +embed_data_files +lua -server
-EOF
-
-# Compile the actual pandoc binaries.
-RUN cabal build -j \
-    --disable-tests \
-    --disable-bench \
-    pandoc-cli pandoc-crossref
-
-# Copy just the binaries we want into /pandocbins/
-RUN mkdir -p /pandocbins && \
-    find dist-newstyle \
-    -name 'pandoc*' -type f -perm -u+x \
-    -exec strip '{}' ';' \
-    -exec cp '{}' /pandocbins/ ';'
-
-FROM ${BASE} as build-texlive
+FROM ${BUILDBASE} as build-texlive
 
 # Pass the correct platform to texlive build.
 ARG TARGETPLATFORM
@@ -74,7 +30,7 @@ RUN apt update && apt install -y \
     wget \
     yarn
 
-ENV MIRROR=https://ctan.math.illinois.edu/systems/texlive/tlnet/
+ENV MIRROR=https://mirror.ctan.org/systems/texlive/tlnet/
 
 # install texlive ourselves instead of relying on the pandoc docker images,
 # so that we can control the cross-platform support (e.g., arm64 linux)
@@ -86,7 +42,7 @@ RUN export ARCH=$(cat /ARCH) && \
 
 RUN mkdir -p /texlivebins && cp -r /usr/local/texlive/*/* /texlivebins
 
-FROM ${BASE} as build-fonts
+FROM ${BUILDBASE} as build-fonts
 
 RUN apt update && apt install -y \
     wget \
@@ -110,7 +66,7 @@ RUN wget https://github.com/alerque/libertinus/releases/download/v7.040/Libertin
     mkdir -p /usr/share/fonts/OTF/ && \
     cp Libertinus-7.040/static/OTF/*.otf /usr/share/fonts/OTF/
 
-FROM ${BASE} as build-latexdiff
+FROM ${BUILDBASE} as build-latexdiff
 
 RUN apt update && apt install -y \
     build-essential \
@@ -125,12 +81,9 @@ RUN wget https://github.com/ftilmann/latexdiff/releases/download/1.3.4/latexdiff
     make install-fast
 
 # Build's done. Copy what we need into the actual container for running.
-FROM ${BASE} as run
+FROM ${RUNBASE} as run
 
 ARG TARGETPLATFORM
-
-# These binaries are by far the most costly part of the build. Grab them first to minimize invalidation.
-COPY --from=build-pandoc /pandocbins /usr/local/bin
 
 # These binaries are the second most costly part of the build.
 COPY --from=build-texlive /texlivebins /usr/local/texlive
@@ -149,11 +102,17 @@ RUN apt update && apt install -y fontconfig && \
 
 RUN apt install -y \
     bash \
-    chromium \
     moreutils \
     nodejs \
     npm \
-    sed
+    sed \
+    software-properties-common
+
+# Install Chromium via custom repo
+# https://askubuntu.com/questions/1204571/how-to-install-chromium-without-snap/1511695#1511695
+RUN add-apt-repository ppa:xtradeb/apps -y && \
+    apt update && \
+    apt install -y chromium
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
@@ -241,7 +200,9 @@ RUN apt install -y \
     aasvg \
     dbus \
     imagemagick \
+    libnss3 \
     librsvg2-bin \
+    libsecret-1-0 \
     libxss1 \
     openbox \
     wget \
