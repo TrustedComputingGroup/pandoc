@@ -20,7 +20,7 @@ jobs:
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v3.4.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -28,19 +28,19 @@ jobs:
 
       # Set up QEMU for cross-platform builds below
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v3.6.0
         with:
           image: tonistiigi/binfmt:latest
           platforms: all
 
       - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3.10.0
 
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v5.7.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
@@ -50,14 +50,13 @@ jobs:
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
       - name: Build and publish Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v6.1.6
         with:
           # Cache layers from the container repo.
-          # Update the cache only on pushes to main.
-          # This minimizes the amount of times we have to rebuild pandoc.
+          # Read-only: Releasing shouldn't be doing anything that wasn't already 
+          # one on a push to main earlier.
           cache-from: type=gha
-          cache-to: ${{ github.event_name == 'push' && 'type=gha' || '' }}
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
