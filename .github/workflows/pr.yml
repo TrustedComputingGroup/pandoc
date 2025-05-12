@@ -32,7 +32,7 @@ jobs:
       # Only amd64, since we're just building a container
       # to be used below in the GH action runner.
       - name: Build and publish Docker image
-        uses: docker/build-push-action@v6.1.6
+        uses: docker/build-push-action@v6.16.0
         with:
           # Cache layers from the container repo.
           # Read-only: Avoid cluttering up the cache on pull requests.

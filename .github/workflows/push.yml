@@ -50,7 +50,7 @@ jobs:
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
       - name: Build and publish Docker image
-        uses: docker/build-push-action@v6.1.6
+        uses: docker/build-push-action@v6.16.0
         with:
           # Cache layers from the container repo.
           # Update the cache only on pushes to main.
