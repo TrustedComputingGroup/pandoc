@@ -109,7 +109,8 @@ RUN apt install -y \
     rsync \
     sed \
     software-properties-common \
-    wget
+    wget \
+    yq
 
 # Install Chromium via custom repo
 # https://askubuntu.com/questions/1204571/how-to-install-chromium-without-snap/1511695#1511695
