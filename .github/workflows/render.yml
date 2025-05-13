@@ -31,6 +31,10 @@ on:
         description: version to render (defaults is default branch)
         required: false
         type: string
+      extra-build-options:
+        description: additional build options to be passed to build.sh
+        required: false
+        type: string
 
 jobs:
   render:
@@ -98,6 +102,7 @@ jobs:
           diffbase: "${{ github.event.pull_request.base.sha }}"
           pr-number: "${{ github.event.number }}"
           pr-repo: "${{ github.repository }}"
+          extra-build-options: "${{ inputs.extra-build-options }}"
       # Render the document with diffs in the 'manual' mode.
       - name: Render
         if: inputs.workflow == 'manual'
@@ -107,6 +112,7 @@ jobs:
           output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
           pdf: true
           diffbase: "${{ inputs.manual_diffbase }}"
+          extra-build-options: "${{ inputs.extra-build-options }}"
       # Render the document without diffs in other modes.
       - name: Render
         if: inputs.workflow != 'pr' && inputs.workflow != 'manual'
@@ -115,6 +121,7 @@ jobs:
           input-md: ${{ inputs.input }}
           output-basename: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}
           pdf: true
+          extra-build-options: "${{ inputs.extra-build-options }}"
 
       # Upload the PDF to the release in 'release' mode
       - name: Upload to release
