@@ -264,6 +264,11 @@ if [[ -d /extra_resources ]]; then
 fi
 cd "${BUILD_DIR}"
 
+readonly src_uidgid=$(stat -c "%u:%g" "${SOURCE_DIR}")
+
+# Directory to hold rendered images and other cache files.
+mkdir -p ".cache/"
+
 # Let git work
 git config --global --add safe.directory "${BUILD_DIR}"
 
@@ -711,20 +716,17 @@ analyze_latex_logs() {
 	fi
 }
 
-# Copy generated files (if any) back to the source directory so they can be cached and speed up future runs.
+# Copy file(s), assuming ownership of SOURCE_DIR.
+cp_chown() {
+	local src=$1
+	local dst=$2
+
+	rsync --archive --mkpath --chown="${src_uidgid}" "${src}" "${dst}"
+}
+
+# Sync generated files (if any) back to the source directory so they can be cached and speed up future runs.
 cache_generated_files() {
-	find . -type f \( \
-		-name "*.aux" -o \
-		-name "*.lof" -o \
-		-name "*.lot" -o \
-		-name "*.toc" -o \
-		-name "*.upa" -o \
-		-name "*.upb" -o \
-		-name "*.convert.pdf" -o \
-		-name "*.mermaid.pdf" -o \
-		-name "*.mermaid.svg" -o \
-		-name "*.aasvg.pdf" \
-	\) -exec cp --parents {} "${SOURCE_DIR}" \; 2>/dev/null
+	cp_chown .cache "${SOURCE_DIR}"
 }
 
 # Takes Markdown input and writes LaTeX output using pandoc.
@@ -744,11 +746,11 @@ do_latex() {
 		--standalone
 		--no-highlight
 		--template=${TEMPLATE_PDF}
-		--lua-filter=mermaid-filter.lua
-		--lua-filter=aasvg-filter.lua
-		--lua-filter=informative-sections.lua
+		--lua-filter=convert-diagrams.lua
+		--lua-filter=convert-aasvg.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=center-images.lua
+		--lua-filter=informative-sections.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
 		--lua-filter=landscape-pages.lua
@@ -786,6 +788,10 @@ do_latex() {
 	fi
 	local end=$(date +%s)
 	echo "Elapsed time: $(($end-$start)) seconds"
+
+	# Cache generated files now so they don't need to be
+	# re-rendered if the build later fails.
+	cache_generated_files
 }
 
 # Takes LaTeX input and writes PDF output and logs using the PDF engine of choice.
@@ -807,7 +813,7 @@ do_pdf() {
 	if [[ "${ignore_errors}" = "true" ]]; then
 		pdflatex="${pdflatex} -interaction=nonstopmode"
 	fi
-	latexmk "${input}" -pdflatex="${pdflatex}" -pdf -diagnostics > "${logfile}"
+	latexmk "${input}" -pdflatex="${pdflatex}" -pdf -diagnostics -output-directory=.cache/ > "${logfile}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "PDF output failed"
@@ -816,12 +822,11 @@ do_pdf() {
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "] ! " "${logfile}"
 
-	cache_generated_files
 	echo "Elapsed time: $(($end-$start)) seconds"
 	# Write any LaTeX errors to stderr.
 	>&2 grep -A 5 "! " "${logfile}"
 	if [[ ! "${FAILED}" = "true" || "${ignore_errors}" = "true" ]]; then
-		mv "${temp_pdf_file}" "${output}"
+		cp_chown ".cache/${temp_pdf_file}" "${output}" && rm ".cache/${temp_pdf_file}"
 	fi
 	if [[ ! "${FAILED}" = "true" ]]; then
 		analyze_latex_logs "${logfile}"
@@ -852,8 +857,8 @@ do_docx() {
 	cmd=(pandoc
 		--embed-resources
 		--standalone
-		--lua-filter=mermaid-filter.lua
-		--lua-filter=aasvg-filter.lua
+		--lua-filter=convert-diagrams.lua
+		--lua-filter=convert-aasvg.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
@@ -876,8 +881,6 @@ do_docx() {
 	else
 		echo "DOCX output generated to file: ${output}"
 	fi
-
-	cache_generated_files
 }
 
 # Takes Markdown input and writes HTML output using pandoc.
@@ -897,8 +900,8 @@ do_html() {
 		--standalone
 		--template=${TEMPLATE_HTML}
 		${HTML_STYLESHEET_ARGS}
-		--lua-filter=mermaid-filter.lua
-		--lua-filter=aasvg-filter.lua
+		--lua-filter=convert-diagrams.lua
+		--lua-filter=convert-aasvg.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
 		--lua-filter=landscape-pages.lua
@@ -932,7 +935,6 @@ do_html() {
 		FAILED=true
 		echo "HTML output failed"
 	else
-		cache_generated_files
 		echo "HTML output generated to file: ${output}"
 	fi
 }
@@ -945,7 +947,7 @@ if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" -o -n "${DIFFPDF_OUTPUT}" -o -n 
 	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TEX_FILE}" "${CROSSREF_TYPE}" "${EXTRA_PANDOC_OPTIONS}"
 fi
 if [ -n "${LATEX_OUTPUT}" ]; then
-	cp "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
+	cp_chown "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
 fi
 
 # Generate the PDF output
@@ -955,8 +957,7 @@ if [ -n "${PDF_OUTPUT}" ]; then
 
 	# Copy the logs, if requested.
 	if [ -n "${PDFLOG_OUTPUT}" ]; then
-		mkdir -p "$(dirname ${SOURCE_DIR}/${PDFLOG_OUTPUT})"
-		cp "${LATEX_LOG}" "${SOURCE_DIR}/${PDFLOG_OUTPUT}"
+		cp_chown "${LATEX_LOG}" "${SOURCE_DIR}/${PDFLOG_OUTPUT}"
 	fi
 fi
 
@@ -1000,8 +1001,7 @@ if [ -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
 		else
 			do_diff_tex_fixups "${TEMP_DIFF_TEX_FILE}"
 			if [ -n "${DIFFTEX_OUTPUT}" ]; then
-				mkdir -p "$(dirname ${SOURCE_DIR}/${DIFFTEX_OUTPUT})"
-				cp "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFTEX_OUTPUT}"
+				cp_chown "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFTEX_OUTPUT}"
 			fi
 		fi
 	fi
@@ -1028,6 +1028,9 @@ if [ "${PRE_DIFFING_FAILED}" == "true" ]; then
 	echo "Overall workflow failed"
 	exit 1
 fi
+
+# Do a final sync for any later generated files.
+cache_generated_files
 
 echo "Overall workflow succeeded"
 exit 0
