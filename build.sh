@@ -210,7 +210,6 @@ done
 
 # Mark globals set from the command line as readonly when we're done updating them.
 readonly RESOURCE_DIR
-readonly DO_GITVERSION
 readonly DO_GITSTATUS
 readonly VERSIONED_FILENAMES
 readonly PR_NUMBER
@@ -296,6 +295,27 @@ if ! browser=$(command -v "chromium-browser"); then
 		fi
 	fi
 fi
+
+# If any of the following values are provided in the YAML metadata block,
+# use the values from the metadata block instead of doing git-based versioning:
+# * version
+# * revision
+# * status
+# NOTE: While Pandoc allows the YAML metadata to be anywhere in the document,
+# we require it to be up at the top.
+# Use sed to strip the '...' at the end of the YAML metadata block, and yq to
+# parse it for fields of interest.
+yaml_version=$(sed '/\.\.\./Q' ${INPUT_FILE} | yq '.version')
+yaml_revision=$(sed '/\.\.\./Q' ${INPUT_FILE} | yq '.revision')
+yaml_status=$(sed '/\.\.\./Q' ${INPUT_FILE} | yq '.status')
+echo "YAML version: ${yaml_version}"
+echo "YAML revision: ${yaml_revision}"
+echo "YAML status: ${yaml_status}"
+if [[ "${yaml_version}" != "null" ]] || [[ "${yaml_revision}" != "null" ]] || [[ "${yaml_status}" != "null" ]]; then
+	echo "Disabling Git-based versioning because version information was found in the YAML metadata block."
+	DO_GITVERSION=false
+fi
+readonly DO_GITVERSION
 
 # figure out git version and revision if needed.
 EXTRA_PANDOC_OPTIONS=""
