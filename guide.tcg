@@ -174,7 +174,7 @@ Usage:
 You can specify a particular version of the docker container using the
 `DOCKER_IMAGE` environment variable:
 
-```sh
+```sh {.small}
 DOCKER_IMAGE=ghcr.io/trustedcomputinggroup/pandoc:0.6.5 ./docker_run --pdf=output.pdf ./input.md
 ```
 
@@ -782,7 +782,7 @@ reimplementation, the code uses the original
 
 Here is an example aasvg diagram:
 
-````md
+````md {.small}
 ```aasvg {caption="(v)TPM Key Management" #fig:tpm-key-management}
  .---------------------.    .----.
 |  Virtual Environment  |  | vTPM +--------------.-----------------.----------------.
@@ -1216,13 +1216,13 @@ To typeset complex equations with multi-character identifiers (such as the funct
 we recommend using the functions `\mathbf` (for functions) and `\mathit` (for variables). For constants, we recommend `\mathrm`.
 This avoids strange kerning issues where a string is treated as a product of single-character symbols, like in @eq:hmac-iso-bad-kerning:
 
-```md
-$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq \mathbf{H}((\bar{K} \oplus \mathrm{OPAD}) \parallel \mathbf{H}((\bar{K} \oplus \mathrm{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-iso}
+```md {.tiny}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq \mathbf{H}((\bar{K} \oplus \mathrm{OPAD}) \parallel ... \parallel \mathit{someTEXT})) $$ {#eq:hmac-iso}
 ```
 
-$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq \mathbf{H}((\bar{K} \oplus \mathrm{OPAD}) \parallel \mathbf{H}((\bar{K} \oplus \mathrm{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-iso}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) \coloneq \mathbf{H}((\bar{K} \oplus \mathrm{OPAD}) \parallel ... \parallel \mathit{someTEXT})) $$ {#eq:hmac-iso}
 
-```md
+```md {.tiny}
 $$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \parallel H((\bar{K} \oplus IPAD) \parallel someTEXT)) $$ {#eq:hmac-iso-bad-kerning}
 ```
 
@@ -1230,11 +1230,11 @@ $$ HMAC(K, someTEXT) \coloneq H((\bar{K} \oplus OPAD) \parallel H((\bar{K} \oplu
 
 You can use Unicode characters to make equations a little more readable in plain-text:
 
-```md
-$$ \mathbf{HMAC}(K, \mathit{someTEXT}) := H((\bar{K} ⊕ \mathrm{OPAD}) \parallel H((\bar{K} ⊕ \mathrm{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-unicode}
+```md {.tiny}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) := H((\bar{K} ⊕ \mathrm{OPAD}) \parallel ... \parallel \mathit{someTEXT})) $$ {#eq:hmac-unicode}
 ```
 
-$$ \mathbf{HMAC}(K, \mathit{someTEXT}) := \mathbf{H}((\bar{K} ⊕ \mathrm{OPAD}) \parallel \mathbf{H}((\bar{K} ⊕ \mathrm{IPAD}) \parallel \mathit{someTEXT})) $$ {#eq:hmac-unicode}
+$$ \mathbf{HMAC}(K, \mathit{someTEXT}) := \mathbf{H}((\bar{K} ⊕ \mathrm{OPAD}) \parallel ... \parallel \mathit{someTEXT})) $$ {#eq:hmac-unicode}
 
 # Advanced Features
 
@@ -1423,7 +1423,7 @@ Figures can be placed on landscape pages as in @fig:pdf-diagram or
 ![Wide Diagram](bigdiagram.pdf){#fig:pdf-diagram .landscape}
 ```
 
-````md
+````md {.small}
 ```mermaid {caption="Complicated Swimlane" #fig:landscape-swimlane width=3000 .landscape}
 sequenceDiagram
 Alice->>Bob: Hello

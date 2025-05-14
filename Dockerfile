@@ -130,7 +130,7 @@ RUN wget -O /usr/share/plantuml.jar https://github.com/plantuml/plantuml/release
 ENV PATH="/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux:${PATH}"
 
 # Packages that are needed despite not being used explicitly by the template:
-# bigfoot, catchfile, fancyvrb, footmisc, hardwrap, lineno, ltablex, latexmk, needspace, pgf, zref
+# bigfoot, catchfile, fancyvrb, footmisc, framed, hardwrap, lineno, ltablex, latexmk, needspace, pgf, zref
 # Package dependencies introduced by latexdiff:
 # changebar, datetime2, latexdiff, listings, marginnote, pdfcomment, soulpos
 RUN tlmgr update --self && tlmgr install \
@@ -159,6 +159,7 @@ RUN tlmgr update --self && tlmgr install \
     footmisc \
     footnotebackref \
     footnotehyper \
+    framed \
     fvextra \
     geometry \
     hardwrap \
