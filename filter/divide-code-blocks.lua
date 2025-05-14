@@ -14,11 +14,15 @@ code_classes =
 }
 
 function CodeBlock(block)
-    local class = block.classes[1]
-    local class_spec = code_classes[string.lower(class or "")]
-    if not class_spec then
-        class_spec = code_classes["normal"]
+    local class_spec = code_classes["normal"]
+    for _, class in ipairs(block.classes) do
+        local maybe_spec = code_classes[string.lower(class)]
+        if maybe_spec then
+            class_spec = maybe_spec
+            break
+        end
     end
+
     font = class_spec["font"]
     return {
         pandoc.RawInline('latex', string.format([[

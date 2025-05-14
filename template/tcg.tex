@@ -147,6 +147,14 @@ $if(logo)$
 \usepackage{rotating}
 $endif$
 
+%
+% This is where the Haskell library skylighting will inject its definitions for the Shaded and Highlighting environments.
+% See also: https://github.com/jgm/pandoc/issues/7923
+%
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+
 % https://github.com/Wandmalfarbe/pandoc-latex-template/issues/391
 % We don't care to scale images.
 \newcommand*\pandocbounded[1]{#1}
@@ -344,11 +352,13 @@ $endif$
 %
 % code block style
 %
-\definecolor{codeblock-background}{RGB}{240,244,255}
+\definecolor{codeblock-line}{RGB}{0,0,0}
+\definecolor{codeblock-background}{RGB}{255,255,255}
 \definecolor{codeblock-header}{RGB}{35,61,130}
 \usepackage{mdframed}
 \newmdenv[
-  linewidth=0pt,
+  linewidth=1pt,
+  linecolor=codeblock-line,
   backgroundcolor=codeblock-background,
   skipabove=5pt,
   nobreak=true]{customcodeblock}

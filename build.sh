@@ -749,6 +749,11 @@ cache_generated_files() {
 	cp_chown .cache "${SOURCE_DIR}"
 }
 
+# This theme was chosen because it is light (like the rest of the document) and
+# looks reasonably nice for both programming languages (e.g., C) as well as
+# diff markups.
+SYNTAX_HIGHLIGHT_STYLE=kate
+
 # Takes Markdown input and writes LaTeX output using pandoc.
 do_latex() {
 	local input=$1
@@ -764,7 +769,7 @@ do_latex() {
 	local start=$(date +%s)
 	local cmd=(pandoc
 		--standalone
-		--no-highlight
+		--highlight-style=${SYNTAX_HIGHLIGHT_STYLE}
 		--template=${TEMPLATE_PDF}
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=convert-aasvg.lua
