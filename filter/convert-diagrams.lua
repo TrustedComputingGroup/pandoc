@@ -1,5 +1,5 @@
--- Turn mermaid and plantuml code blocks into figures, retaining other classes
--- on the code block as classes on the figure.
+-- Turn aasvg, mermaid, or plantuml code blocks into figures, retaining
+-- other classes on the code block as classes on the figure.
 
 -- Patch the path to include the current script's directory.
 package.path = package.path .. ";" .. debug.getinfo(1).source:match("@?(.*/)") .. "?.lua"
@@ -71,6 +71,10 @@ function convertFigure(code, caption, attrs, extension, convert_command)
     return pandoc.Figure(img, caption, attrs)
 end
 
+function aasvgFigure(code, caption, attrs)
+    return convertFigure(code, caption, attrs, ".aasvg.svg", "aasvg --fill > %s 2>&1")
+end
+
 function mermaidFigure(code, caption, attrs)
     return convertFigure(code, caption, attrs, mermaid_extension[FORMAT] or mermaid_extension["pdf"],
         "mmdc --configFile /resources/filters/mermaid-config.json --puppeteerConfigFile ./.puppeteer.json --width 2000 --height 2000 --backgroundColor transparent --pdfFit --input - --output %s 2>&1")
@@ -86,7 +90,7 @@ function CodeBlock(el)
 
     local figure_classes = pandoc.List({})
     for i, class in ipairs(el.classes) do
-        if class == 'mermaid' or class == 'plantuml' then
+        if class == 'aasvg' or class == 'mermaid' or class == 'plantuml' then
             diagramType = class
         else
             figure_classes:insert(class)
@@ -97,6 +101,9 @@ function CodeBlock(el)
         local caption = {long = pandoc.Plain(pandoc.Str(el.attributes.caption))}
         local attrs = pandoc.Attr(el.identifier, figure_classes)
 
+        if diagramType == 'aasvg' then
+            return aasvgFigure(el.text, caption, attrs)
+        end
         if diagramType == 'mermaid' then
             return mermaidFigure(el.text, caption, attrs)
         end
