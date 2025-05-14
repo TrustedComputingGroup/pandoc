@@ -880,6 +880,7 @@ do_docx() {
 		echo "DOCX output failed"
 	else
 		echo "DOCX output generated to file: ${output}"
+		chown "${src_uidgid}" "${output}"
 	fi
 }
 
@@ -936,6 +937,7 @@ do_html() {
 		echo "HTML output failed"
 	else
 		echo "HTML output generated to file: ${output}"
+		chown "${src_uidgid}" "${output}"
 	fi
 }
 
