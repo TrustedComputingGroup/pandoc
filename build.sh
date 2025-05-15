@@ -771,6 +771,7 @@ do_latex() {
 		--standalone
 		--highlight-style=${SYNTAX_HIGHLIGHT_STYLE}
 		--template=${TEMPLATE_PDF}
+		--lua-filter=render-helpers.lua
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=convert-aasvg.lua
 		--lua-filter=convert-images.lua
@@ -882,6 +883,7 @@ do_docx() {
 	cmd=(pandoc
 		--embed-resources
 		--standalone
+		--lua-filter=render-helpers.lua
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=convert-aasvg.lua
 		--lua-filter=convert-images.lua
@@ -926,6 +928,7 @@ do_html() {
 		--standalone
 		--template=${TEMPLATE_HTML}
 		${HTML_STYLESHEET_ARGS}
+		--lua-filter=render-helpers.lua
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=convert-aasvg.lua
 		--lua-filter=parse-html.lua
