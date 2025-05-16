@@ -772,7 +772,6 @@ do_latex() {
 		--highlight-style=${SYNTAX_HIGHLIGHT_STYLE}
 		--template=${TEMPLATE_PDF}
 		--lua-filter=convert-diagrams.lua
-		--lua-filter=convert-aasvg.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=center-images.lua
 		--lua-filter=informative-sections.lua
@@ -883,7 +882,6 @@ do_docx() {
 		--embed-resources
 		--standalone
 		--lua-filter=convert-diagrams.lua
-		--lua-filter=convert-aasvg.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
@@ -927,7 +925,6 @@ do_html() {
 		--template=${TEMPLATE_HTML}
 		${HTML_STYLESHEET_ARGS}
 		--lua-filter=convert-diagrams.lua
-		--lua-filter=convert-aasvg.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
 		--lua-filter=landscape-pages.lua
