@@ -1460,16 +1460,6 @@ Carl->>Bob: Goodbye
 Bob->>Alice: Goodbye
 ```
 
-## Helper classes
-
-To wrap a word in backticks that render as normal text, you can use the following syntax:
-
-```md
-[These words]{.btick} are in backticks.
-```
-
-[These words]{.btick} are in backticks.
-
 ## TCG Storage Workgroup Customizations
 
 TCG Storage committee uses command `MethodsOrUID` to render Names of methods and UIDs in \MethodsOrUID{Courier New font}.

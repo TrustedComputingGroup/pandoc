@@ -771,7 +771,7 @@ do_latex() {
 		--standalone
 		--highlight-style=${SYNTAX_HIGHLIGHT_STYLE}
 		--template=${TEMPLATE_PDF}
-		--lua-filter=render-helpers.lua
+		--lua-filter=fix-latex-backticks.lua
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=center-images.lua
@@ -882,7 +882,6 @@ do_docx() {
 	cmd=(pandoc
 		--embed-resources
 		--standalone
-		--lua-filter=render-helpers.lua
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=parse-html.lua
@@ -926,7 +925,6 @@ do_html() {
 		--standalone
 		--template=${TEMPLATE_HTML}
 		${HTML_STYLESHEET_ARGS}
-		--lua-filter=render-helpers.lua
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
