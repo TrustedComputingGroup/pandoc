@@ -741,7 +741,7 @@ cp_chown() {
 	local src=$1
 	local dst=$2
 
-	rsync --archive --mkpath --chown="${src_uidgid}" "${src}" "${dst}"
+	rsync --archive --mkpath --delete --chown="${src_uidgid}" "${src}" "${dst}"
 }
 
 # Sync generated files (if any) back to the source directory so they can be cached and speed up future runs.
