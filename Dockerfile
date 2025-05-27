@@ -90,30 +90,23 @@ FROM ${RUNBASE} AS run
 
 ARG TARGETPLATFORM
 
-# Copy Typst
-COPY --from=build-typst /usr/local/cargo/bin/typst /usr/local/bin
-
-# These binaries are the second most costly part of the build.
-COPY --from=build-texlive /texlivebins /usr/local/texlive
-
-# Copy only the fonts we're using from the template.
-COPY --from=build-fonts \
-    /usr/share/fonts/truetype/msttcorefonts/Arial* \
-    /usr/share/fonts/truetype/msttcorefonts/Courier* \
-    /usr/share/fonts/TTF/ARIAL* \
-    /usr/share/fonts/OTF/Libertinus* \
-    /usr/share/fonts/truetype/noto/NotoSansMono* \
-    /usr/share/fonts/
-
-RUN apt update && apt install -y fontconfig && \
-    fc-cache -f
-
-RUN apt install -y \
+RUN apt update && apt install -y \
+    aasvg \
+    xorg \
+    xvfb \
+    dbus \
     bash \
     default-jre \
+    fontconfig \
+    imagemagick \
+    libnss3 \
+    librsvg2-bin \
+    libsecret-1-0 \
+    libxss1 \
     moreutils \
     nodejs \
     npm \
+    openbox \
     rsync \
     sed \
     software-properties-common \
@@ -136,6 +129,10 @@ RUN wget -O /usr/share/plantuml.jar https://github.com/plantuml/plantuml/release
 # Important: /usr/local/texlive/bin/ paths come before other paths. We want to use the texlive we
 # built above, not any that happen to have come along with our base image.
 ENV PATH="/usr/local/texlive/bin/aarch64-linux:/usr/local/texlive/bin/x86_64-linux:${PATH}"
+
+# Copy TeX Live and latexdiff
+COPY --from=build-texlive /texlivebins /usr/local/texlive
+COPY --from=build-latexdiff /usr/local/bin/latexdiff* /usr/local/bin
 
 # Packages that are needed despite not being used explicitly by the template:
 # bigfoot, catchfile, fancyvrb, footmisc, framed, hardwrap, lineno, ltablex, latexmk, needspace, pgf, zref
@@ -211,18 +208,6 @@ RUN tlmgr update --self && tlmgr install \
     xltabular \
     zref
 
-RUN apt install -y \
-    aasvg \
-    dbus \
-    imagemagick \
-    libnss3 \
-    librsvg2-bin \
-    libsecret-1-0 \
-    libxss1 \
-    openbox \
-    xorg \
-    xvfb
-
 ENV DRAWIO_RELEASE=26.0.16
 
 # TARGETPLATFORM is linux/arm64 or linux/amd64. The release for amd64 is called drawio-amd64-23.1.5.deb.
@@ -231,8 +216,19 @@ RUN export DRAWIO_DEB=drawio-${TARGETPLATFORM#linux/}-${DRAWIO_RELEASE}.deb && \
     dpkg -i ${DRAWIO_DEB} && \
     rm ${DRAWIO_DEB}
 
-# Grab latexdiff
-COPY --from=build-latexdiff /usr/local/bin/latexdiff* /usr/local/bin
+# Copy Typst
+COPY --from=build-typst /usr/local/cargo/bin/typst /usr/local/bin
+
+# Copy only the fonts we're using from the template.
+COPY --from=build-fonts \
+    /usr/share/fonts/truetype/msttcorefonts/Arial* \
+    /usr/share/fonts/truetype/msttcorefonts/Courier* \
+    /usr/share/fonts/TTF/ARIAL* \
+    /usr/share/fonts/OTF/Libertinus* \
+    /usr/share/fonts/truetype/noto/NotoSansMono* \
+    /usr/share/fonts/
+# Refresh the font cache.
+RUN fc-cache -f
 
 # https://stackoverflow.com/questions/52998331/imagemagick-security-policy-pdf-blocking-conversion
 RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
