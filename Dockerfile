@@ -1,8 +1,13 @@
 # syntax=docker/dockerfile:1.3-labs
+ARG RUSTBASE=rust:1.87.0-bookworm
 ARG BUILDBASE=debian:bookworm-20250203-slim
 ARG RUNBASE=pandoc/core:3.6-ubuntu
 
-FROM ${BUILDBASE} as build-texlive
+FROM ${RUSTBASE} AS build-typst
+
+RUN cargo install --version 0.13.1 typst-cli
+
+FROM ${BUILDBASE} AS build-texlive
 
 # Pass the correct platform to texlive build.
 ARG TARGETPLATFORM
@@ -42,7 +47,7 @@ RUN export ARCH=$(cat /ARCH) && \
 
 RUN mkdir -p /texlivebins && cp -r /usr/local/texlive/*/* /texlivebins
 
-FROM ${BUILDBASE} as build-fonts
+FROM ${BUILDBASE} AS build-fonts
 
 RUN apt update && apt install -y \
     wget \
@@ -66,7 +71,7 @@ RUN wget https://github.com/alerque/libertinus/releases/download/v7.040/Libertin
     mkdir -p /usr/share/fonts/OTF/ && \
     cp Libertinus-7.040/static/OTF/*.otf /usr/share/fonts/OTF/
 
-FROM ${BUILDBASE} as build-latexdiff
+FROM ${BUILDBASE} AS build-latexdiff
 
 RUN apt update && apt install -y \
     build-essential \
@@ -81,9 +86,12 @@ RUN wget https://github.com/ftilmann/latexdiff/releases/download/1.3.4/latexdiff
     make install-fast
 
 # Build's done. Copy what we need into the actual container for running.
-FROM ${RUNBASE} as run
+FROM ${RUNBASE} AS run
 
 ARG TARGETPLATFORM
+
+# Copy Typst
+COPY --from=build-typst /usr/local/cargo/bin/typst /usr/local/bin
 
 # These binaries are the second most costly part of the build.
 COPY --from=build-texlive /texlivebins /usr/local/texlive
