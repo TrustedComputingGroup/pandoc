@@ -19,6 +19,7 @@ PDF_ENGINE=xelatex
 CROSSREF_TYPE="iso"
 DO_AUTO_BACKMATTER="yes"
 TEMPLATE_PDF="tcg.tex"
+TEMPLATE_TYPST="tcg.typ"
 TEMPLATE_HTML=""
 HTML_STYLESHEET_ARGS=""
 CSL=""
@@ -163,7 +164,10 @@ while true; do
 		shift 2
 		;;
 	--template)
+		# TODO: If simultaneous LaTeX and Typst-based PDF generation is required,
+		# then we need separate --template_latex and --template_typst flags.
 		TEMPLATE_PDF="${2}"
+		TEMPLATE_TYPST="${2}"
 		shift 2
 		;;
 	--template_html)
@@ -842,6 +846,7 @@ do_typst() {
 	local cmd=(pandoc
 		--standalone
 		--highlight-style=${SYNTAX_HIGHLIGHT_STYLE}
+		--template=${TEMPLATE_TYPST}
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=parse-html.lua
