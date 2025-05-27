@@ -1,0 +1,230 @@
+---
+title: "TCG Markdown User's Guide (With Typst)"
+type: GUIDANCE
+...
+
+---
+
+# Disclaimers, Notices, and License Terms
+
+THIS SPECIFICATION IS PROVIDED “AS IS” WITH NO WARRANTIES WHATSOEVER, INCLUDING
+ANY WARRANTY OF MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR ANY PARTICULAR
+PURPOSE, OR ANY WARRANTY OTHERWISE ARISING OUT OF ANY PROPOSAL, SPECIFICATION OR
+SAMPLE.
+
+Without limitation, TCG disclaims all liability, including liability for
+infringement of any proprietary rights, relating to use of information in this
+specification and to the implementation of this specification, and TCG disclaims
+all liability for cost of procurement of substitute goods or services, lost
+profits, loss of use, loss of data or any incidental, consequential, direct,
+indirect, or special damages, whether under contract, tort, warranty or
+otherwise, arising in any way out of use or reliance upon this specification or
+any information herein. This document is copyrighted by Trusted Computing Group
+(TCG), and no license, express or implied, is granted herein other than as
+follows: You may not copy or reproduce the document or distribute it to others
+without written permission from TCG, except that you may freely do so for the
+purposes of (a) examining or implementing TCG specifications or (b) developing,
+testing, or promoting information technology standards and best practices, so
+long as you distribute the document with these disclaimers, notices, and license
+terms. Contact the Trusted Computing Group at www.trustedcomputinggroup.org for
+information on specification licensing through membership agreements. Any marks
+and brands contained herein are the property of their respective owners.
+
+---
+
+# Change History
+
+| Revision | Date       | Description   |
+| -------- | ---------- | ------------- |
+| 0.1/1    | 2023/12/17 | Initial draft |
+
+---
+
+\tableofcontents
+
+\listoftables
+
+\listoffigures
+
+---
+
+# Scope and Purpose
+
+This file is a pared-down copy of guide.tcg, with some material cut out. It is
+for testing the experimental Typst support.
+
+```sh
+DOCKER_IMAGE=working:latest ./docker_run --pdf=guide.pdf --typst=guide.typ --pdf_engine=typst --pdflog=guide.pdf.log ./guide_typst.tcg
+```
+
+::: Note :::
+This document demonstrates the TCG Pandoc toolset, which
+automatically adds "TCG Confidential" at the bottom of all drafts. This document
+is itself not TCG Confidential because it is a part of an open-source
+repository.
+::::::::::::
+
+The purpose of this guide is to demonstrate the usage of Markdown-plus-GitHub
+document-authorship flows for TCG workgroup usage.
+
+This document contains a boilerplate section at the front called Document Style.
+This section is typically included in TCG Specifications and isn't as relevant
+for Guidance and Reference documents. It's included here, mainly to demonstrate
+the usage of Markdown for specifications.
+
+# Getting Started
+
+## Creating a Repository {#sec:creating-a-repository}
+
+You can create a repository from scratch, or you can use
+[the template repository](https://github.com/TrustedComputingGroup/specification-example)
+to get started a little more quickly. There's a little green "Use this template"
+button in the top right.
+
+## GitHub Actions {#sec:basic-gh-action}
+
+After creating a repository in @sec:creating-a-repository, you may want to set up GitHub actions.
+
+Even if you used the template repository, please double-check this. As the tools
+are being actively developed, there is probably a newer version of the tools
+available for you!
+
+::: Note :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+Use `ghcr.io/trustedcomputinggroup/pandoc:latest` at your own risk. As the tools
+may change defaults from version to version, it is better to pin your doc to a
+particular version of the tools and periodically update the tools as needed.
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+A typical GitHub Markdown repo will:
+
+- Render the spec to PDF on pull requests and attach the PDF to the PR.
+- Render the spec to PDF and Word on releases and attach them to the release.
+- Cache the LaTex intermediate files to the GitHub actions cache. This allows
+  small changes to the doc to render faster.
+
+The recommended way to do this is to use the
+[reusable GitHub workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows)
+in
+[trustedcomputinggroup/pandoc](https://github.com/trustedcomputinggroup/pandoc)'s
+.github/workflows directory.
+
+Another project's `.github/workflows/render.yml` might look a bit like this:
+
+```yaml
+name: Render
+
+on:
+  workflow_call:
+    inputs:
+      workflow:
+        description: the workflow to run ('pr', 'push', 'release', 'manual')
+        required: true
+        type: string
+      revision:
+        description: version to render (default is default branch)
+        required: false
+        type: string
+      manual_diffbase:
+        description: diffbase for manual workflow
+        required: false
+        type: string
+
+jobs:
+  render:
+    uses: trustedcomputinggroup/pandoc/.github/workflows/render.yml@v0.15.4
+    with:
+      container-version: 0.15.4
+      input: spec.tcg
+      workflow: ${{ inputs.workflow }}
+      revision: ${{ inputs.revision }}
+      manual_diffbase: ${{ inputs.manual_diffbase }}
+```
+
+The reusable workflows provided by this repository support four different
+operations:
+
+Table: Reusable Workflow Operations {#tbl:reusable-workflows}
+
++----------------------+----------------------------+
+| Workflow             | Description                |
++======================+============================+
+| pr                   | Render the spec and diff   |
+|                      | the change in the PR,      |
+|                      | attaching both to the      |
+|                      | "Artifacts" tab of the PR. |
++----------------------+----------------------------+
+| push                 | Render the spec and attach |
+|                      | it to the action's         |
+|                      | "Artifacts" tab.           |
++----------------------+----------------------------+
+| release              | Render the spec and attach |
+|                      | it to the release.         |
++----------------------+----------------------------+
+| manual               | (Triggered manually)       |
+|                      | Render the spec at the     |
+|                      | revision `revision` with   |
+|                      | optional diffing to        |
+|                      | `manual_diffbase`.         |
++----------------------+----------------------------+
+
+## Local Testing
+
+These tools have a number of dependencies on LaTeX and LaTeX plugins. The
+simplest way to get a consistent build is to use the docker container that gets
+used for the GitHub actions.
+
+`docker_run` is provided as a convenience script for Linux systems.
+
+Usage:
+
+```sh
+./docker_run --pdf=output.pdf ./input.md
+```
+
+You can specify a particular version of the docker container using the
+`DOCKER_IMAGE` environment variable:
+
+```sh {.small}
+DOCKER_IMAGE=ghcr.io/trustedcomputinggroup/pandoc:0.6.5 ./docker_run --pdf=output.pdf ./input.md
+```
+
+If you're working on a change to these tools, it can be beneficial to build and
+tag a local version of the container and then run it locally:
+
+```sh
+docker build --tag working .
+
+DOCKER_IMAGE=working:latest ./docker_run --pdf=output.pdf ./input.md
+```
+
+## TCG Document Boilerplate
+
+There are several sections that are recommended for use in every TCG Markdown
+document.
+
+The trickiest section is the YAML front matter at the very top of the Markdown
+file. It looks like this:
+
+```md
+---
+title: "TCG Markdown User's Guide"
+type: GUIDANCE
+...
+```
+
+This section provides metadata to the tools.
+
+### Front Matter Variables {#sec:yaml-frontmatter}
+
+#### title
+
+REQUIRED.
+
+`title` is the title of the document.
+
+#### type
+
+REQUIRED.
+
+`type` should be one of: "SPECIFICATION", "GUIDANCE", or "REFERENCE". It appears
+on the title page on the left-hand side.

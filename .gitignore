@@ -1,4 +1,6 @@
 *.pdf
+*.typ
+*.log
 *.docx
 *.html
 .cache/*

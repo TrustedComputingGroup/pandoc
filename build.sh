@@ -9,6 +9,7 @@ DIFFTEX_OUTPUT=""
 DOCX_OUTPUT=""
 HTML_OUTPUT=""
 LATEX_OUTPUT=""
+TYPST_OUTPUT=""
 PDFLOG_OUTPUT=""
 VERSIONED_FILENAMES="no"
 PR_NUMBER=""
@@ -54,6 +55,7 @@ print_usage() {
 	echo "  --crossref=(iso|tcg): set cross-reference style."
 	echo "  --pdf=output: enable output of pdf and specify the output file name."
 	echo "  --latex=output: enable output of latex and specify the output file name."
+	echo "  --typst=output: enable output of typst and specify the output file name."
 	echo "  --html=output: enable output of html and specify the output file name."
 	echo "  --pdflog=output: enable logging of pdf engine and specify the output file name."
 	echo "  --diffpdf=output: enable output of pdf diff and specify the output file name (requires --diffbase)"
@@ -72,13 +74,13 @@ print_usage() {
 	echo "  --versioned_filenames: insert version information before the file extension for outputs"
 	echo "  --pr_number=number: mark the document as a pull-request draft if using Git versioning."
 	echo "  --pr_repo=url: provide the URL for the repository for pull-request drafts (has no effect if --PR_NUMBER is not passed)."
-	echo "  --pdf_engine=(xelatex|lualatex): use the given latex engine (default xelatex)"
+	echo "  --pdf_engine=(xelatex|lualatex|typst): use the given PDF engine (default xelatex)"
 	echo "  --noautobackmatter: don't automatically insert back matter at the end of the document."
 	echo "  --csl: provide a csl file via the command line (instead of in YAML metadata)."
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,pdflog:,pdf_engine:,template:,template_html:,html_stylesheet:,reference_doc:,docx:,crossref:,html:,resourcedir:,noautobackmatter,csl: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,typst:,pdflog:,pdf_engine:,template:,template_html:,html_stylesheet:,reference_doc:,docx:,crossref:,html:,resourcedir:,noautobackmatter,csl: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -126,6 +128,10 @@ while true; do
 		;;
 	--latex)
 		LATEX_OUTPUT="${2}"
+		shift 2
+		;;
+	--typst)
+		TYPST_OUTPUT="${2}"
 		shift 2
 		;;
 	--pdflog)
@@ -243,7 +249,7 @@ if [ -z "${PDF_OUTPUT}${LATEX_OUTPUT}${DOCX_OUTPUT}${HTML_OUTPUT}" ]; then
 fi
 
 # the pdf engine must be supported
-if [ "${PDF_ENGINE}" != "xelatex" -a "${PDF_ENGINE}" != "lualatex" ]; then
+if [ "${PDF_ENGINE}" != "xelatex" -a "${PDF_ENGINE}" != "lualatex" -a "${PDF_ENGINE}" != "typst" ]; then
 	>&2 echo "Unsupported PDF engine '${PDF_ENGINE}', expected one of: xelatex, lualatex"
 	print_usage
 	exit 1
@@ -504,6 +510,7 @@ echo "pdf: ${PDF_OUTPUT:-none} (engine: ${PDF_ENGINE})"
 echo "diff pdf: ${DIFFPDF_OUTPUT:-none} (engine: ${PDF_ENGINE})"
 echo "latex: ${latex_ouput:-none}"
 echo "diff latex: ${DIFFTEX_OUTPUT:-none} "
+echo "typst: ${TYPST_OUTPUT:-none}"
 echo "html: ${html_ouput:-none}"
 echo "resource dir: ${RESOURCE_DIR}"
 echo "build dir: ${BUILD_DIR}"
@@ -718,7 +725,7 @@ retry () {
 }
 
 # Greps the latex logs to surface relevant errors and warnings.
-analyze_latex_logs() {
+analyze_PDF_LOGs() {
 	local logfile=$1
 
 	local runcount=$(grep "Run number " "${logfile}" | tail -n 1 | cut -d ' ' -f 3)
@@ -819,8 +826,61 @@ do_latex() {
 	cache_generated_files
 }
 
+# Takes Markdown input and writes Typst output using pandoc.
+do_typst() {
+	local input=$1
+	local output=$2
+	local crossref=$3
+	local extra_pandoc_options=$4
+	mkdir -p "$(dirname ${output})"
+
+	# TODO: https://github.com/TrustedComputingGroup/pandoc/issues/164
+	# highlighting breaks diffing due to the \xxxxTok commands generated during highlighting being fragile.
+	# Citations: https://pandoc.org/MANUAL.html#other-relevant-metadata-fields
+	echo "Generating Typst Output"
+	local start=$(date +%s)
+	local cmd=(pandoc
+		--standalone
+		--highlight-style=${SYNTAX_HIGHLIGHT_STYLE}
+		--lua-filter=convert-diagrams.lua
+		--lua-filter=convert-images.lua
+		--lua-filter=parse-html.lua
+		--filter=pandoc-crossref
+		--citeproc
+		--resource-path=.:/resources:${RESOURCE_DIR}
+		--data-dir=/resources
+		--top-level-division=section
+		--variable=block-headings
+		--variable=numbersections
+		--metadata=date:"'${DATE}'"
+		--metadata=date-english:"'${DATE_ENGLISH}'"
+		--metadata=year:"'${YEAR}'"
+		--metadata=titlepage:true
+		--metadata=link-citations
+		--metadata=link-bibliography
+		--metadata=crossrefYaml:/resources/filters/pandoc-crossref-${crossref}.yaml
+		--metadata=colorlinks:true
+		--metadata=contact:admin@trustedcomputinggroup.org
+		--from=${FROM}
+		${extra_pandoc_options}
+		--to=typst
+		--output="'${output}'"
+		"'${input}'")
+	retry 5 "${cmd[@]}"
+	if [ $? -ne 0 ]; then
+		FAILED=true
+		echo "Typst output failed"
+	fi
+	local end=$(date +%s)
+	echo "Elapsed time: $(($end-$start)) seconds"
+
+	# Cache generated files now so they don't need to be
+	# re-rendered if the build later fails.
+	cache_generated_files
+}
+
 # Takes LaTeX input and writes PDF output and logs using the PDF engine of choice.
-do_pdf() {
+do_pdf_from_latex() {
 	local input=$1
 	local output=$2
 	mkdir -p "$(dirname ${output})"
@@ -854,8 +914,35 @@ do_pdf() {
 		cp_chown ".cache/${temp_pdf_file}" "${output}" && rm ".cache/${temp_pdf_file}"
 	fi
 	if [[ ! "${FAILED}" = "true" ]]; then
-		analyze_latex_logs "${logfile}"
+		analyze_PDF_LOGs "${logfile}"
 	fi
+}
+
+
+# Takes Typst input and writes PDF output and logs.
+do_pdf_from_typst() {
+	local input=$1
+	local output=$2
+	mkdir -p "$(dirname ${output})"
+
+	local logfile=$3
+	local temp_pdf_file="$(basename ${input%.*}).pdf"
+	rm -f ${temp_pdf_file}
+	local start=$(date +%s)
+	typst compile ${input} ${temp_pdf_file}
+	if [ $? -ne 0 ]; then
+		FAILED=true
+		echo "PDF output failed"
+	fi
+	if [[ ! "${FAILED}" = "true" || "${ignore_errors}" = "true" ]]; then
+		cp_chown "${temp_pdf_file}" "${output}"
+	fi
+	if [ $? -ne 0 ]; then
+		FAILED=true
+		echo "PDF output failed"
+	fi
+	local end=$(date +%s)
+	echo "Elapsed time: $(($end-$start)) seconds"
 }
 
 # Takes Markdown input and writes Docx output using pandoc.
@@ -964,11 +1051,20 @@ do_html() {
 	fi
 }
 
-# Generate .tex output if either latex or pdf formats were requested, because
-# the .tex is an intermediate requirement to the pdf.
+do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
+
+# Generate .typ output if either typst or pdf format (using the Typst engine) were requested.
+readonly TEMP_TYP_FILE="${BUILD_DIR}/${INPUT_FILE}.typ"
+if { [ -n "${TYPST_OUTPUT}" ] || { [ "${PDF_ENGINE}" == "typst" ] && [ -n "${PDF_OUTPUT}" ]; }; }; then
+	do_typst "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TYP_FILE}" "${CROSSREF_TYPE}" "${EXTRA_PANDOC_OPTIONS}"
+fi
+if [ -n "${TYPST_OUTPUT}" ]; then
+	cp_chown "${TEMP_TYP_FILE}" "${SOURCE_DIR}/${TYPST_OUTPUT}"
+fi
+
+# Generate .tex output if either latex or pdf formats (using a non-Typst engine) were requested.
 readonly TEMP_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.tex"
-if [ -n "${PDF_OUTPUT}" -o -n "${LATEX_OUTPUT}" -o -n "${DIFFPDF_OUTPUT}" -o -n "${DIFFTEX_OUTPUT}" ]; then
-	do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
+if { [ -n "${LATEX_OUTPUT}" ] || [ -n "${DIFFTEX_OUTPUT}" ] || { [ "${PDF_ENGINE}" != "typst" ] && { [ -n "${PDF_OUTPUT}" ] || [ -n "${DIFFPDF_OUTPUT}" ]; }; }; }; then
 	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TEX_FILE}" "${CROSSREF_TYPE}" "${EXTRA_PANDOC_OPTIONS}"
 fi
 if [ -n "${LATEX_OUTPUT}" ]; then
@@ -976,19 +1072,22 @@ if [ -n "${LATEX_OUTPUT}" ]; then
 fi
 
 # Generate the PDF output
-readonly LATEX_LOG="${BUILD_DIR}/latex.log"
+readonly PDF_LOG="${BUILD_DIR}/pdf.log"
 if [ -n "${PDF_OUTPUT}" ]; then
-	do_pdf "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${PDF_OUTPUT}" "${LATEX_LOG}" false
+	if [ "${PDF_ENGINE}" == "typst" ]; then
+		do_pdf_from_typst "${TEMP_TYP_FILE}" "${SOURCE_DIR}/${PDF_OUTPUT}" "${PDF_LOG}" false
+	else
+		do_pdf_from_latex "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${PDF_OUTPUT}" "${PDF_LOG}" false
+	fi
 
 	# Copy the logs, if requested.
 	if [ -n "${PDFLOG_OUTPUT}" ]; then
-		cp_chown "${LATEX_LOG}" "${SOURCE_DIR}/${PDFLOG_OUTPUT}"
+		cp_chown "${PDF_LOG}" "${SOURCE_DIR}/${PDFLOG_OUTPUT}"
 	fi
 fi
 
 # Generate the html output
 if [ -n "${HTML_OUTPUT}" ]; then
-	do_md_fixups "${BUILD_DIR}/${INPUT_FILE}" "html"
 	do_html "${BUILD_DIR}/${INPUT_FILE}" "${SOURCE_DIR}/${HTML_OUTPUT}" "${CROSSREF_TYPE}"
 fi
 
@@ -1036,7 +1135,7 @@ if [ "${FAILED}" != "true" -a -n "${DIFFPDF_OUTPUT}" ]; then
 	# We do our best to fix up the latexdiff result so that it compiles without errors.
 	# In some cases, there are still errors. It is better to produce an ugly diff-document than to
 	# produce no diff-document at all.
-	do_pdf "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${LATEX_LOG}" true
+	do_pdf_from_latex "${TEMP_DIFF_TEX_FILE}" "${SOURCE_DIR}/${DIFFPDF_OUTPUT}" "${PDF_LOG}" true
 
 	# Copy the logs, if requested. Note that this file gets the latexdiff and PDF driver output.
 	if [ -n "${DIFFPDFLOG_OUTPUT}" ]; then
@@ -1045,7 +1144,7 @@ if [ "${FAILED}" != "true" -a -n "${DIFFPDF_OUTPUT}" ]; then
 		cat "${TEMP_LATEXDIFF_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
 		echo "" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
 		echo "${PDF_ENGINE} output:" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
-		cat "${LATEX_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
+		cat "${PDF_LOG}" >> "${SOURCE_DIR}/${DIFFPDFLOG_OUTPUT}"
 	fi
 fi
 
