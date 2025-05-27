@@ -725,7 +725,7 @@ retry () {
 }
 
 # Greps the latex logs to surface relevant errors and warnings.
-analyze_PDF_LOGs() {
+analyze_pdf_logs() {
 	local logfile=$1
 
 	local runcount=$(grep "Run number " "${logfile}" | tail -n 1 | cut -d ' ' -f 3)
@@ -914,7 +914,7 @@ do_pdf_from_latex() {
 		cp_chown ".cache/${temp_pdf_file}" "${output}" && rm ".cache/${temp_pdf_file}"
 	fi
 	if [[ ! "${FAILED}" = "true" ]]; then
-		analyze_PDF_LOGs "${logfile}"
+		analyze_pdf_logs "${logfile}"
 	fi
 }
 
