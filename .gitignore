@@ -4,3 +4,6 @@
 *.docx
 *.html
 .cache/*
+
+# Do include files in the template directory
+!/template/*
