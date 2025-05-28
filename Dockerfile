@@ -225,7 +225,10 @@ COPY --from=build-fonts \
     /usr/share/fonts/truetype/msttcorefonts/Courier* \
     /usr/share/fonts/TTF/ARIAL* \
     /usr/share/fonts/OTF/Libertinus* \
-    /usr/share/fonts/truetype/noto/NotoSansMono* \
+    /usr/share/fonts/truetype/noto/NotoSans-* \
+    /usr/share/fonts/truetype/noto/NotoSansMono-* \
+    /usr/share/fonts/truetype/noto/NotoSansMath-* \
+    /usr/share/fonts/truetype/noto/NotoSerif-* \
     /usr/share/fonts/
 # Refresh the font cache.
 RUN fc-cache -f

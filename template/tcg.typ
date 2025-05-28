@@ -4,6 +4,41 @@
 //   pandoc -D typst
 //
 
+//
+// TODO: Title page
+//
+
+//
+// Font settings
+//
+// Normal text
+#set text(
+  font: "Noto Sans",
+  size: 9pt,
+)
+// Math
+#show math.equation: set text(
+  font: "Noto Sans Math",
+  size: 9pt,
+)
+// Code
+#show raw: set text(
+  font: "Noto Sans Mono",
+  size: 9pt,
+)
+// Headings
+#set heading(numbering: "1.1")
+#show heading: it => block()[
+  #let size = 16pt - it.depth*2pt
+  #if size < 10pt { size = 10pt }
+  #set align(center)
+  #set text(
+    font: "Noto Sans",
+    size: size,
+    weight: "semibold")
+  #it
+]
+
 #let horizontalrule = line(start: (25%,0%), end: (75%,0%))
 
 #show terms: it => {
@@ -22,88 +57,12 @@
 
 #show figure.where(
   kind: table
-): set figure.caption(position: $if(table-caption-position)$$table-caption-position$$else$top$endif$)
+): set figure.caption(position: bottom)
 
 #show figure.where(
   kind: image
-): set figure.caption(position: $if(figure-caption-position)$$figure-caption-position$$else$bottom$endif$)
+): set figure.caption(position: bottom)
 
-$if(template)$
-#import "$template$": conf
-$else$
-$template.typst()$
-$endif$
-
-$if(smart)$
-$else$
-#set smartquote(enabled: false)
-
-$endif$
-$for(header-includes)$
-$header-includes$
-
-$endfor$
-#show: doc => conf(
-$if(title)$
-  title: [$title$],
-$endif$
-$if(subtitle)$
-  subtitle: [$subtitle$],
-$endif$
-$if(author)$
-  authors: (
-$for(author)$
-$if(author.name)$
-    ( name: [$author.name$],
-      affiliation: [$author.affiliation$],
-      email: [$author.email$] ),
-$else$
-    ( name: [$author$],
-      affiliation: "",
-      email: "" ),
-$endif$
-$endfor$
-    ),
-$endif$
-$if(keywords)$
-  keywords: ($for(keywords)$$keyword$$sep$,$endfor$),
-$endif$
-$if(date)$
-  date: [$date$],
-$endif$
-$if(lang)$
-  lang: "$lang$",
-$endif$
-$if(region)$
-  region: "$region$",
-$endif$
-$if(abstract)$
-  abstract: [$abstract$],
-$endif$
-$if(margin)$
-  margin: ($for(margin/pairs)$$margin.key$: $margin.value$,$endfor$),
-$endif$
-$if(papersize)$
-  paper: "$papersize$",
-$endif$
-$if(mainfont)$
-  font: ("$mainfont$",),
-$endif$
-$if(fontsize)$
-  fontsize: $fontsize$,
-$endif$
-$if(section-numbering)$
-  sectionnumbering: "$section-numbering$",
-$endif$
-  pagenumbering: $if(page-numbering)$"$page-numbering$"$else$none$endif$,
-  cols: $if(columns)$$columns$$else$1$endif$,
-  doc,
-)
-
-$for(include-before)$
-$include-before$
-
-$endfor$
 $if(toc)$
 #outline(
   title: auto,
