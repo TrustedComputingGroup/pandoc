@@ -937,6 +937,7 @@ do_html() {
 		--top-level-division=section
 		--variable=block-headings
 		--variable=numbersections
+		--mathml
 		--metadata=titlepage:true
 		--metadata=titlepage-background:/resources/img/cover.png
 		--metadata=crossrefYaml:/resources/filters/pandoc-crossref-${crossref}.yaml
