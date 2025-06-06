@@ -838,6 +838,10 @@ do_typst() {
 	local extra_pandoc_options=$4
 	mkdir -p "$(dirname ${output})"
 
+	# Hack: Just copy the Typst template(s) to the current directory so that
+	# Typst can find them during compilation.
+	cp /resources/templates/*.typ .
+
 	# TODO: https://github.com/TrustedComputingGroup/pandoc/issues/164
 	# highlighting breaks diffing due to the \xxxxTok commands generated during highlighting being fragile.
 	# Citations: https://pandoc.org/MANUAL.html#other-relevant-metadata-fields
@@ -934,7 +938,7 @@ do_pdf_from_typst() {
 	local temp_pdf_file="$(basename ${input%.*}).pdf"
 	rm -f ${temp_pdf_file}
 	local start=$(date +%s)
-	typst compile ${input} ${temp_pdf_file}
+	typst compile --package-path="/resources/templates" ${input} ${temp_pdf_file}
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "PDF output failed"
