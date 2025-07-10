@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.3-labs
 ARG RUSTBASE=rust:1.87.0-bookworm
 ARG BUILDBASE=debian:bookworm-20250203-slim
-ARG RUNBASE=pandoc/core:3.6-ubuntu
+ARG RUNBASE=pandoc/core:3.7-ubuntu
 
 FROM ${RUSTBASE} AS build-typst
 
