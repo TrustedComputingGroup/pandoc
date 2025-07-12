@@ -603,6 +603,13 @@ do_md_fixups() {
 		fi
 	fi
 
+	# Configure lofItemTemplate/lotItemTemplate in the YAML frontmatter.
+	# These are placed first in the frontmatter so they won't override any existing settings.
+	# These can't be passed as --metadata since the dollar signs won't expand properly.
+	# These have no effect on PDF output.
+	sed -i '0,/^---$/{s//---\nlofItemTemplate: |\n  1. \$\$lt\$\$/}' "${input}"
+	sed -i '0,/^---$/{s//---\nlotItemTemplate: |\n  1. \$\$lt\$\$/}' "${input}"
+
 	# These don't render correctly:
 	#  - The lists are raw text and not clickable entries.
 	#  - The "List of Figures" and "List of Tables" headers show up in the toc
