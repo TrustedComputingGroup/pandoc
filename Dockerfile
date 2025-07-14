@@ -138,7 +138,7 @@ COPY --from=build-latexdiff /usr/local/bin/latexdiff* /usr/local/bin
 # bigfoot, catchfile, fancyvrb, footmisc, framed, hardwrap, lineno, ltablex, latexmk, needspace, pgf, zref
 # Package dependencies introduced by latexdiff:
 # changebar, datetime2, latexdiff, listings, marginnote, pdfcomment, soulpos
-RUN tlmgr update --self && tlmgr install \
+RUN tlmgr update --self --all && tlmgr install \
     accsupp \
     adjustbox \
     appendix \
