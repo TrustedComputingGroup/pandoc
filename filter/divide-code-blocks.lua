@@ -26,15 +26,11 @@ function CodeBlock(block)
     font = class_spec["font"]
     return {
         pandoc.RawInline('latex', string.format([[
-            \vskip 3pt
-            \begin{customcodeblock}
-            \textbf{\textit{\textcolor{codeblock-header}{\small \BeginDemarcated{Code}}}}
-            %s
+            \BeginCodeBlock{%s}
         ]], font)),
         block,
         pandoc.RawInline('latex', [[
-            \textbf{\textit{\textcolor{codeblock-header}{\small \EndDemarcated{Code}}}}
-            \end{customcodeblock}
+            \EndCodeBlock
         ]]),
     }
 end

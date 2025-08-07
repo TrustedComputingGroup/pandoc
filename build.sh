@@ -563,10 +563,6 @@ cat <<- EOF > ./.puppeteer.json
 }
 EOF
 
-if [ "${BLOCK_QUOTES_ARE_INFORMATIVE_TEXT}" == "yes" ]; then
-	EXTRA_PANDOC_OPTIONS+=" --lua-filter=informative-quote-blocks.lua"
-fi
-
 # Use sed to perform some basic fixups on certain input files.
 #
 # If the second argument is provided and is "html", strip out `\listoffigures` and `\listoftables`,
