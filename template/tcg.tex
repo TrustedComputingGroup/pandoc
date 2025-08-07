@@ -82,6 +82,18 @@
   \EndAccSupp{}%
 }
 
+\newcommand{\BeginCodeBlock}[1]{
+  \vskip 3pt
+  \begin{customcodeblock}
+  \textbf{\textit{\textcolor{codeblock-header}{\small \BeginDemarcated{Code}}}}
+  #1
+}
+
+\newcommand{\EndCodeBlock}{
+  \textbf{\textit{\textcolor{codeblock-header}{\small \EndDemarcated{Code}}}}
+  \end{customcodeblock}
+}
+
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \IfFileExists{microtype.sty}{% use microtype if available
