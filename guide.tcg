@@ -471,6 +471,84 @@ You can use `.normal`, `.small`, or `.tiny` (illustrated below):
 
 The default case is `.normal`.
 
+Code blocks will automatically break if they need to span across pages.
+
+```
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas imperdiet arcu
+non pretium hendrerit. Fusce nec est elit. Etiam at fringilla magna, a placerat
+dolor. In non commodo purus. Suspendisse potenti. Vestibulum ante ipsum primis
+in faucibus orci luctus et ultrices posuere cubilia curae; Aliquam erat volutpat.
+Phasellus tincidunt lorem sed ligula commodo, ut tincidunt velit lobortis.
+Suspendisse quis aliquet tellus, et lacinia augue. Suspendisse posuere imperdiet
+turpis, id aliquet quam lobortis quis. Sed augue lacus, dictum et posuere sed,
+ultricies eget mi. Nullam interdum et risus sollicitudin finibus. Sed luctus diam
+eget metus consequat blandit. Sed sem dui, fringilla ac nisl a, faucibus convallis
+nunc.
+
+Donec aliquet enim sed odio elementum, feugiat semper elit bibendum. Nam placerat
+posuere velit egestas rutrum. Curabitur iaculis orci turpis, et malesuada augue
+feugiat vel. Vivamus ut convallis nulla. Quisque vehicula, nisi eu maximus luctus,
+enim massa molestie nisl, sed tincidunt sapien nibh non risus. Etiam maximus nisi
+eget erat bibendum auctor. Suspendisse faucibus placerat tellus, vitae malesuada
+est tempus sit amet. Mauris pulvinar mollis lectus, nec rhoncus felis. Nullam
+venenatis feugiat tristique. Vestibulum tempus dolor vel tortor consectetur
+imperdiet. Nam placerat, erat ut venenatis vulputate, nibh purus pulvinar neque,
+et sollicitudin ipsum dui non ipsum. Nullam a sapien erat. Proin fermentum, arcu
+et vestibulum rutrum, dolor urna consectetur velit, ac commodo ex ex et nisi.
+Aliquam tincidunt turpis vel porttitor convallis.
+
+Fusce eu enim enim. Donec at arcu venenatis, suscipit nulla eget, luctus nulla.
+Cras semper dolor sed purus mollis tristique. Donec vitae nisl id tortor dapibus
+posuere. Pellentesque ut orci leo. Donec a imperdiet purus. Phasellus vel lorem
+vel augue porta eleifend viverra ut leo. Nam vel neque fermentum, finibus ante at,
+venenatis arcu. Ut tincidunt placerat mi sed suscipit. Duis ut justo et mi gravida
+volutpat ut vel metus. Morbi non dapibus dui. Donec pulvinar, justo at ultricies
+consectetur, ante erat accumsan justo, a convallis massa tortor at nisl. Curabitur
+non elit ac elit ultricies lacinia. Vivamus viverra quam felis, sed auctor nisl
+commodo vel. Pellentesque habitant morbi tristique senectus et netus et malesuada
+fames ac turpis egestas.
+
+Mauris in sapien blandit, accumsan nibh vel, ornare erat. Proin condimentum
+fringilla nunc ut posuere. Donec laoreet magna sed felis volutpat finibus. Morbi
+sagittis neque eget lectus vestibulum vestibulum. Nullam eu sapien tempus, gravida
+ligula mattis, auctor libero. Curabitur semper, quam non convallis cursus, turpis
+sapien efficitur justo, rutrum ultricies nisi metus porttitor velit. Sed elementum
+libero hendrerit, scelerisque velit vitae, fermentum urna. Duis mollis enim vitae
+lectus tincidunt, vitae eleifend ex volutpat. Quisque eu libero quis augue
+consectetur pulvinar in posuere mi. Maecenas fermentum commodo tortor, sed elementum
+erat auctor et. Vivamus quam orci, interdum at porttitor quis, mattis quis mi.
+Vestibulum rhoncus condimentum velit at rhoncus. Aliquam sit amet ligula tellus.
+
+Nunc suscipit, velit eget facilisis scelerisque, erat tortor fermentum ante, et
+viverra velit dui eu elit. Vestibulum elementum rutrum felis. Morbi facilisis, quam
+eu pellentesque pulvinar, arcu est euismod nisi, ut ultricies erat lacus quis nulla.
+Vestibulum aliquam, purus nec tempor dictum, lorem ligula congue dui, non sagittis
+purus purus vitae mi. Quisque vitae eros non felis euismod volutpat sit amet id nulla.
+Maecenas ut est mi. In diam lacus, tempus non arcu in, interdum pulvinar lacus. Cras
+vitae tortor nec mi rhoncus malesuada efficitur id nunc. Ut mollis semper nisi, in
+tempor massa hendrerit ac. Mauris pretium nisl risus, a commodo ante aliquet eget.
+Nullam condimentum lectus quis erat porta, a tincidunt augue placerat. Etiam leo
+tortor, facilisis eu gravida sed, malesuada in tortor. In hac habitasse platea
+dictumst. Nulla lacinia velit vitae odio laoreet, nec dictum magna tincidunt. Aliquam
+at purus elit. Fusce luctus a magna in pulvinar.
+
+Vivamus pellentesque placerat dui sed varius. Integer a tincidunt eros. Nam lacus
+libero, fermentum sit amet nulla vel, tempus dapibus augue. Nam semper mauris vel
+pretium posuere. Suspendisse nec dolor eget lacus tincidunt tristique. Mauris
+consectetur malesuada dolor non aliquam. Sed ornare velit mi, nec tempus velit
+efficitur vel. Fusce at enim sed neque cursus fringilla id quis urna. Interdum et
+malesuada fames ac ante ipsum primis in faucibus.
+
+In hac habitasse platea dictumst. Pellentesque euismod arcu mauris. Praesent
+placerat cursus enim. Mauris luctus elementum turpis, sit amet finibus sapien
+sollicitudin sit amet. Proin eu neque nulla. Duis posuere viverra mollis. Donec
+fringilla molestie euismod. Phasellus dignissim turpis erat, id sodales magna
+vulputate et. Ut cursus vulputate sapien, et finibus nunc viverra at. Praesent
+ac sapien nisi. Pellentesque a posuere lacus. Suspendisse potenti. Aliquam semper
+auctor lorem, ultricies vehicula orci aliquam sed. Praesent interdum leo metus,
+ut rhoncus sem consequat a.
+```
+
 ## Footnotes {#sec:footnotes}
 
 ```md
