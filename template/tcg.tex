@@ -84,14 +84,14 @@
 
 \newcommand{\BeginCodeBlock}[1]{
   \vskip 3pt
-  \begin{customcodeblock}
+  \begingroup
   \textbf{\textit{\textcolor{codeblock-header}{\small \BeginDemarcated{Code}}}}
   #1
 }
 
 \newcommand{\EndCodeBlock}{
   \textbf{\textit{\textcolor{codeblock-header}{\small \EndDemarcated{Code}}}}
-  \end{customcodeblock}
+  \endgroup
 }
 
 % Use upquote if available, for straight quotes in verbatim environments
@@ -369,16 +369,26 @@ $endif$
 \definecolor{codeblock-header}{RGB}{35,61,130}
 \usepackage{mdframed}
 \newmdenv[
-  linewidth=1pt,
-  linecolor=codeblock-line,
-  backgroundcolor=codeblock-background,
-  skipabove=5pt,
-  nobreak=true]{customcodeblock}
-\newmdenv[
   linewidth=0pt,
   backgroundcolor=informative-background,
   skipabove=5pt,
   nobreak=true]{informative}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable, skins}
+\tcbset{enhanced}
+
+\renewenvironment{Shaded}{
+  \begin{tcolorbox}[
+    breakable,
+    arc=0pt,
+    boxrule=1pt,
+    colback=codeblock-background,
+    colframe=codeblock-line,
+  ]
+}{
+  \end{tcolorbox}
+}
 
 \newcommand{\hlineifmdframed}{}
 \newcommand{\BeginInformative}[1]{

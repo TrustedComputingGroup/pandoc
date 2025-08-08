@@ -23,6 +23,11 @@ function CodeBlock(block)
         end
     end
 
+    -- Without any classes, code blocks are rendered with \verbatim instead of
+    -- the Shaded environment. Forcing the addition of a class ensures that
+    -- all code blocks are rendered consistently.
+    table.insert(block.classes, "_placeholder")
+
     font = class_spec["font"]
     return {
         pandoc.RawInline('latex', string.format([[

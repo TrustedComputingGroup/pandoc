@@ -187,6 +187,7 @@ RUN tlmgr update --self --all && tlmgr install \
     multirow \
     needspace \
     newunicodechar \
+    pdfcol \ 
     pagecolor \
     pdfcomment \
     pdflscape \
@@ -196,8 +197,10 @@ RUN tlmgr update --self --all && tlmgr install \
     selnolig \
     setspace \
     soulpos \
+    tcolorbox \
     textpos \
     titling \
+    tikzfill \
     ulem \
     unicode-math \
     upquote \
