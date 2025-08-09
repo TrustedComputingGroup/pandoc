@@ -9,6 +9,7 @@ DIFFTEX_OUTPUT=""
 DOCX_OUTPUT=""
 HTML_OUTPUT=""
 LATEX_OUTPUT=""
+LATEX_OVERRIDE=""
 TYPST_OUTPUT=""
 PDFLOG_OUTPUT=""
 VERSIONED_FILENAMES="no"
@@ -81,7 +82,7 @@ print_usage() {
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,typst:,pdflog:,pdf_engine:,template:,template_html:,html_stylesheet:,reference_doc:,docx:,crossref:,html:,resourcedir:,noautobackmatter,csl: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,latex_override:,typst:,pdflog:,pdf_engine:,template:,template_html:,html_stylesheet:,reference_doc:,docx:,crossref:,html:,resourcedir:,noautobackmatter,csl: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -129,6 +130,10 @@ while true; do
 		;;
 	--latex)
 		LATEX_OUTPUT="${2}"
+		shift 2
+		;;
+	--latex_override)
+		LATEX_OVERRIDE="${2}"
 		shift 2
 		;;
 	--typst)
@@ -1077,11 +1082,18 @@ fi
 
 # Generate .tex output if either latex or pdf formats (using a non-Typst engine) were requested.
 readonly TEMP_TEX_FILE="${BUILD_DIR}/${INPUT_FILE}.tex"
-if { [ -n "${LATEX_OUTPUT}" ] || [ -n "${DIFFTEX_OUTPUT}" ] || { [ "${PDF_ENGINE}" != "typst" ] && { [ -n "${PDF_OUTPUT}" ] || [ -n "${DIFFPDF_OUTPUT}" ]; }; }; }; then
-	do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TEX_FILE}" "${CROSSREF_TYPE}" "${EXTRA_PANDOC_OPTIONS}"
-fi
-if [ -n "${LATEX_OUTPUT}" ]; then
-	cp_chown "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
+
+if [ -n "${LATEX_OVERRIDE}" ]; then
+	echo "Using latex override: ${BUILD_DIR}/${LATEX_OVERRIDE}"
+	cp "${BUILD_DIR}/${LATEX_OVERRIDE}" "${TEMP_TEX_FILE}"
+else
+	echo "Generating latex from ${BUILD_DIR}/${INPUT_FILE}"
+	if { [ -n "${LATEX_OUTPUT}" ] || [ -n "${DIFFTEX_OUTPUT}" ] || { [ "${PDF_ENGINE}" != "typst" ] && { [ -n "${PDF_OUTPUT}" ] || [ -n "${DIFFPDF_OUTPUT}" ]; }; }; }; then
+		do_latex "${BUILD_DIR}/${INPUT_FILE}" "${TEMP_TEX_FILE}" "${CROSSREF_TYPE}" "${EXTRA_PANDOC_OPTIONS}"
+	fi
+	if [ -n "${LATEX_OUTPUT}" ]; then
+		cp_chown "${TEMP_TEX_FILE}" "${SOURCE_DIR}/${LATEX_OUTPUT}"
+	fi
 fi
 
 # Generate the PDF output
