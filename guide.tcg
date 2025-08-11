@@ -428,15 +428,42 @@ The result looks like this:
 int i = 42;
 ```
 
-You can customize the font size, in case code runs off the edge of the page and can't be word-wrapped:
+Long lines of text will automatically break on the following characters: spaces, periods, forward slashes, and colons.
 
-````md
+The following code block contains a long string that cannot fit on a single line.
+
+````md {.tiny}
+```
+{
+  "Foo": {
+    "Bar": {
+      "Baz": "/some/very/long/string/that/has/no/spaces/e.g./because/it's/a/very/long/and/complicated/file/path",
+    }
+  }
+}
+```
+````
+
+The above code renders like so:
+
+```
+{
+  "Foo": {
+    "Bar": {
+      "Baz": "/some/very/long/string/that/has/no/spaces/e.g./because/it's/a/very/long/and/complicated/file/path",
+    }
+  }
+}
+```
+
+To cut down on word-wrapping, the font size can be reduced by adding `{.small}`:
+
+````md {.tiny}
 ``` {.small}
 {
   "Foo": {
     "Bar": {
-      "Baz":
-        "/some/very/long/string/that/can't/be/word/wrapped/e.g./because/it's/encoded/in/json",
+      "Baz": "/some/very/long/string/that/has/no/spaces/e.g./because/it's/a/very/long/and/complicated/file/path",
     }
   }
 }
@@ -449,8 +476,7 @@ The result looks like this:
 {
   "Foo": {
     "Bar": {
-      "Baz":
-        "/some/very/long/string/that/can't/be/word/wrapped/e.g./because/it's/encoded/in/json",
+      "Baz": "/some/very/long/string/that/has/no/spaces/e.g./because/it's/a/very/long/and/complicated/file/path",
     }
   }
 }
@@ -462,8 +488,7 @@ You can use `.normal`, `.small`, or `.tiny` (illustrated below):
 {
   "Foo": {
     "Bar": {
-      "Baz":
-        "/some/very/long/string/that/can't/be/word/wrapped/e.g./because/it's/encoded/in/json",
+      "Baz": "/some/very/long/string/that/has/no/spaces/e.g./because/it's/a/very/long/and/complicated/file/path",
     }
   }
 }
@@ -523,14 +548,14 @@ Nunc suscipit, velit eget facilisis scelerisque, erat tortor fermentum ante, et
 viverra velit dui eu elit. Vestibulum elementum rutrum felis. Morbi facilisis, quam
 eu pellentesque pulvinar, arcu est euismod nisi, ut ultricies erat lacus quis nulla.
 Vestibulum aliquam, purus nec tempor dictum, lorem ligula congue dui, non sagittis
-purus purus vitae mi. Quisque vitae eros non felis euismod volutpat sit amet id nulla.
-Maecenas ut est mi. In diam lacus, tempus non arcu in, interdum pulvinar lacus. Cras
-vitae tortor nec mi rhoncus malesuada efficitur id nunc. Ut mollis semper nisi, in
-tempor massa hendrerit ac. Mauris pretium nisl risus, a commodo ante aliquet eget.
-Nullam condimentum lectus quis erat porta, a tincidunt augue placerat. Etiam leo
-tortor, facilisis eu gravida sed, malesuada in tortor. In hac habitasse platea
-dictumst. Nulla lacinia velit vitae odio laoreet, nec dictum magna tincidunt. Aliquam
-at purus elit. Fusce luctus a magna in pulvinar.
+purus purus vitae mi. Quisque vitae eros non felis euismod volutpat sit amet id
+nulla. Maecenas ut est mi. In diam lacus, tempus non arcu in, interdum pulvinar
+lacus. Cras vitae tortor nec mi rhoncus malesuada efficitur id nunc. Ut mollis
+semper nisi, in tempor massa hendrerit ac. Mauris pretium nisl risus, a commodo ante
+aliquet eget. Nullam condimentum lectus quis erat porta, a tincidunt augue placerat.
+Etiam leo tortor, facilisis eu gravida sed, malesuada in tortor. In hac habitasse
+platea dictumst. Nulla lacinia velit vitae odio laoreet, nec dictum magna tincidunt.
+Aliquam at purus elit. Fusce luctus a magna in pulvinar.
 
 Vivamus pellentesque placerat dui sed varius. Integer a tincidunt eros. Nam lacus
 libero, fermentum sit amet nulla vel, tempus dapibus augue. Nam semper mauris vel
@@ -552,8 +577,8 @@ ut rhoncus sem consequat a.
 ## Footnotes {#sec:footnotes}
 
 ```md
-You can use a footnote[^footnote-example] to provide additional details about something
-out of the way, at the bottom of the page.
+You can use a footnote[^footnote-example] to provide additional details about
+something out of the way, at the bottom of the page.
 
 [^footnote-example]: See @sec:footnotes for more information about footnotes.
 ```
