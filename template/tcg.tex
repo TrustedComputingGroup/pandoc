@@ -82,27 +82,6 @@
   \EndAccSupp{}%
 }
 
-\newcommand{\BeginCodeBlock}[1]{
-  \vskip 3pt
-  \begingroup
-
-  % The `\usepackage[none]{hyphenat}` invocation above disables hyphenation everywhere,
-  % and breaks word-wrapping on non-space characters within code blocks. This means that
-  % long symbol names without spaces will bleed off the edge of the page. Here we are
-  % re-enabling hyphenation behavior for code blocks to get non-space word-wrapping to
-  % function.
-  \hyphenpenalty=50
-  \exhyphenpenalty=50
-
-  \textbf{\textit{\textcolor{codeblock-header}{\small \BeginDemarcated{Code}}}}
-  #1
-}
-
-\newcommand{\EndCodeBlock}{
-  \textbf{\textit{\textcolor{codeblock-header}{\small \EndDemarcated{Code}}}}
-  \endgroup
-}
-
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \IfFileExists{microtype.sty}{% use microtype if available
@@ -174,6 +153,67 @@ $endif$
 %
 $if(highlighting-macros)$
 $highlighting-macros$
+
+% The following directives only apply to specs that use code blocks
+% and so are gated behind `if(highlighting-macros)`. In particular,
+% `\renewenvironment{Shaded}` fails to compile if the spec does not
+% include a code block, because in such cases Pandoc does not inject
+% the relevant definitions via `highlighting-macros`.
+
+%
+% code block style
+%
+\definecolor{codeblock-line}{RGB}{0,0,0}
+\definecolor{codeblock-background}{RGB}{255,255,255}
+\definecolor{codeblock-header}{RGB}{35,61,130}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable, skins}
+\tcbset{enhanced}
+
+% Draws a page-breakable black box around the code block.
+\renewenvironment{Shaded}{
+  \begin{tcolorbox}[
+    breakable,
+    arc=0pt,
+    boxrule=1pt,
+    colback=codeblock-background,
+    colframe=codeblock-line,
+  ]
+}{
+  \end{tcolorbox}
+}
+
+% Allows text in the code block to break on spaces, periods, slashes, and colons.
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+  commandchars=\\\{\},
+  breaklines,
+  breaknonspaceingroup,
+  breakafter=./:
+}
+
+\newcommand{\BeginCodeBlock}[1]{
+  \vskip 3pt
+  \begingroup
+
+  % The `\usepackage[none]{hyphenat}` invocation above disables hyphenation everywhere,
+  % and breaks word-wrapping on non-space characters within code blocks. This means that
+  % long symbol names without spaces will bleed off the edge of the page. Here we are
+  % re-enabling hyphenation behavior for code blocks to get non-space word-wrapping to
+  % function.
+  \hyphenpenalty=50
+  \exhyphenpenalty=50
+
+  \textbf{\textit{\textcolor{codeblock-header}{\small \BeginDemarcated{Code}}}}
+  #1
+}
+
+\newcommand{\EndCodeBlock}{
+  \textbf{\textit{\textcolor{codeblock-header}{\small \EndDemarcated{Code}}}}
+  \endgroup
+}
+
 $endif$
 
 % https://github.com/Wandmalfarbe/pandoc-latex-template/issues/391
@@ -370,42 +410,12 @@ $endif$
 \definecolor{table-section-background}{RGB}{224, 224, 224}
 \definecolor{table-section-foreground}{RGB}{10, 10, 10}
 
-%
-% code block style
-%
-\definecolor{codeblock-line}{RGB}{0,0,0}
-\definecolor{codeblock-background}{RGB}{255,255,255}
-\definecolor{codeblock-header}{RGB}{35,61,130}
 \usepackage{mdframed}
 \newmdenv[
   linewidth=0pt,
   backgroundcolor=informative-background,
   skipabove=5pt,
   nobreak=true]{informative}
-
-\usepackage{tcolorbox}
-\tcbuselibrary{breakable, skins}
-\tcbset{enhanced}
-
-\renewenvironment{Shaded}{
-  \begin{tcolorbox}[
-    breakable,
-    arc=0pt,
-    boxrule=1pt,
-    colback=codeblock-background,
-    colframe=codeblock-line,
-  ]
-}{
-  \end{tcolorbox}
-}
-
-\usepackage{fvextra}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{
-  commandchars=\\\{\},
-  breaklines,
-  breaknonspaceingroup,
-  breakafter=./:
-}
 
 \newcommand{\hlineifmdframed}{}
 \newcommand{\BeginInformative}[1]{
