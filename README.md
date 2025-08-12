@@ -22,7 +22,7 @@ The interesting dependencies are:
 
 ## How to Use with GitHub Specs
 
-See the [Guide](guide.md) (In PDF form on the [Releases](https://github.com/TrustedComputingGroup/pandoc/releases) page).
+See the [Guide](guide.tcg) (In PDF form on the [Releases](https://github.com/TrustedComputingGroup/pandoc/releases) page).
 A template repository is available at https://github.com/trustedcomputinggroup/specification-example.
 
 ## How to Run Locally
@@ -92,7 +92,6 @@ You can then run the following:
 
 HTML support is experimental. Known issues:
 
-- `\listoffigures` and `\listoftables` are not supported, as they render without clickable links.
 - Mermaid figures currently render as fixed-width.
 
 To render a document to HTML:
