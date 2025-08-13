@@ -73,17 +73,17 @@ Suppose you have a directory `my_resource_dir` with the following contents:
 - `reference_style.csl`
 - `template.tex`
 
-`template.tex` and any input files can refer to files in `resource_dir`, for example
-by using `\includegraphics{extra/my_resource_dir/img/cover_page_background.png}`.
+`template.tex` and any input files can refer to files in `my_resource_dir`, for example
+by using `\includegraphics{img/cover_page_background.png}`.
 
 You can then run the following:
 
 ```sh
 ./docker_run \
-  --extra_resource_dir path/to/my_resource_dir \
-  --template extra/my_resource_dir/template.tex \
-  --reference_doc extra/my_resource_dir/reference_doc.docx \
-  --csl extra/my_resource_dir/reference_style.csl \
+  --resourcedir my_resource_dir \
+  --template /my_resource_dir/template.tex" \
+  --reference_doc /my_resource_dir/reference_doc.docx" \
+  --csl /my_resource_dir/reference_style.csl \
   --pdf output.pdf \
   input.tcg
 ```
@@ -98,10 +98,10 @@ To render a document to HTML:
 
 ```sh
 ./docker_run \
-  --extra_resource_dir path/to/my_resource_dir \
-  --template_html extra/my_resource_dir/html.template \
-  --html_stylesheet extra/my_resource_dir/style1.css \
-  --html_stylesheet extra/my_resource_dir/style2.css \
+  --resourcedir my_resource_dir \
+  --template_html /my_resource_dir/html.template \
+  --html_stylesheet /my_resource_dir/style1.css \
+  --html_stylesheet /my_resource_dir/style2.css \
   --html output.html \
   input.tcg
 ```
