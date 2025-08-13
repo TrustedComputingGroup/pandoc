@@ -42,8 +42,6 @@ print_usage() {
 	echo "Usage:"
 	echo "$(basename "${0}") [options] [input-file]"
 	echo
-	echo "If a volume is mapped to /extra_resources/{dir}, input files may reference its contents as extra/{dir}."
-	echo
 	echo "Arguments:"
 	echo "  This script takes a single markdown file input for rendering to docx/pdf/LaTeX."
 	echo
@@ -272,10 +270,6 @@ mkdir -p "${BUILD_DIR}"
 # This will allow us to manipulate the Git state without side effects
 # to callers of docker_run.
 cp -r . "${BUILD_DIR}"
-if [[ -d /extra_resources ]]; then
-	mkdir -p "${BUILD_DIR}/extra"
-    cp -r /extra_resources/* "${BUILD_DIR}/extra"
-fi
 cd "${BUILD_DIR}"
 
 readonly src_uidgid=$(stat -c "%u:%g" "${SOURCE_DIR}")
@@ -512,6 +506,8 @@ readonly LATEX_OUTPUT
 readonly PDFLOG_OUTPUT
 readonly DIFFPDFLOG_OUTPUT
 
+readonly RESOURCE_PATH=".:/resources:${RESOURCE_DIR}"
+
 echo "Starting Build with"
 echo "file: ${INPUT_FILE}"
 echo "docx: ${DOCX_OUTPUT:-none}"
@@ -521,7 +517,7 @@ echo "latex: ${latex_ouput:-none}"
 echo "diff latex: ${DIFFTEX_OUTPUT:-none} "
 echo "typst: ${TYPST_OUTPUT:-none}"
 echo "html: ${html_ouput:-none}"
-echo "resource dir: ${RESOURCE_DIR}"
+echo "resource path: ${RESOURCE_PATH}"
 echo "build dir: ${BUILD_DIR}"
 echo "browser: ${browser}"
 echo "use git version: ${DO_GITVERSION}"
@@ -803,7 +799,7 @@ do_latex() {
 		--citeproc
 		--lua-filter=tabularx.lua
 		--lua-filter=divide-code-blocks.lua
-		--resource-path=.:/resources:${RESOURCE_DIR}
+		--resource-path=${RESOURCE_PATH}
 		--data-dir=/resources
 		--top-level-division=section
 		--variable=block-headings
@@ -864,7 +860,7 @@ do_typst() {
 		--lua-filter=parse-html.lua
 		--filter=pandoc-crossref
 		--citeproc
-		--resource-path=.:/resources:${RESOURCE_DIR}
+		--resource-path=${RESOURCE_PATH}
 		--data-dir=/resources
 		--top-level-division=section
 		--variable=block-headings
@@ -915,7 +911,8 @@ do_pdf_from_latex() {
 	if [[ "${ignore_errors}" = "true" ]]; then
 		pdflatex="${pdflatex} -interaction=nonstopmode"
 	fi
-	latexmk "${input}" -pdflatex="${pdflatex}" -pdf -diagnostics -output-directory=.cache/ > "${logfile}"
+	TEXINPUTS="${TEXINPUTS}:${RESOURCE_PATH}" \
+	  latexmk "${input}" -pdflatex="${pdflatex}" -pdf -diagnostics -output-directory=.cache/ > "${logfile}"
 	if [ $? -ne 0 ]; then
 		FAILED=true
 		echo "PDF output failed"
@@ -993,7 +990,7 @@ do_docx() {
 		--lua-filter=landscape-pages.lua
 		--lua-filter=style-fenced-divs.lua
 		--filter=pandoc-crossref
-		--resource-path=.:/resources:${RESOURCE_DIR}
+		--resource-path=${RESOURCE_PATH}
 		--data-dir=/resources
 		--from='${FROM}+raw_attribute'
 		--metadata=subtitle:"'${subtitle}'"
@@ -1036,7 +1033,7 @@ do_html() {
 		--filter=pandoc-crossref
 		--lua-filter=divide-code-blocks.lua
 		--lua-filter=style-fenced-divs.lua
-		--resource-path=.:/resources:${RESOURCE_DIR}
+		--resource-path=${RESOURCE_PATH}
 		--data-dir=/resources
 		--top-level-division=section
 		--variable=block-headings
