@@ -42,7 +42,7 @@ print_usage() {
 	echo "Usage:"
 	echo "$(basename "${0}") [options] [input-file]"
 	echo
-	echo "If a volume is mapped to `/extra_resources/{dir}`, input files may reference its contents as `extra/{dir}`."
+	echo "If a volume is mapped to /extra_resources/{dir}, input files may reference its contents as extra/{dir}."
 	echo
 	echo "Arguments:"
 	echo "  This script takes a single markdown file input for rendering to docx/pdf/LaTeX."
