@@ -21,8 +21,7 @@ CROSSREF_TYPE="iso"
 DO_AUTO_BACKMATTER="yes"
 TEMPLATE_PDF="tcg.tex"
 TEMPLATE_TYPST="tcg.typ"
-TEMPLATE_HTML=""
-HTML_STYLESHEET_ARGS=""
+HTML_ARGS=""
 CSL=""
 
 
@@ -176,11 +175,11 @@ while true; do
 		shift 2
 		;;
 	--template_html)
-		TEMPLATE_HTML="${2}"
+		HTML_ARGS+=" --template ${2}"
 		shift 2
 		;;
 	--html_stylesheet)
-		HTML_STYLESHEET_ARGS+=" --css ${2}"
+		HTML_ARGS+=" --css ${2}"
 		shift 2
 		;;
 	--reference_doc)
@@ -1027,8 +1026,7 @@ do_html() {
 		-V toccolor=blue
 		--embed-resources
 		--standalone
-		--template=${TEMPLATE_HTML}
-		${HTML_STYLESHEET_ARGS}
+		${HTML_ARGS}
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
