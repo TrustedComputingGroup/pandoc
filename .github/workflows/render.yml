@@ -86,11 +86,6 @@ jobs:
       # that call to this one.
       # The unfortunate workaround is for this file to be updated to point at specific commits
       # and reference that version of the action file in this reusable workflow.
-      # Note: It appears that we can't pass variables into 'uses:' below to allow callers to
-      # request a version of the action. Referencing it by local path breaks external workflows
-      # that call to this one.
-      # The unfortunate workaround is for this file to be updated to point at specific commits
-      # and reference that version of the action file in this reusable workflow.
       # Render the document with diffs in the 'pr' mode.
       - name: Render
         if: inputs.workflow == 'pr'
