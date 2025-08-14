@@ -789,6 +789,7 @@ do_latex() {
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=convert-images.lua
 		--lua-filter=center-images.lua
+		--lua-filter=include-into-code-blocks.lua
 		--lua-filter=informative-sections.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
@@ -984,6 +985,7 @@ do_docx() {
 		--standalone
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=convert-images.lua
+		--lua-filter=include-into-code-blocks.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
 		--lua-filter=landscape-pages.lua
@@ -1025,6 +1027,7 @@ do_html() {
 		--standalone
 		${HTML_ARGS}
 		--lua-filter=convert-diagrams.lua
+		--lua-filter=include-into-code-blocks.lua
 		--lua-filter=parse-html.lua
 		--lua-filter=apply-classes-to-tables.lua
 		--lua-filter=landscape-pages.lua

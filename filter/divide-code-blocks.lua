@@ -28,6 +28,8 @@ function CodeBlock(block)
     -- all code blocks are rendered consistently.
     table.insert(block.classes, "_placeholder")
 
+    block.text = block.text:gsub("\r", "") -- Remove carriage-returns.
+
     font = class_spec["font"]
     return {
         pandoc.RawInline('latex', string.format([[

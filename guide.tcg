@@ -574,6 +574,23 @@ auctor lorem, ultricies vehicula orci aliquam sed. Praesent interdum leo metus,
 ut rhoncus sem consequat a.
 ```
 
+Code blocks can also include content from other files.
+
+````md
+```include {.small}
+!include sample-text.inc
+```
+````
+
+The result looks like this:
+
+```include {.small}
+!include sample-text.inc
+```
+
+An `include` block can contain multiple `!include` directives. Paths are resolved
+relative to the directory in which the build occurs.
+
 ## Footnotes {#sec:footnotes}
 
 ```md
