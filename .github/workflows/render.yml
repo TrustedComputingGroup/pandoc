@@ -67,17 +67,7 @@ jobs:
         env:
           cache-name: cache-latex-${{ inputs.input }}-files
         with:
-          path: |
-            *.aux
-            *.fdb_latexmk
-            *.lof
-            *.lot
-            *.toc
-            *.upa
-            *.upb
-            *.convert.pdf
-            *.mermaid.pdf
-            *.aasvg.pdf
+          path: "**/.cache/**/*"
           key: latex-${{ inputs.input }}-${{ inputs.container-version }}-${{ github.run_id }}
           restore-keys: latex-${{ inputs.input }}-${{ inputs.container-version }}
 
