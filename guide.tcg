@@ -1238,6 +1238,56 @@ Each type of Markdown table provides different support for alignment. See the
 [Pandoc table documentation](https://pandoc.org/chunkedhtml-demo/8.9-tables.html)
 for more details.
 
+#### Font size
+
+The font size of tables can be customized via the `.small` or `.tiny` classes.
+
+```md
+Table: Font size demonstration (small) {#tbl:fontsize-demonstration .small}
+
++-------+-------+-----------------+
+| Fruit | Color | Description     |
++=======+=======+=================+
+| Apple | Red   | Useful for pie. |
++-------+-------+-----------------+
+| Pear  | Green | Useful for pie? |
++-------+-------+-----------------+
+
+Here is how to customize the font size of a table that has no caption:
+
+: {.tiny}
+
++--------+--------+---------------------+
+| Fruit  | Color  | Description         |
++========+========+=====================+
+| Banana | Yellow | Useful for pie.     |
++--------+--------+---------------------+
+| Tomato | Red    | Not useful for pie. |
++--------+--------+---------------------+
+```
+
+These tables render like so:
+
+Table: Font size demonstration (small) {#tbl:fontsize-demonstration .small}
+
++-------+-------+-----------------+
+| Fruit | Color | Description     |
++=======+=======+=================+
+| Apple | Red   | Useful for pie. |
++-------+-------+-----------------+
+| Pear  | Green | Useful for pie? |
++-------+-------+-----------------+
+
+: {.tiny}
+
++--------+--------+---------------------+
+| Fruit  | Color  | Description         |
++========+========+=====================+
+| Banana | Yellow | Useful for pie.     |
++--------+--------+---------------------+
+| Tomato | Red    | Not useful for pie. |
++--------+--------+---------------------+
+
 ## HTML Tables {#sec:html-tables}
 
 A rowspan/colspan table like @tbl:fruits-grid can be implemented in HTML like

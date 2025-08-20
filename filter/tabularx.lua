@@ -1,6 +1,13 @@
 -- Use xltabular's xltabular environment instead of longtable to write LaTeX tables.
 -- Run this filter after pandoc-crossref.
 
+fontsize_classes =
+{
+    ["normal"] = "\\small",
+    ["small"] = "\\scriptsize",
+    ["tiny"] = "\\tiny",
+}
+
 function Length(element)
     local n = 0
     for key, value in pairs(element) do
@@ -234,6 +241,15 @@ end
 -- which gives us the option to draw the full grid of the table.
 function Table(tbl)
     if FORMAT =='latex' then
+        local fontsize = fontsize_classes["normal"]
+        for _, class in ipairs(tbl.classes) do
+            local maybe_fontsize = fontsize_classes[string.lower(class)]
+            if maybe_fontsize then
+                fontsize = maybe_fontsize
+                break
+            end
+        end
+
         tbl.colspecs = NormalizeColumns(tbl.colspecs)
         local latex_code = ''
 
@@ -274,6 +290,9 @@ function Table(tbl)
         if not numbered then
             latex_code = latex_code .. '\\addtocounter{table}{-1}\n'
         end
+
+        -- Set the font size.
+        latex_code = latex_code .. '\\begingroup' .. fontsize
 
         --
         -- Begin the xltabular environment
@@ -370,7 +389,7 @@ function Table(tbl)
         -- End the tabular environment
         --
 
-        latex_code = latex_code .. '\\end{xltabular}\n'
+        latex_code = latex_code .. '\\end{xltabular}\\endgroup\n'
 
         -- Return a raw LaTeX blob with our encoded table.
         return pandoc.RawBlock('tex', latex_code)
