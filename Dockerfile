@@ -98,6 +98,7 @@ RUN apt update && apt install -y \
     bash \
     default-jre \
     fontconfig \
+    graphviz \
     imagemagick \
     libnss3 \
     librsvg2-bin \
