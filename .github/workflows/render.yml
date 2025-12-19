@@ -53,7 +53,7 @@ jobs:
           echo output filename: ${filename}
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.revision }}
           fetch-depth: 0
@@ -63,7 +63,7 @@ jobs:
       # key so that the cache is invalidated upon file change or container
       # version change.
       - name: Cache LaTeX files
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-latex-${{ inputs.input }}-files
         with:
@@ -121,14 +121,14 @@ jobs:
           file_glob: true
       # Always upload all PDF and log files to the workflow artifacts
       - name: Upload pdfs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.pdf
           path: |
             ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}*.pdf
         if: always()
       - name: Upload logs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}.log
           path: |
