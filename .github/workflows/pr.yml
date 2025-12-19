@@ -16,6 +16,14 @@ jobs:
       packages: write
 
     steps:
+      # Debug "No space left on device (os error 28)" issues
+      - name: Check disk usage
+        run: df -h
+      - name: Check sizes of directories in home directory
+        run: du -sh /home/runner/* | sort -h
+      - name: Check sizes of directories in tools cache
+        run: du -sh /opt/hostedtoolcache/* | sort -h
+
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry
