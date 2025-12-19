@@ -29,6 +29,8 @@ jobs:
       # pre-installed tools to make space.
       - name: Free up disk space by deleting /opt/hostedtoolcache/CodeQL
         run: rm -rf /opt/hostedtoolcache/CodeQL
+      - name: Free up disk space by deleting /opt/hostedtoolcache/Python
+        run: rm -rf /opt/hostedtoolcache/Python
 
       # Login against a Docker registry
       # https://github.com/docker/login-action
