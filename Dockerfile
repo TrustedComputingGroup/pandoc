@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.3-labs
 ARG RUSTBASE=rust:1.92.0-trixie
 ARG BUILDBASE=debian:trixie-20251208-slim
-ARG RUNBASE=pandoc/core:3.8.3-debian
+ARG RUNBASE=pandoc/core:3.8.3-ubuntu
 
 FROM ${RUSTBASE} AS build-typst
 
