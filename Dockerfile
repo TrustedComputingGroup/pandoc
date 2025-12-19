@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1.3-labs
-ARG RUSTBASE=rust:1.87.0-bookworm
-ARG BUILDBASE=debian:bookworm-20250203-slim
-ARG RUNBASE=pandoc/core:3.7-ubuntu
+ARG RUSTBASE=rust:1.92.0-trixie
+ARG BUILDBASE=debian:trixie-20251208-slim
+ARG RUNBASE=pandoc/core:3.8.3-ubuntu
 
 FROM ${RUSTBASE} AS build-typst
 
-RUN cargo install --version 0.13.1 typst-cli
+RUN cargo install --version 0.14.2 typst-cli
 
 FROM ${BUILDBASE} AS build-texlive
 
@@ -33,7 +33,7 @@ RUN apt update && apt install -y \
     perl \
     sed \
     wget \
-    yarn
+    yarnpkg
 
 ENV MIRROR=https://mirror.ctan.org/systems/texlive/tlnet/
 
@@ -123,9 +123,9 @@ RUN add-apt-repository ppa:xtradeb/apps -y && \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN npm install --global --unsafe-perm puppeteer@23.2.1 imgur@2.4.2 @mermaid-js/mermaid-cli@11.1.1 typescript@5.5.4 pandiff@0.6.0
+RUN npm install --global --unsafe-perm puppeteer@24.34.0 imgur@2.5.0 @mermaid-js/mermaid-cli@11.12.0 typescript@5.9.3 pandiff@0.8.0
 
-RUN wget -O /usr/share/plantuml.jar https://github.com/plantuml/plantuml/releases/download/v1.2025.2/plantuml-asl-1.2025.2.jar
+RUN wget -O /usr/share/plantuml.jar https://github.com/plantuml/plantuml/releases/download/v1.2025.10/plantuml-asl-1.2025.10.jar
 
 # Important: /usr/local/texlive/bin/ paths come before other paths. We want to use the texlive we
 # built above, not any that happen to have come along with our base image.
@@ -212,7 +212,7 @@ RUN tlmgr update --self --all && tlmgr install \
     xltabular \
     zref
 
-ENV DRAWIO_RELEASE=26.0.16
+ENV DRAWIO_RELEASE=29.0.3
 
 # TARGETPLATFORM is linux/arm64 or linux/amd64. The release for amd64 is called drawio-amd64-23.1.5.deb.
 RUN export DRAWIO_DEB=drawio-${TARGETPLATFORM#linux/}-${DRAWIO_RELEASE}.deb && \
