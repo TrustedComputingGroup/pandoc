@@ -111,7 +111,7 @@ jobs:
       # Upload the PDF to the release in 'release' mode
       - name: Upload to release
         if: inputs.workflow == 'release'
-        uses: svenstaro/upload-release-action@v2.11
+        uses: svenstaro/upload-release-action@v2.11.3
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ steps.gen_output_name.outputs.OUTPUT_FILENAME }}*.pdf
