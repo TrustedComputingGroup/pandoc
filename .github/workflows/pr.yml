@@ -24,6 +24,19 @@ jobs:
       - name: Check sizes of directories in tools cache
         run: du -sh /opt/hostedtoolcache/* | sort -h
 
+      # A recent run of du -sh /opt/hostedtoolcache/* | sort -h yielded:
+      # 24K	/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+      # 217M	/opt/hostedtoolcache/Ruby
+      # 520M	/opt/hostedtoolcache/PyPy
+      # 574M	/opt/hostedtoolcache/node
+      # 1.1G	/opt/hostedtoolcache/go
+      # 1.7G	/opt/hostedtoolcache/CodeQL
+      # 1.9G	/opt/hostedtoolcache/Python
+      # Since we are just building a Docker container we delete some unused
+      # pre-installed tools to make space.
+      - name: Free up disk space by deleting /opt/hostedtoolcache/CodeQL
+        run: rm -rf /opt/hostedtoolcache/CodeQL
+
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry
