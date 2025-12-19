@@ -33,7 +33,7 @@ RUN apt update && apt install -y \
     perl \
     sed \
     wget \
-    yarn
+    yarnpkg
 
 ENV MIRROR=https://mirror.ctan.org/systems/texlive/tlnet/
 
