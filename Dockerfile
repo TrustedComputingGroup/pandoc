@@ -141,6 +141,7 @@ COPY --from=build-latexdiff /usr/local/bin/latexdiff* /usr/local/bin
 # changebar, datetime2, latexdiff, listings, marginnote, pdfcomment, soulpos
 RUN tlmgr update --self --all && tlmgr install \
     accsupp \
+    acronym \
     adjustbox \
     appendix \
     amsmath \
@@ -210,6 +211,7 @@ RUN tlmgr update --self --all && tlmgr install \
     xcolor \
     xetex \
     xltabular \
+    xstring \
     zref
 
 ENV DRAWIO_RELEASE=29.0.3
