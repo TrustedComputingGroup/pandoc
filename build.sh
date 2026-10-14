@@ -797,6 +797,8 @@ do_latex() {
 		--lua-filter=style-fenced-divs.lua
 		--filter=pandoc-crossref
 		--citeproc
+		--lua-filter=acronyms.lua
+		--lua-filter=acronym-list.lua
 		--lua-filter=tabularx.lua
 		--lua-filter=divide-code-blocks.lua
 		--resource-path=${RESOURCE_PATH}
