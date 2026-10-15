@@ -783,7 +783,7 @@ do_latex() {
 	local start=$(date +%s)
 	local cmd=(pandoc
 		--standalone
-		--highlight-style=${SYNTAX_HIGHLIGHT_STYLE}
+		--syntax-highlighting=${SYNTAX_HIGHLIGHT_STYLE}
 		--template=${TEMPLATE_PDF}
 		--lua-filter=fix-latex-backticks.lua
 		--lua-filter=convert-diagrams.lua
@@ -853,7 +853,7 @@ do_typst() {
 	local start=$(date +%s)
 	local cmd=(pandoc
 		--standalone
-		--highlight-style=${SYNTAX_HIGHLIGHT_STYLE}
+		--syntax-highlighting=${SYNTAX_HIGHLIGHT_STYLE}
 		--template=${TEMPLATE_TYPST}
 		--lua-filter=convert-diagrams.lua
 		--lua-filter=convert-images.lua
