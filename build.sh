@@ -8,6 +8,7 @@ DIFFPDF_OUTPUT=""
 DIFFTEX_OUTPUT=""
 DOCX_OUTPUT=""
 HTML_OUTPUT=""
+JSON_OUTPUT=""
 LATEX_OUTPUT=""
 LATEX_OVERRIDE=""
 TYPST_OUTPUT=""
@@ -79,7 +80,7 @@ print_usage() {
 }
 
 
-if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,latex_override:,typst:,pdflog:,pdf_engine:,template:,template_html:,html_stylesheet:,reference_doc:,docx:,crossref:,html:,resourcedir:,noautobackmatter,csl: --options="" -- "$@"); then
+if ! options=$(getopt --longoptions=help,puppeteer,gitversion,gitstatus,nogitversion,table_rules,plain_quotes,versioned_filenames,pr_number:,pr_repo:,diffbase:,pdf:,diffpdf:,difftex:,diffpdflog:,latex:,latex_override:,typst:,pdflog:,pdf_engine:,template:,template_html:,html_stylesheet:,reference_doc:,docx:,crossref:,html:,json:,resourcedir:,noautobackmatter,csl: --options="" -- "$@"); then
 	echo "Incorrect options provided"
 	print_usage
 	exit 1
@@ -165,6 +166,10 @@ while true; do
 		HTML_OUTPUT="${2}"
 		shift 2
 		;;
+	--json)
+		JSON_OUTPUT="${2}"
+		shift 2
+		;;
 	--template)
 		# TODO: If simultaneous LaTeX and Typst-based PDF generation is required,
 		# then we need separate --template_latex and --template_typst flags.
@@ -248,7 +253,7 @@ if [ ! -e "${INPUT_FILE}" ]; then
 fi
 
 # at least one output must be requested
-if [ -z "${PDF_OUTPUT}${LATEX_OUTPUT}${DOCX_OUTPUT}${HTML_OUTPUT}" ]; then
+if [ -z "${PDF_OUTPUT}${LATEX_OUTPUT}${DOCX_OUTPUT}${HTML_OUTPUT}${JSON_OUTPUT}" ]; then
 	>&2 echo "Expected --pdf, --docx, --html, or --latex option"
 	print_usage
 	exit 1
@@ -495,12 +500,17 @@ if [ "${VERSIONED_FILENAMES}" == "yes" ]; then
 	if [ ! -z "${HTML_OUTPUT}" ]; then
 		HTML_OUTPUT=$(prefix_filename "${version_prefix}" "${HTML_OUTPUT}")
 	fi
+	if [ ! -z "${JSON_OUTPUT}" ]; then
+		JSON_OUTPUT=$(prefix_filename "${version_prefix}" "${JSON_OUTPUT}")
+	fi
+	
 fi
 readonly PDF_OUTPUT
 readonly DIFFPDF_OUTPUT
 readonly DIFFTEX_OUTPUT
 readonly DOCX_OUTPUT
 readonly HTML_OUTPUT
+readonly JSON_OUTPUT
 readonly LATEX_OUTPUT
 readonly PDFLOG_OUTPUT
 readonly DIFFPDFLOG_OUTPUT
@@ -510,6 +520,7 @@ readonly RESOURCE_PATH=".:/resources:${RESOURCE_DIR}"
 echo "Starting Build with"
 echo "file: ${INPUT_FILE}"
 echo "docx: ${DOCX_OUTPUT:-none}"
+echo "json: ${JSON_OUTPUT:-none}"
 echo "pdf: ${PDF_OUTPUT:-none} (engine: ${PDF_ENGINE})"
 echo "diff pdf: ${DIFFPDF_OUTPUT:-none} (engine: ${PDF_ENGINE})"
 echo "latex: ${latex_ouput:-none}"
@@ -1067,6 +1078,30 @@ do_html() {
 	fi
 }
 
+do_json() {
+	local input=$1
+	local output=$2
+	mkdir -p "$(dirname ${output})"
+
+	echo "Generating JSON Output"
+	local start=$(date +%s)
+	local cmd=(pandoc
+		--standalone
+		--lua-filter=part3-command-tables-to-json.lua
+		--data-dir=/resources
+		--from=${FROM}
+		--to=plain
+		--output="'${output}'"
+		"'${input}'")
+	retry 1 "${cmd[@]}"
+	if [ $? -ne 0 ]; then
+		FAILED=true
+		echo "JSON output failed"
+	fi
+	local end=$(date +%s)
+	echo "Elapsed time: $(($end-$start)) seconds"
+}
+
 do_md_fixups "${BUILD_DIR}/${INPUT_FILE}"
 
 # Generate .typ output if either typst or pdf format (using the Typst engine) were requested.
@@ -1117,6 +1152,11 @@ fi
 # Generate the docx output
 if [ -n "${DOCX_OUTPUT}" ]; then
 	do_docx "${BUILD_DIR}/${INPUT_FILE}" "${SOURCE_DIR}/${DOCX_OUTPUT}"
+fi
+
+# Generate the JSON output
+if [ -n "${JSON_OUTPUT}" ]; then
+	do_json "${BUILD_DIR}/${INPUT_FILE}" "${SOURCE_DIR}/${JSON_OUTPUT}"
 fi
 
 # Diffs may fail in some circumstances. Do not fail the entire workflow here.
