@@ -146,9 +146,6 @@ RUN tlmgr update --self --all && tlmgr install \
     appendix \
     amsmath \
     anyfontsize \
-    adjustbox \
-    anyfontsize \
-    appendix \
     bigfoot \
     bookmark \
     booktabs \
